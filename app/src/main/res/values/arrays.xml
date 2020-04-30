@@ -1,0 +1,27 @@
+<resources>
+    <string-array name="teamColours">
+        <item>White</item>
+        <item>Yellow</item>
+        <item>Orange</item>
+        <item>Magenta</item>
+        <item>Red</item>
+        <item>Maroon</item>
+        <item>Purple</item>
+        <item>Dark Blue</item>
+        <item>Blue</item>
+        <item>Cyan</item>
+        <item>Teal</item>
+        <item>Green</item>
+        <item>Dark Green</item>
+    </string-array>
+
+    <string-array name="transmissionProtocols">
+        <item>UDP</item>
+        <item>TCP</item>
+    </string-array>
+
+    <string-array name="transmittedDataTypes">
+        <item>GPS Position</item>
+        <item>Generated Icons</item>
+    </string-array>
+</resources>

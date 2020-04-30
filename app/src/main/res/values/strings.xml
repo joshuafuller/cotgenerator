@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">CoT Generator</string>
+
+    <string name="play">Play</string>
+    <string name="start">Start</string>
+    <string name="about">About</string>
+</resources>

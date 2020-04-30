@@ -1,0 +1,153 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="General Settings">
+
+        <ListPreference
+            android:key="teamColour"
+            app:defaultValue="Cyan"
+            app:entries="@array/transmittedDataTypes"
+            app:entryValues="@array/transmittedDataTypes"
+            app:iconSpaceReserved="false"
+            app:title="Transmitted Data Type"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="CoT Settings">
+
+        <EditTextPreference
+            android:defaultValue="COT"
+            android:key="callsign"
+            app:iconSpaceReserved="false"
+            app:title="Callsign Prefix"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            android:key="iconCount"
+            app:defaultValue="60"
+            app:iconSpaceReserved="false"
+            app:title="Icon Count"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            android:key="staleTimer"
+            app:defaultValue="5"
+            app:iconSpaceReserved="false"
+            app:summary="5 minutes"
+            app:title="Stale Time" />
+
+        <ListPreference
+            android:key="teamColour"
+            app:defaultValue="Cyan"
+            app:entries="@array/teamColours"
+            app:entryValues="@array/teamColours"
+            app:iconSpaceReserved="false"
+            app:title="Team Colour"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="Location Settings">
+
+        <EditTextPreference
+            android:key="centreLatitude"
+            app:defaultValue="58.243527"
+            app:iconSpaceReserved="false"
+            app:summary="58.243527 degrees"
+            app:title="Centre Latitude" />
+
+        <EditTextPreference
+            android:key="centreLongitude"
+            app:defaultValue="-6.606301"
+            app:iconSpaceReserved="false"
+            app:summary="-6.606301 degrees"
+            app:title="Centre Longitude" />
+
+        <EditTextPreference
+            android:key="radialDistribution"
+            app:defaultValue="100"
+            app:iconSpaceReserved="false"
+            app:summary="100 metres"
+            app:title="Radial Distribution" />
+
+        <EditTextPreference
+            android:key="movementRadius"
+            app:defaultValue="50"
+            app:iconSpaceReserved="false"
+            app:summary="50 metres"
+            app:title="Movement Radius Per Icon" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="Transmission Settings">
+
+        <ListPreference
+            android:key="transmissionProtocol"
+            app:defaultValue="TCP"
+            app:entries="@array/transmissionProtocols"
+            app:entryValues="@array/transmissionProtocols"
+            app:iconSpaceReserved="false"
+            app:title="Transmission Protocol"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            android:key="transmissionPeriod"
+            app:defaultValue="10"
+            app:iconSpaceReserved="false"
+            app:summary="10 seconds"
+            app:title="Transmission period" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="udpGroup"
+        app:iconSpaceReserved="false"
+        app:title="UDP Settings">
+
+        <EditTextPreference
+            android:key="udpIp"
+            app:defaultValue="239.2.3.1"
+            app:iconSpaceReserved="false"
+            app:title="UDP Destination Address"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            android:key="udpPort"
+            app:defaultValue="6969"
+            app:iconSpaceReserved="false"
+            app:title="UDP Destination Port"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="tcpGroup"
+        app:iconSpaceReserved="false"
+        app:title="TCP Settings">
+
+        <EditTextPreference
+            android:key="tcpIp"
+            app:defaultValue="192.168.1.2"
+            app:iconSpaceReserved="false"
+            app:title="Server Address"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            android:key="tcpPort"
+            app:defaultValue="8089"
+            app:iconSpaceReserved="false"
+            app:title="Server Port"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

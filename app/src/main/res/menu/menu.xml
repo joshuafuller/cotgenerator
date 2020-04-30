@@ -1,0 +1,27 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".CotActivity">
+
+    <item
+        android:id="@+id/pause"
+        android:icon="@drawable/pause"
+        android:orderInCategory="1"
+        android:title="@string/play"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/start"
+        android:icon="@drawable/start"
+        android:orderInCategory="1"
+        android:title="@string/start"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/about"
+        android:icon="@android:drawable/ic_menu_help"
+        android:orderInCategory="2"
+        android:title="@string/about"
+        app:showAsAction="never" />
+
+</menu>

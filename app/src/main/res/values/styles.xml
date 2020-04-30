@@ -1,0 +1,41 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="alertDialogTheme">@style/AlertDialogTheme</item>
+        <item name="android:dialogPreferenceStyle">@style/AlertDialogTheme</item>
+        <item name="android:editTextStyle">@style/EditTextStyle</item>
+        <item name="android:alertDialogStyle">@style/AlertDialogTheme</item>
+
+
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="Base.ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark" />
+
+    <style name="AlertDialogTheme" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:textColorPrimary">@color/textColour</item>
+        <item name="android:textColorSecondary">@color/textColour</item>
+        <item name="android:textColor">@color/textColour</item>
+        <item name="editTextColor">@color/textColour</item>
+        <item name="editTextStyle">@style/EditTextStyle</item>
+        <item name="android:background">@color/greyLight</item>
+    </style>
+
+    <style name="EditTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="android:editTextColor">@color/textColour</item>
+        <item name="android:background">@color/greyLighter</item>
+        <item name="android:textColor">@color/textColour</item>
+        <item name="android:editTextBackground">@color/greyLighter</item>
+    </style>
+
+</resources>
