@@ -24,7 +24,7 @@
             android:defaultValue="COT"
             android:key="callsign"
             app:iconSpaceReserved="false"
-            app:title="Callsign Prefix"
+            app:title="Callsign"
             app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference
@@ -53,6 +53,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:key="locationGroup"
         app:iconSpaceReserved="false"
         app:title="Location Settings">
 
@@ -104,7 +105,7 @@
             app:defaultValue="10"
             app:iconSpaceReserved="false"
             app:summary="10 seconds"
-            app:title="Transmission period" />
+            app:title="Transmission Period" />
 
     </PreferenceCategory>
 

@@ -38,8 +38,8 @@ public class CursorOnTarget {
 
     // System info
     public Integer battery = null; // internal device battery remaining, scale of 1-100
-    public String device = "NOT-A-REAL-DEVICE";
-    public String platform = "CoT Generator";
+    public String device = String.format("%s %s", Build.MANUFACTURER.toUpperCase(), Build.MODEL.toUpperCase());
+    public String platform = "COT-GENERATOR";
     public String os = String.valueOf(Build.VERSION.SDK_INT);
     public String version = BuildConfig.VERSION_NAME;
 

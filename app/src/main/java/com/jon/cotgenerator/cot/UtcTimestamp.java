@@ -9,11 +9,11 @@ import java.time.format.DateTimeFormatter;
 * utility functions all over the place. */
 public class UtcTimestamp {
     private static final String TAG = UtcTimestamp.class.getSimpleName();
-    private String mIsoTimestamp;
-    private long mMilliseconds;
+    private String isoTimestamp;
+    private long milliseconds;
 
-    public long toLong() { return mMilliseconds; }
-    @Override public String toString() { return mIsoTimestamp; }
+    public long toLong() { return milliseconds; }
+    @Override public String toString() { return isoTimestamp; }
 
     public static UtcTimestamp now() {
         return new UtcTimestamp(System.currentTimeMillis());
@@ -21,13 +21,13 @@ public class UtcTimestamp {
 
     public UtcTimestamp(String str) throws IllegalArgumentException {
         if (isValidString(str)) {
-            mMilliseconds = timestampStringToLong(str);
-            mIsoTimestamp = str;
+            milliseconds = timestampStringToLong(str);
+            isoTimestamp = str;
         } else {
             String newStr = fullString(str);
             if (isValidString(newStr)) {
-                mMilliseconds = timestampStringToLong(newStr);
-                mIsoTimestamp = newStr;
+                milliseconds = timestampStringToLong(newStr);
+                isoTimestamp = newStr;
             } else {
                 throw new IllegalArgumentException("Invalid string passed to UtcTimestamp: '" + str + "'");
             }
@@ -35,21 +35,21 @@ public class UtcTimestamp {
     }
 
     public UtcTimestamp(long ms) {
-        mMilliseconds = ms;
-        mIsoTimestamp = timestampLongToString(ms);
+        milliseconds = ms;
+        isoTimestamp = timestampLongToString(ms);
     }
 
     public UtcTimestamp add(long ms) {
-        return new UtcTimestamp(mMilliseconds + ms);
+        return new UtcTimestamp(milliseconds + ms);
     }
 
     public UtcTimestamp add(String str) throws IllegalArgumentException {
         if (isValidString(str)) {
-            return new UtcTimestamp(mMilliseconds + timestampStringToLong(str));
+            return new UtcTimestamp(milliseconds + timestampStringToLong(str));
         } else {
             String newStr = fullString(str);
             if (isValidString(newStr)) {
-                return new UtcTimestamp(mMilliseconds + timestampStringToLong(newStr));
+                return new UtcTimestamp(milliseconds + timestampStringToLong(newStr));
             } else {
                 throw new IllegalArgumentException("Invalid string passed to UtcTimestamp: '" + str + "'");
             }

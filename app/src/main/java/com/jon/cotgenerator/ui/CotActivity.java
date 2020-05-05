@@ -47,6 +47,7 @@ public class CotActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        /* Regular setup */
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cot_activity);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
@@ -55,6 +56,7 @@ public class CotActivity extends AppCompatActivity {
                     .replace(R.id.container, SettingsFragment.newInstance())
                     .commitNow();
         }
+        /* Receiving intents from services */
         broadcastManager = LocalBroadcastManager.getInstance(this);
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(CotService.CLOSE_SERVICE_INTERNAL);
@@ -106,13 +108,12 @@ public class CotActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Intent intent = new Intent(this, CotService.class);
         switch (item.getItemId()) {
             case R.id.start:
-                sendServiceIntent(intent, CotService.START_SERVICE);
+                sendServiceIntent(new Intent(this, CotService.class), CotService.START_SERVICE);
                 return true;
             case R.id.pause:
-                sendServiceIntent(intent, CotService.STOP_SERVICE);
+                sendServiceIntent(new Intent(this, CotService.class), CotService.STOP_SERVICE);
                 return true;
             case R.id.about:
                 about();

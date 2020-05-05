@@ -22,12 +22,13 @@ import com.jon.cotgenerator.ui.CotActivity;
 
 public class CotService extends Service {
     private static final String TAG = CotService.class.getSimpleName();
-    public static final String START_SERVICE = BuildConfig.APPLICATION_ID + ".START";
-    public static final String STOP_SERVICE = BuildConfig.APPLICATION_ID + ".STOP";
-    public static final String CLOSE_SERVICE_INTERNAL = BuildConfig.APPLICATION_ID + ".CLOSE_SERVICE_INTERNAL";
+    private static final String BASE_INTENT_ID = BuildConfig.APPLICATION_ID + ".CotService.";
+    public static final String START_SERVICE = BASE_INTENT_ID + "START";
+    public static final String STOP_SERVICE = BASE_INTENT_ID + "STOP";
+    public static final String CLOSE_SERVICE_INTERNAL = BASE_INTENT_ID + "CLOSE_SERVICE_INTERNAL";
 
-    private SharedPreferences mSharedPrefs;
-    private CotManager mManager;
+    private SharedPreferences prefs;
+    private CotManager cotManager;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -38,8 +39,8 @@ public class CotService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        mManager = new CotManager(mSharedPrefs);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        cotManager = new CotManager(prefs);
     }
 
     @Override
@@ -47,11 +48,11 @@ public class CotService extends Service {
         if (intent != null && intent.getAction() != null) {
             switch (intent.getAction()) {
                 case START_SERVICE:
-                    mManager.start();
+                    cotManager.start();
                     startForegroundService();
                     break;
                 case STOP_SERVICE:
-                    mManager.shutdown();
+                    cotManager.shutdown();
                     stopForegroundService();
                     LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(CLOSE_SERVICE_INTERNAL));
                     break;
@@ -61,7 +62,6 @@ public class CotService extends Service {
     }
 
     private void startForegroundService() {
-        Log.i(TAG, "startForegroundService");
         /* minimum importance -> no heads-up service notification */
         NotificationChannel channel = new NotificationChannel(
                 BuildConfig.APPLICATION_ID, getString(R.string.app_name), NotificationManager.IMPORTANCE_HIGH);
