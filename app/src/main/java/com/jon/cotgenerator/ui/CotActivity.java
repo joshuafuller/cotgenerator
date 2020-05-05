@@ -71,13 +71,13 @@ public class CotActivity extends AppCompatActivity {
         broadcastManager.unregisterReceiver(broadcastReceiver);
     }
 
-    public static boolean isServiceRunning(Context context) {
-        final String serviceClass = CotService.class.getName();
-        ActivityManager manager = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
+    private boolean isCotServiceRunning(Context context) {
+        final String cotService = CotService.class.getName();
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         /* Note that getRunningServices() is deprecated and currently only returns the services associated
-        * with the current application. But that's all we need anyway, so whatever */
+         * with the current application. But that's all we need anyway, so whatever */
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.equals(service.service.getClassName())) {
+            if (cotService.equals(service.service.getClassName())) {
                 return true;
             }
         }
@@ -94,7 +94,7 @@ public class CotActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
-        if (isServiceRunning(this)) {
+        if (isCotServiceRunning(this)) {
             menu.findItem(R.id.start).setVisible(false);
             menu.findItem(R.id.pause).setVisible(true);
         } else {
