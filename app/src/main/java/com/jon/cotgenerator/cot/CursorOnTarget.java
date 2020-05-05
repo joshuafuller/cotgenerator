@@ -44,47 +44,9 @@ public class CursorOnTarget {
     public String version = BuildConfig.VERSION_NAME;
 
     // Any other info
-    public String mXmlDetail = null;
-
-    public static class CotParsingException extends Exception {
-        CotParsingException(String errorMessage) {
-            super(errorMessage);
-        }
-    }
+    public String xmlDetail = null;
 
     public CursorOnTarget() { /* blank */ }
-
-    public CursorOnTarget(XmlManager xml) {
-        try {
-            xml.setQuotes();
-
-            how = xml.getAttribute("how");
-            type = xml.getAttribute("type");
-            uid = xml.getAttribute("uid");
-            callsign = xml.getAttribute("callsign", XmlManager.OPTIONAL);
-            endpoint = xml.getAttribute("endpoint", XmlManager.OPTIONAL);
-            time = new UtcTimestamp(xml.getAttribute("time"));
-            start = new UtcTimestamp(xml.getAttribute("start"));
-            stale = new UtcTimestamp(xml.getAttribute("stale"));
-            lat = parseDouble(xml.getAttribute("lat"));
-            lon = parseDouble(xml.getAttribute("lon"));
-            hae = parseDouble(xml.getAttribute("hae"));
-            ce = parseDouble(xml.getAttribute("ce"));
-            le = parseDouble(xml.getAttribute("le"));
-            course = parseDouble(xml.getAttribute("course", XmlManager.OPTIONAL));
-            speed = parseDouble(xml.getAttribute("speed", XmlManager.OPTIONAL));
-            team = xml.getAttribute("name", XmlManager.OPTIONAL);
-            role = xml.getAttribute("role", XmlManager.OPTIONAL);
-            battery = parseInt(xml.getAttribute("battery", XmlManager.OPTIONAL));
-            device = xml.getAttribute("device", XmlManager.OPTIONAL);
-            platform = xml.getAttribute("platform", XmlManager.OPTIONAL);
-            os = xml.getAttribute("os", XmlManager.OPTIONAL);
-            version = xml.getAttribute("version", XmlManager.OPTIONAL);
-        } catch (CotParsingException e) {
-            e.printStackTrace();
-            Log.e(TAG, "Received an invalid CoT packet, discarding. Packet =\n" + xml.toString());
-        }
-    }
 
     @Override
     public String toString() {
@@ -126,23 +88,7 @@ public class CursorOnTarget {
         return this.toString().getBytes();
     }
 
-    public void resetStart(final long start) {
-        final long dt = stale.toLong() - this.start.toLong();
-        this.start = new UtcTimestamp(start);
-        stale = new UtcTimestamp(start + dt);
-    }
-
     public void setStaleDiff(final long dt) {
         stale = new UtcTimestamp(start.toLong() + dt);
-    }
-
-    private static Integer parseInt(String data) {
-        if (data == null) return 0;
-        return (data.length() == 0) ? null : Integer.parseInt(data);
-    }
-
-    private static double parseDouble(String data) {
-        if (data == null) return 0.0;
-        return (data.length() == 0) ? 0.0 : Double.parseDouble(data);
     }
 }
