@@ -23,7 +23,14 @@ import com.jon.cotgenerator.service.CotService;
 
 import java.util.Locale;
 
+import pub.devrel.easypermissions.EasyPermissions;
 public class CotActivity extends AppCompatActivity {
+    private static final String[] REQUIRED_PERMISSIONS = new String[]{
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+            Manifest.permission.READ_PHONE_STATE
+    };
+
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override public void onReceive(Context context, Intent intent) {
             if (intent.getAction() == null) {
@@ -52,6 +59,10 @@ public class CotActivity extends AppCompatActivity {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(CotService.CLOSE_SERVICE_INTERNAL);
         broadcastManager.registerReceiver(broadcastReceiver, intentFilter);
+        /* Requesting permissions */
+        if (!EasyPermissions.hasPermissions(this, REQUIRED_PERMISSIONS)) {
+            EasyPermissions.requestPermissions(this, "Needed for accessing GPS data", 123, REQUIRED_PERMISSIONS);
+        }
     }
 
     @Override
