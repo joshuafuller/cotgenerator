@@ -25,7 +25,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         Preference.OnPreferenceChangeListener {
     private static final String TAG = SettingsFragment.class.getSimpleName();
 
-    private SharedPreferences mPrefs;
+    private SharedPreferences prefs;
 
     public static SettingsFragment newInstance() {
         return new SettingsFragment();
@@ -90,40 +90,52 @@ public class SettingsFragment extends PreferenceFragmentCompat
     @Override
     public void onActivityCreated(@Nullable Bundle state) {
         super.onActivityCreated(state);
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        mPrefs.registerOnSharedPreferenceChangeListener(this);
+        prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        prefs.registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         for (Map.Entry entry : SUFFIXES.entrySet()) {
-            setPreferenceSuffix(mPrefs, (String) entry.getKey(), (String) entry.getValue());
+            setPreferenceSuffix(prefs, (String) entry.getKey(), (String) entry.getValue());
         }
         toggleProtocolSettingVisibility();
+        toggleDataTypeSettingsVisibility();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mPrefs.unregisterOnSharedPreferenceChangeListener(this);
+        prefs.unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
         Log.i(TAG, "onSharedPreferenceChanged " + key);
         if (SUFFIXES.containsKey(key)) {
-            setPreferenceSuffix(mPrefs, key, SUFFIXES.get(key));
+            setPreferenceSuffix(this.prefs, key, SUFFIXES.get(key));
         }
-        if (Key.TRANSMISSION_PROTOCOL.equals(key)) {
-            toggleProtocolSettingVisibility();
+        switch (key) {
+            case Key.TRANSMISSION_PROTOCOL:
+                toggleProtocolSettingVisibility();
+                break;
+            case Key.TRANSMITTED_DATA:
+                toggleDataTypeSettingsVisibility();
+                break;
         }
     }
 
     private void toggleProtocolSettingVisibility() {
-        boolean showUdp = mPrefs.getString(Key.TRANSMISSION_PROTOCOL, "UDP").equals("UDP");
+        boolean showUdp = prefs.getString(Key.TRANSMISSION_PROTOCOL, "").equals("UDP");
         findPreference(Key.UDP_GROUP).setVisible(showUdp);
         findPreference(Key.TCP_GROUP).setVisible(!showUdp);
+    }
+
+    private void toggleDataTypeSettingsVisibility() {
+        boolean sendGps = prefs.getString(Key.TRANSMITTED_DATA, "").equals("GPS Position");
+        findPreference(Key.ICON_COUNT).setVisible(!sendGps);
+        findPreference(Key.LOCATION_GROUP).setVisible(!sendGps);
     }
 
     @Override
@@ -132,7 +144,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         final String str = (String) newValue;
         boolean result = true;
         switch (pref.getKey()) {
-            case Key.SEND_SELF_POSITION:
+            case Key.TRANSMITTED_DATA:
                 CotActivity activity = (CotActivity) getActivity();
                 AndroidUtils.toast(activity, "Not implemented yet!");
 //                activity.requestGpsPermission();
@@ -154,9 +166,11 @@ public class SettingsFragment extends PreferenceFragmentCompat
             case Key.TRANSMISSION_PERIOD:
                 result = validateInt(str, 1, null);
                 break;
+            case Key.TCP_IP:
             case Key.UDP_IP:
                 result = validateIpAddress(str);
                 break;
+            case Key.TCP_PORT:
             case Key.UDP_PORT:
                 result = validateInt(str, 1, 65535);
                 break;
