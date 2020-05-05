@@ -36,6 +36,10 @@ public class CursorOnTarget {
     public String team = null;  // cyan, green, purple, etc
     public String role = "Team Member";  // HQ, sniper, K9, etc
 
+    // Location source
+    public String altsrc = "???";
+    public String geosrc = "???";
+
     // System info
     public Integer battery = null; // internal device battery remaining, scale of 1-100
     public String device = String.format("%s %s", Build.MANUFACTURER.toUpperCase(), Build.MODEL.toUpperCase());
@@ -58,11 +62,11 @@ public class CursorOnTarget {
 
         /* the basic required fields in a CoT message */
         final String base = String.format(locale,
-                "<?xml version=\"1.0\"?><event version=\"2.0\" uid=\"%s\" type=\"%s\" time=\"%s\"" +
-                        " start=\"%s\" stale=\"%s\" how=\"%s\"><point lat=\"%.7f\" lon=\"%.7f\" hae=\"%f\"" +
-                        " ce=\"%f\" le=\"%f\"/><detail><track speed=\"%.7f\" course=\"%.7f\"/>",
+                "<event version=\"2.0\" uid=\"%s\" type=\"%s\" time=\"%s\" start=\"%s\" stale=\"%s\" how=\"%s\"><point lat=\"%.7f\" " +
+                        "lon=\"%.7f\" hae=\"%f\" ce=\"%f\" le=\"%f\"/><detail><track speed=\"%.7f\" course=\"%.7f\"/>" +
+                        "<precisionlocation altsrc=\"%s\" geopointsrc=\"%s\" />",
                 uid, type, time.toString(), start.toString(), stale.toString(), how, lat,
-                lon, hae, ce, le, speed, course);
+                lon, hae, ce, le, speed, course, altsrc, geosrc);
 
         String contact = includeEndpoint ? String.format(locale, "<contact callsign=\"%s\" endpoint=\"%s\"/>", callsign, endpoint)
                                          : String.format(locale, "<contact callsign=\"%s\"/>", callsign);
