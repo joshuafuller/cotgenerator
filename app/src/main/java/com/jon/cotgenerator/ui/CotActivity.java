@@ -1,10 +1,6 @@
 package com.jon.cotgenerator.ui;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
+import android.Manifest;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -12,18 +8,29 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.preference.PreferenceManager;
+
 import com.jon.cotgenerator.BuildConfig;
 import com.jon.cotgenerator.R;
 import com.jon.cotgenerator.service.CotService;
+import com.jon.cotgenerator.service.GpsService;
+import com.jon.cotgenerator.utils.Key;
+import com.jon.cotgenerator.utils.PrefUtils;
 
 import java.util.Locale;
 
 import pub.devrel.easypermissions.EasyPermissions;
+
 public class CotActivity extends AppCompatActivity {
     private static final String[] REQUIRED_PERMISSIONS = new String[]{
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -32,7 +39,8 @@ public class CotActivity extends AppCompatActivity {
     };
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override public void onReceive(Context context, Intent intent) {
+        @Override
+        public void onReceive(Context context, Intent intent) {
             if (intent.getAction() == null) {
                 return;
             }
@@ -44,6 +52,7 @@ public class CotActivity extends AppCompatActivity {
         }
     };
     private LocalBroadcastManager broadcastManager;
+    SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,15 +65,23 @@ public class CotActivity extends AppCompatActivity {
                     .replace(R.id.container, SettingsFragment.newInstance())
                     .commitNow();
         }
+
         /* Receiving intents from services */
         broadcastManager = LocalBroadcastManager.getInstance(this);
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(CotService.CLOSE_SERVICE_INTERNAL);
         broadcastManager.registerReceiver(broadcastReceiver, intentFilter);
+
         /* Requesting permissions */
         if (!EasyPermissions.hasPermissions(this, REQUIRED_PERMISSIONS)) {
             EasyPermissions.requestPermissions(this, "Needed for accessing GPS data", 123, REQUIRED_PERMISSIONS);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
     }
 
     @Override
@@ -111,9 +128,15 @@ public class CotActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.start:
                 sendServiceIntent(new Intent(this, CotService.class), CotService.START_SERVICE);
+                if (PrefUtils.getString(prefs, Key.TRANSMITTED_DATA).equals("GPS Position")) {
+                    sendServiceIntent(new Intent(this, GpsService.class), GpsService.START_SERVICE);
+                }
                 return true;
             case R.id.pause:
                 sendServiceIntent(new Intent(this, CotService.class), CotService.STOP_SERVICE);
+                if (PrefUtils.getString(prefs, Key.TRANSMITTED_DATA).equals("GPS Position")) {
+                    sendServiceIntent(new Intent(this, GpsService.class), GpsService.STOP_SERVICE);
+                }
                 return true;
             case R.id.about:
                 about();

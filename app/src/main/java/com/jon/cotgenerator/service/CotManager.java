@@ -2,33 +2,39 @@ package com.jon.cotgenerator.service;
 
 import android.content.SharedPreferences;
 
+import com.jon.cotgenerator.utils.Key;
+
 class CotManager implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String TAG = CotManager.class.getSimpleName();
-    private SharedPreferences mPrefs;
-    private CotThread mThread;
+    private SharedPreferences prefs;
+    private CotThread thread;
 
     CotManager(SharedPreferences prefs) {
-        mPrefs = prefs;
+        this.prefs = prefs;
     }
 
-    boolean isRunning() {
-        return mThread != null && mThread.isRunning();
+    private boolean isRunning() {
+        return thread != null && thread.isRunning();
     }
 
     void start() {
-        mPrefs.registerOnSharedPreferenceChangeListener(this);
-        mThread = new CotThread(mPrefs);
-        mThread.start();
+        prefs.registerOnSharedPreferenceChangeListener(this);
+        boolean isUdp = prefs.getString(Key.TRANSMISSION_PROTOCOL, "").equals("UDP");
+        thread = isUdp ? new UdpCotThread(prefs) : new TcpCotThread(prefs);
+        thread.start();
     }
 
     void shutdown() {
-        mThread.shutdown();
-        mThread = null;
-        mPrefs.unregisterOnSharedPreferenceChangeListener(this);
+        if (thread != null) {
+            thread.shutdown();
+            thread = null;
+        }
+        prefs.unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+        /* If any preferences are changed, kill the thread and instantly reload with the new settings */
         if (isRunning()) {
             shutdown();
             start();
