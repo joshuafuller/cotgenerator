@@ -6,8 +6,8 @@
         app:title="General Settings">
 
         <ListPreference
-            android:key="teamColour"
-            app:defaultValue="Cyan"
+            android:key="transmittedData"
+            app:defaultValue="GPS Position"
             app:entries="@array/transmittedDataTypes"
             app:entryValues="@array/transmittedDataTypes"
             app:iconSpaceReserved="false"
