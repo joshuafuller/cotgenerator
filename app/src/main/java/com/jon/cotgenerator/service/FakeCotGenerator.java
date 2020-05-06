@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 
 import com.jon.cotgenerator.cot.CursorOnTarget;
 import com.jon.cotgenerator.cot.UtcTimestamp;
+import com.jon.cotgenerator.enums.TeamColour;
 import com.jon.cotgenerator.utils.Constants;
 import com.jon.cotgenerator.utils.Key;
 import com.jon.cotgenerator.utils.PrefUtils;
@@ -48,7 +49,6 @@ class FakeCotGenerator extends CotGenerator {
                 PrefUtils.getDouble(prefs, Key.CENTRE_LATITUDE) * DEG_TO_RAD,
                 PrefUtils.getDouble(prefs, Key.CENTRE_LONGITUDE) * DEG_TO_RAD
         );
-        final String team = PrefUtils.getString(prefs, Key.TEAM_COLOUR);
         final Random random = new Random();
         final double dlat = distributionRadius / Constants.EARTH_RADIUS;
         final double dlon = Math.abs(dlat / Math.cos(centre.lat));
@@ -63,7 +63,7 @@ class FakeCotGenerator extends CotGenerator {
             cot.time = now;
             cot.start = now;
             cot.setStaleDiff(staleTimer);
-            cot.team = team;
+            cot.team = TeamColour.fromPrefs(prefs).team();
             final Point point = generatePoint(latItr, lonItr, centre, distributionRadius);
             cot.lat = point.lat * RAD_TO_DEG;
             cot.lon = point.lon * RAD_TO_DEG;

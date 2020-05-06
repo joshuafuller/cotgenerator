@@ -41,14 +41,15 @@
             app:summary="5 minutes"
             app:title="Stale Time" />
 
-        <ListPreference
+        <com.jaredrummler.android.colorpicker.ColorPreferenceCompat
+            android:defaultValue="0xFF00FFFF"
             android:key="teamColour"
-            app:defaultValue="Cyan"
-            app:entries="@array/teamColours"
-            app:entryValues="@array/teamColours"
+            app:cpv_allowCustom="false"
+            app:cpv_colorPresets="@array/teamColours"
+            app:cpv_colorShape="circle"
+            app:cpv_showColorShades="false"
             app:iconSpaceReserved="false"
-            app:title="Team Colour"
-            app:useSimpleSummaryProvider="true" />
+            app:title="Team Colour" />
 
     </PreferenceCategory>
 

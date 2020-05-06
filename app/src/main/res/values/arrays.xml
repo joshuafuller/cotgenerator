@@ -1,19 +1,19 @@
 <resources>
-    <string-array name="teamColours">
-        <item>White</item>
-        <item>Yellow</item>
-        <item>Orange</item>
-        <item>Magenta</item>
-        <item>Red</item>
-        <item>Maroon</item>
-        <item>Purple</item>
-        <item>Dark Blue</item>
-        <item>Blue</item>
-        <item>Cyan</item>
-        <item>Teal</item>
-        <item>Green</item>
-        <item>Dark Green</item>
-    </string-array>
+    <array name="teamColours">
+        <item>#800080</item>
+        <item>#FF00FF</item>
+        <item>#FF00FF</item>
+        <item>#800000</item>
+        <item>#FF8000</item>
+        <item>#FFFF00</item>
+        <item>#00FF00</item>
+        <item>#00FF00</item>
+        <item>#006400</item>
+        <item>#00FFFF</item>
+        <item>#008080</item>
+        <item>#0000FF</item>
+        <item>#00008B</item>
+    </array>
 
     <string-array name="transmissionProtocols">
         <item>UDP</item>

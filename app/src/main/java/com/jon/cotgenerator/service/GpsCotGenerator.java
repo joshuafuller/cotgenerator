@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.jon.cotgenerator.cot.CursorOnTarget;
 import com.jon.cotgenerator.cot.UtcTimestamp;
+import com.jon.cotgenerator.enums.TeamColour;
 import com.jon.cotgenerator.utils.Key;
 import com.jon.cotgenerator.utils.PrefUtils;
 
@@ -44,7 +45,7 @@ class GpsCotGenerator extends CotGenerator {
         cot.time = now;
         cot.start = now;
         cot.setStaleDiff(1000 * 60 * PrefUtils.getInt(prefs, Key.STALE_TIMER));
-        cot.team = PrefUtils.getString(prefs, Key.TEAM_COLOUR);
+        cot.team = TeamColour.fromPrefs(prefs).team();
         LastGpsLocation.updateCot(cot);
         return result(cot);
     }
