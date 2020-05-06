@@ -28,16 +28,15 @@ final class UdpCotThread extends CotThread {
         super.shutdown();
         if (socket != null) {
             socket.close();
+            socket = null;
         }
-        socket = null;
     }
 
     @Override
     public void run() {
         super.run();
         initialiseDestAddress();
-        initialiseSocket();
-        final int movementRadius = PrefUtils.getInt(prefs, Key.MOVEMENT_RADIUS);
+        openSocket();
         cotGenerator = CotGenerator.getFromPrefs(prefs);
         List<CursorOnTarget> icons = cotGenerator.generate();
 
@@ -61,7 +60,7 @@ final class UdpCotThread extends CotThread {
         destPort = PrefUtils.getInt(prefs, Key.UDP_PORT);
     }
 
-    private void initialiseSocket() {
+    private void openSocket() {
         try {
             if (destIp.isMulticastAddress()) {
                 socket = new MulticastSocket();

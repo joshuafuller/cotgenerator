@@ -12,7 +12,6 @@ class LastGpsLocation {
     private static Location lastLocation = null;
 
     static void update(Location location) {
-        Log.i(TAG, "Received GPS update: " + location);
         lastLocation = location;
     }
 

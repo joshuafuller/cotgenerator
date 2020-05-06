@@ -22,7 +22,7 @@ abstract class CotGenerator {
         switch (dataType) {
             case "GPS Position":
                 return new GpsCotGenerator(prefs);
-            case "Generated Icons":
+            case "Fake Icons":
                 return new FakeCotGenerator(prefs);
             default:
                 throw new IllegalArgumentException("Unsupported CotGenerator: " + dataType);

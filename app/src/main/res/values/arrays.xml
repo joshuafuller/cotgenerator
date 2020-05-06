@@ -22,6 +22,6 @@
 
     <string-array name="transmittedDataTypes">
         <item>GPS Position</item>
-        <item>Generated Icons</item>
+        <item>Fake Icons</item>
     </string-array>
 </resources>

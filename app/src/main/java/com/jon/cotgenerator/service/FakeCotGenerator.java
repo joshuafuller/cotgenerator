@@ -40,7 +40,7 @@ class FakeCotGenerator extends CotGenerator {
     protected List<CursorOnTarget> initialise() {
         iconsMap = new HashMap<>();
         final int nCot = PrefUtils.getInt(prefs, Key.ICON_COUNT);
-        final String prefix = PrefUtils.getString(prefs, Key.CALLSIGN);
+        final String callsign = PrefUtils.getString(prefs, Key.CALLSIGN);
         final UtcTimestamp now = UtcTimestamp.now();
         final long staleTimer = 1000 * 60 * PrefUtils.getInt(prefs, Key.STALE_TIMER);
         final double distributionRadius = PrefUtils.getDouble(prefs, Key.RADIAL_DISTRIBUTION);
@@ -57,7 +57,7 @@ class FakeCotGenerator extends CotGenerator {
 
         for (int i = 0; i < nCot; i++) {
             CursorOnTarget cot = new CursorOnTarget();
-            String uid = String.format(Locale.ENGLISH, "%s_%04d", prefix, i);
+            String uid = String.format(Locale.ENGLISH, "%s_%04d", callsign, i);
             cot.uid = uid;
             cot.callsign = uid;
             cot.time = now;
