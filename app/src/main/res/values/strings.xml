@@ -4,4 +4,7 @@
     <string name="play">Play</string>
     <string name="start">Start</string>
     <string name="about">About</string>
+
+    <string name="tcpFreetakserver">Public FreeTakServer</string>
+    <string name="tcpTakserver">Public TAK Server</string>
 </resources>

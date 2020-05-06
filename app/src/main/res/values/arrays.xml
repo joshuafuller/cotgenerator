@@ -24,4 +24,10 @@
         <item>GPS Position</item>
         <item>Fake Icons</item>
     </string-array>
+
+    <string-array name="tcpPresets">
+        <item>@string/tcpFreetakserver</item>
+        <item>@string/tcpTakserver</item>
+    </string-array>
+
 </resources>

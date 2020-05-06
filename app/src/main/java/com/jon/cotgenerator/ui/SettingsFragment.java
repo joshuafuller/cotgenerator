@@ -8,12 +8,14 @@ import android.widget.EditText;
 
 import androidx.annotation.Nullable;
 import androidx.preference.EditTextPreference;
+import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
 import com.jon.cotgenerator.R;
 import com.jon.cotgenerator.utils.AndroidUtils;
+import com.jon.cotgenerator.utils.Constants;
 import com.jon.cotgenerator.utils.Key;
 
 import java.util.HashMap;
@@ -123,6 +125,29 @@ public class SettingsFragment extends PreferenceFragmentCompat
             case Key.TRANSMITTED_DATA:
                 toggleDataTypeSettingsVisibility();
                 break;
+            case Key.TCP_PRESETS:
+                insertPresetTcpServer();
+                break;
+            case Key.TCP_IP:
+            case Key.TCP_PORT:
+                ListPreference presetPref = findPreference(Key.TCP_PRESETS);
+                presetPref.setValue(null);
+                break;
+        }
+    }
+
+    private void insertPresetTcpServer() {
+        String preset = prefs.getString(Key.TCP_PRESETS, "");
+        EditTextPreference addrPref = findPreference(Key.TCP_IP);
+        EditTextPreference portPref = findPreference(Key.TCP_PORT);
+        if (getString(R.string.tcpFreetakserver).equals(preset)) {
+            addrPref.setText(Constants.ADDRESS_FREETAKSERVER);
+            portPref.setText(Constants.PORT_FREETAKSERVER);
+            Log.i(TAG, "Set to " + Constants.ADDRESS_FREETAKSERVER + " and " + Constants.PORT_FREETAKSERVER);
+        } else if (getString(R.string.tcpTakserver).equals(preset)) {
+            addrPref.setText(Constants.ADDRESS_TAKSERVER);
+            portPref.setText(Constants.PORT_TAKSERVER);
+            Log.i(TAG, "Set to " + Constants.ADDRESS_TAKSERVER + " and " + Constants.PORT_TAKSERVER);
         }
     }
 

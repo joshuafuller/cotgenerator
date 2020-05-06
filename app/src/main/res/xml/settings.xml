@@ -135,6 +135,13 @@
         app:iconSpaceReserved="false"
         app:title="TCP Settings">
 
+        <ListPreference
+            android:key="tcpPresets"
+            app:entries="@array/tcpPresets"
+            app:entryValues="@array/tcpPresets"
+            app:iconSpaceReserved="false"
+            app:title="Preset Server Configurations..." />
+
         <EditTextPreference
             android:key="tcpIp"
             app:defaultValue="192.168.1.2"
