@@ -32,7 +32,9 @@ abstract class CotThread extends Thread {
 
     void shutdown() {
         isRunning = false;
-        cotGenerator.clear();
+        if (cotGenerator != null) {
+            cotGenerator.clear();
+        }
         interrupt();
     }
 
