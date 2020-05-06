@@ -18,6 +18,9 @@ import java.util.PrimitiveIterator;
 import java.util.Random;
 
 class FakeCotGenerator extends CotGenerator {
+    private static final double DEG_TO_RAD = Math.PI / 180.0;
+    private static final double RAD_TO_DEG = 1 / DEG_TO_RAD;
+
     private Map<Point, CursorOnTarget> iconsMap;
     private int movementRadius;
 

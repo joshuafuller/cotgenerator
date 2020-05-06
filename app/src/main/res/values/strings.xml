@@ -5,6 +5,9 @@
     <string name="start">Start</string>
     <string name="about">About</string>
 
+    <string name="transmittedDataGps">GPS Position</string>
+    <string name="transmittedDataFake">Fake Icons</string>
+
     <string name="tcpFreetakserver">Public FreeTakServer</string>
     <string name="tcpTakserver">Public TAK Server</string>
 </resources>

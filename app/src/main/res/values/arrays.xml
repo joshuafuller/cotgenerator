@@ -21,8 +21,8 @@
     </string-array>
 
     <string-array name="transmittedDataTypes">
-        <item>GPS Position</item>
-        <item>Fake Icons</item>
+        <item>@string/transmittedDataGps</item>
+        <item>@string/transmittedDataFake</item>
     </string-array>
 
     <string-array name="tcpPresets">

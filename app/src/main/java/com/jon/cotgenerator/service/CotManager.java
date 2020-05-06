@@ -2,7 +2,7 @@ package com.jon.cotgenerator.service;
 
 import android.content.SharedPreferences;
 
-import com.jon.cotgenerator.utils.Key;
+import com.jon.cotgenerator.enums.TransmissionProtocol;
 
 class CotManager implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String TAG = CotManager.class.getSimpleName();
@@ -19,7 +19,7 @@ class CotManager implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     void start() {
         prefs.registerOnSharedPreferenceChangeListener(this);
-        boolean isUdp = prefs.getString(Key.TRANSMISSION_PROTOCOL, "").equals("UDP");
+        boolean isUdp = TransmissionProtocol.fromPrefs(prefs) == TransmissionProtocol.UDP;
         thread = isUdp ? new UdpCotThread(prefs) : new TcpCotThread(prefs);
         thread.start();
     }

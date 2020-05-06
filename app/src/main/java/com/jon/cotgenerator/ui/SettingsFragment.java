@@ -14,6 +14,9 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
 import com.jon.cotgenerator.R;
+import com.jon.cotgenerator.enums.ServerPreset;
+import com.jon.cotgenerator.enums.TransmissionProtocol;
+import com.jon.cotgenerator.enums.TransmittedData;
 import com.jon.cotgenerator.utils.AndroidUtils;
 import com.jon.cotgenerator.utils.Constants;
 import com.jon.cotgenerator.utils.Key;
@@ -137,28 +140,22 @@ public class SettingsFragment extends PreferenceFragmentCompat
     }
 
     private void insertPresetTcpServer() {
-        String preset = prefs.getString(Key.TCP_PRESETS, "");
         EditTextPreference addrPref = findPreference(Key.TCP_IP);
         EditTextPreference portPref = findPreference(Key.TCP_PORT);
-        if (getString(R.string.tcpFreetakserver).equals(preset)) {
-            addrPref.setText(Constants.ADDRESS_FREETAKSERVER);
-            portPref.setText(Constants.PORT_FREETAKSERVER);
-            Log.i(TAG, "Set to " + Constants.ADDRESS_FREETAKSERVER + " and " + Constants.PORT_FREETAKSERVER);
-        } else if (getString(R.string.tcpTakserver).equals(preset)) {
-            addrPref.setText(Constants.ADDRESS_TAKSERVER);
-            portPref.setText(Constants.PORT_TAKSERVER);
-            Log.i(TAG, "Set to " + Constants.ADDRESS_TAKSERVER + " and " + Constants.PORT_TAKSERVER);
+        ServerPreset preset = ServerPreset.fromPrefs(prefs);
+        if (addrPref != null && portPref != null) {
+            preset.fillPreferences(addrPref, portPref);
         }
     }
 
     private void toggleProtocolSettingVisibility() {
-        boolean showUdp = prefs.getString(Key.TRANSMISSION_PROTOCOL, "").equals("UDP");
-        findPreference(Key.UDP_GROUP).setVisible(showUdp);
-        findPreference(Key.TCP_GROUP).setVisible(!showUdp);
+        boolean showUdpSettings = TransmissionProtocol.fromPrefs(prefs) == TransmissionProtocol.UDP;
+        findPreference(Key.UDP_GROUP).setVisible(showUdpSettings);
+        findPreference(Key.TCP_GROUP).setVisible(!showUdpSettings);
     }
 
     private void toggleDataTypeSettingsVisibility() {
-        boolean sendGps = prefs.getString(Key.TRANSMITTED_DATA, "").equals("GPS Position");
+        boolean sendGps = TransmittedData.fromPrefs(prefs) == TransmittedData.GPS;
         findPreference(Key.ICON_COUNT).setVisible(!sendGps);
         findPreference(Key.LOCATION_GROUP).setVisible(!sendGps);
     }
@@ -169,11 +166,6 @@ public class SettingsFragment extends PreferenceFragmentCompat
         final String str = (String) newValue;
         boolean result = true;
         switch (pref.getKey()) {
-            case Key.TRANSMITTED_DATA:
-                CotActivity activity = (CotActivity) getActivity();
-                AndroidUtils.toast(activity, "Not implemented yet!");
-//                activity.requestGpsPermission();
-                break;
             case Key.CALLSIGN:
                 /* alphanumeric characters only */
                 result = str.matches("\\w*?");

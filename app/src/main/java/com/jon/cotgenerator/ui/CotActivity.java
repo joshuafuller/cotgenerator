@@ -22,6 +22,7 @@ import androidx.preference.PreferenceManager;
 
 import com.jon.cotgenerator.BuildConfig;
 import com.jon.cotgenerator.R;
+import com.jon.cotgenerator.enums.TransmittedData;
 import com.jon.cotgenerator.service.CotService;
 import com.jon.cotgenerator.service.GpsService;
 import com.jon.cotgenerator.utils.Key;
@@ -125,16 +126,17 @@ public class CotActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        final boolean sendGps = TransmittedData.fromPrefs(prefs) == TransmittedData.GPS;
         switch (item.getItemId()) {
             case R.id.start:
                 sendServiceIntent(new Intent(this, CotService.class), CotService.START_SERVICE);
-                if (PrefUtils.getString(prefs, Key.TRANSMITTED_DATA).equals("GPS Position")) {
+                if (sendGps) {
                     sendServiceIntent(new Intent(this, GpsService.class), GpsService.START_SERVICE);
                 }
                 return true;
             case R.id.pause:
                 sendServiceIntent(new Intent(this, CotService.class), CotService.STOP_SERVICE);
-                if (PrefUtils.getString(prefs, Key.TRANSMITTED_DATA).equals("GPS Position")) {
+                if (sendGps) {
                     sendServiceIntent(new Intent(this, GpsService.class), GpsService.STOP_SERVICE);
                 }
                 return true;
