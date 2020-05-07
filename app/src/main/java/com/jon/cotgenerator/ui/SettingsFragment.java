@@ -18,7 +18,7 @@ import com.jon.cotgenerator.R;
 import com.jon.cotgenerator.enums.ServerPreset;
 import com.jon.cotgenerator.enums.TransmissionProtocol;
 import com.jon.cotgenerator.enums.TransmittedData;
-import com.jon.cotgenerator.utils.AndroidUtils;
+import com.jon.cotgenerator.utils.Notify;
 import com.jon.cotgenerator.utils.Key;
 
 import java.util.HashMap;
@@ -202,7 +202,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 break;
         }
         if (!result) {
-            AndroidUtils.toast(getActivity(), "Invalid input: " + str);
+            Notify.red(requireView(), "Invalid input: " + str);
         }
         return result;
     }
