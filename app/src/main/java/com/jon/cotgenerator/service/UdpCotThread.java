@@ -40,13 +40,16 @@ final class UdpCotThread extends CotThread {
         cotGenerator = CotGenerator.getFromPrefs(prefs);
         List<CursorOnTarget> icons = cotGenerator.generate();
 
+        int periodMilliseconds = PrefUtils.getInt(prefs, Key.TRANSMISSION_PERIOD) * 1000;
+        int bufferTimeMs = periodMilliseconds / icons.size();
+
         while (isRunning) {
             long startTime = System.currentTimeMillis();
             for (CursorOnTarget cot : icons) {
                 sendToDestination(cot);
+                bufferSleep(bufferTimeMs);
             }
             icons = cotGenerator.generate();
-            waitUntilNextTransmission(startTime);
         }
     }
 
@@ -81,7 +84,6 @@ final class UdpCotThread extends CotThread {
             socket.send(new DatagramPacket(buf, buf.length, destIp, destPort));
             Log.i(TAG, "Sent cot: " + cot.toString());
         } catch (IOException e) {
-            e.printStackTrace();
             shutdown();
         }
     }

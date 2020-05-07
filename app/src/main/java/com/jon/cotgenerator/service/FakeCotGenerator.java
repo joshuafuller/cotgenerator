@@ -31,8 +31,10 @@ class FakeCotGenerator extends CotGenerator {
 
     @Override
     protected void clear() {
-        iconsMap.clear();
-        iconsMap = null;
+        if (iconsMap != null) {
+            iconsMap.clear();
+            iconsMap = null;
+        }
     }
 
     @Override

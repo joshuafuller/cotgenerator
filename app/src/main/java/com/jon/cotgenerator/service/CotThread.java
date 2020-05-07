@@ -38,13 +38,9 @@ abstract class CotThread extends Thread {
         interrupt();
     }
 
-    protected void waitUntilNextTransmission(long startTime) {
+    protected void bufferSleep(int bufferTimeMs) {
         try {
-            final int periodSeconds = PrefUtils.getInt(prefs, Key.TRANSMISSION_PERIOD);
-            final long dt = (periodSeconds * 1000) - (System.currentTimeMillis() - startTime);
-            if (dt > 0) {
-                Thread.sleep(dt);
-            }
+            Thread.sleep(bufferTimeMs);
         } catch (InterruptedException e) {
             /* do nothing */
         }

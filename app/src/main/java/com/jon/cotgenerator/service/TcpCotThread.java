@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.List;
 
@@ -45,13 +46,15 @@ final class TcpCotThread extends CotThread {
         cotGenerator = CotGenerator.getFromPrefs(prefs);
         List<CursorOnTarget> icons = cotGenerator.generate();
 
+        int periodMilliseconds = PrefUtils.getInt(prefs, Key.TRANSMISSION_PERIOD) * 1000;
+        int bufferTimeMs = periodMilliseconds / icons.size();
+
         while (isRunning) {
-            long startTime = System.currentTimeMillis();
             for (CursorOnTarget cot : icons) {
                 sendToDestination(cot);
+                bufferSleep(bufferTimeMs);
             }
             icons = cotGenerator.generate();
-            waitUntilNextTransmission(startTime);
         }
     }
 
@@ -61,7 +64,7 @@ final class TcpCotThread extends CotThread {
             outputStream.write(cot.toBytes());
             Log.i(TAG, "Sent cot: " + cot.toString());
         } catch (IOException e) {
-            e.printStackTrace();
+            shutdown();
         }
     }
 
