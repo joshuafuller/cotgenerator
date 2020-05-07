@@ -55,9 +55,9 @@ final class UdpCotThread extends CotThread {
 
     private void initialiseDestAddress() {
         try {
-            destIp = InetAddress.getByName(PrefUtils.getString(prefs, Key.UDP_IP));
+            destIp = InetAddress.getByName(PrefUtils.getString(prefs, Key.UDP_ADDRESS));
         } catch (UnknownHostException e) {
-            Log.e(TAG, "Error parsing destination address: " + prefs.getString(Key.UDP_IP, ""));
+            Log.e(TAG, "Error parsing destination address: " + prefs.getString(Key.UDP_ADDRESS, ""));
             shutdown();
         }
         destPort = PrefUtils.parseInt(prefs, Key.UDP_PORT);

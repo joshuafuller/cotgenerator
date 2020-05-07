@@ -17,10 +17,10 @@ public final class Key {
     public static final String TRANSMISSION_PERIOD = "transmissionPeriod";
     public static final String TRANSMISSION_PROTOCOL = "transmissionProtocol";
     public static final String UDP_GROUP = "udpGroup";
-    public static final String UDP_IP = "udpIp";
+    public static final String UDP_ADDRESS = "udpAddress";
     public static final String UDP_PORT = "udpPort";
     public static final String TCP_PRESETS = "tcpPresets";
     public static final String TCP_GROUP = "tcpGroup";
-    public static final String TCP_IP = "tcpIp";
+    public static final String TCP_ADDRESS = "tcpAddress";
     public static final String TCP_PORT = "tcpPort";
 }
