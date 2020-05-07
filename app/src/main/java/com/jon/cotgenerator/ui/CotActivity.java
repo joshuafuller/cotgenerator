@@ -31,6 +31,8 @@ import com.jon.cotgenerator.R;
 import com.jon.cotgenerator.enums.TransmittedData;
 import com.jon.cotgenerator.service.CotService;
 import com.jon.cotgenerator.service.GpsService;
+import com.jon.cotgenerator.utils.DeviceUid;
+import com.jon.cotgenerator.utils.GenerateInt;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -40,10 +42,10 @@ import java.util.List;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class CotActivity extends AppCompatActivity {
+    private static final String TAG = CotActivity.class.getSimpleName();
+
     private static final String[] REQUIRED_PERMISSIONS = new String[]{
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_BACKGROUND_LOCATION,
-            Manifest.permission.READ_PHONE_STATE
+            Manifest.permission.ACCESS_FINE_LOCATION
     };
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -82,8 +84,11 @@ public class CotActivity extends AppCompatActivity {
 
         /* Requesting permissions */
         if (!EasyPermissions.hasPermissions(this, REQUIRED_PERMISSIONS)) {
-            EasyPermissions.requestPermissions(this, "Needed for accessing GPS data", 123, REQUIRED_PERMISSIONS);
+            EasyPermissions.requestPermissions(this, "Needed for accessing GPS data", GenerateInt.next(), REQUIRED_PERMISSIONS);
         }
+
+        /* Generate a device-specific UUID and save to file, if it doesn't already exist */
+        DeviceUid.generate(this);
     }
 
     @Override
