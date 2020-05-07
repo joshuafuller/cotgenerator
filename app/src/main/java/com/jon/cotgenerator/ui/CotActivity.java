@@ -152,7 +152,7 @@ public class CotActivity extends AppCompatActivity {
     }
 
     private void about() {
-        List<String> titles = Arrays.asList("Version", "Build Time", "Github Repo");
+        List<String> titles = Arrays.asList("Version", "Build Time", "Github Repository");
         List<String> items = Arrays.asList(
                 BuildConfig.VERSION_NAME,
                 BuildConfig.BUILD_TIME.toInstant().atZone(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("HH:mm:ss dd MMM YYYY z")),

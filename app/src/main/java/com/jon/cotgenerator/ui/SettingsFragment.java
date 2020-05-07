@@ -72,18 +72,18 @@ public class SettingsFragment extends PreferenceFragmentCompat
         put(Key.RADIAL_DISTRIBUTION, "metres");
     }};
 
-    private static final String[] KEYS_REQUIRING_VALIDATION = new String[]{
-            Key.CALLSIGN,
-            Key.CENTRE_LATITUDE,
-            Key.CENTRE_LONGITUDE,
-            Key.UDP_IP,
-            Key.UDP_PORT,
-            Key.TCP_IP,
-            Key.TCP_PORT,
-            Key.ICON_COUNT,
-            Key.MOVEMENT_RADIUS,
-            Key.RADIAL_DISTRIBUTION,
-    };
+    private static final Map<String, String> PREFS_REQUIRING_VALIDATION = new HashMap<String, String>() {{
+        put(Key.CALLSIGN, "Should only contain alphanumeric characters");
+        put(Key.CENTRE_LATITUDE, "Should be a number between -180 and +180");
+        put(Key.CENTRE_LONGITUDE, "Should be a number between -90 and +90");
+        put(Key.UDP_IP, "Should be a valid IPv4 address");
+        put(Key.UDP_PORT, "Should be an integer from 1 to 65535 inclusive");
+        put(Key.TCP_IP, "Should be a valid IPv4 address");
+        put(Key.TCP_PORT, "Should be an integer from 1 to 65535 inclusive");
+        put(Key.ICON_COUNT, "Should be a positive integer");
+        put(Key.MOVEMENT_RADIUS, "Should be a positive integer");
+        put(Key.RADIAL_DISTRIBUTION, "Should be a positive integer");
+    }};
 
     private static final String[] SEEKBARS = new String[]{
             Key.STALE_TIMER,
@@ -100,7 +100,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
             EditTextPreference pref = findPreference(key);
             if (pref != null) pref.setOnBindEditTextListener(phone);
         }
-        for (final String key : KEYS_REQUIRING_VALIDATION) {
+        for (final String key : PREFS_REQUIRING_VALIDATION.keySet()) {
             Preference pref = findPreference(key);
             if (pref != null) pref.setOnPreferenceChangeListener(this);
         }
@@ -273,7 +273,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 break;
         }
         if (!result) {
-            Notify.red(requireView(), "Invalid input: " + str);
+            Notify.red(requireView(), "Invalid input: " + str + ". " + PREFS_REQUIRING_VALIDATION.get(pref.getKey()));
         }
         return result;
     }
