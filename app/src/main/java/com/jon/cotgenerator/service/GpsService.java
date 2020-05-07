@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.IBinder;
 import android.os.Looper;
-import android.util.Log;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -62,11 +61,10 @@ public class GpsService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i(TAG, "Intent: " + intent.getAction());
         if (intent != null && intent.getAction() != null) {
             switch (intent.getAction()) {
                 case START_SERVICE:
-                    updateRateSeconds = Integer.parseInt(getString(R.string.gps_cot_update_rate));
+                    updateRateSeconds = Integer.parseInt(getString(R.string.defaultGpsUpdateRate));
                     registerGpsUpdates();
                     break;
                 case STOP_SERVICE:
@@ -75,7 +73,7 @@ public class GpsService extends Service {
                     stopSelf();
                     break;
                 case CHANGE_UPDATE_RATE:
-                    updateRateSeconds = intent.getIntExtra(NEW_UPDATE_RATE_SECONDS, Integer.parseInt(getString(R.string.gps_cot_update_rate)));
+                    updateRateSeconds = intent.getIntExtra(NEW_UPDATE_RATE_SECONDS, Integer.parseInt(getString(R.string.defaultGpsUpdateRate)));
                     initialiseLocationRequest();
                     break;
             }

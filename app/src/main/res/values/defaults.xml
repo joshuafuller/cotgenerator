@@ -1,6 +1,22 @@
 <resources>
-    <string name="gps_cot_update_rate">5</string>
+    <!-- GpsService -->
+    <string name="defaultGpsUpdateRate">5</string>
 
     <!-- Settings -->
-    <string name="defaultTeamColour">0xFF00FFFF</string>
+    <string name="defaultTransmittedData">@string/transmittedDataGps</string>
+    <string name="defaultCallsign">GENERATED</string>
+    <string name="defaultIconCount">10</string>
+    <string name="defaultStaleTimer">5</string>
+    <integer name="defaultTeamColour">0xFF00FFFF</integer>
+    <string name="defaultLatitude">58.243527</string>
+    <string name="defaultLongitude">-6.606301</string>
+    <string name="defaultRadialDistribution">100</string>
+    <string name="defaultMovementRadius">5</string>
+    <string name="defaultTransmissionProtocol">@string/transmissionProtocolTcp</string>
+    <string name="defaultTransmissionPeriod">10</string>
+    <string name="defaultUdpIp">239.2.3.1</string>
+    <string name="defaultUdpPort">6969</string>
+    <string name="defaultTcpPreset">@string/tcpTakserver</string>
+    <string name="defaultTcpIp">@string/takserverIp</string>
+    <string name="defaultTcpPort">@string/takserverPort</string>
 </resources>

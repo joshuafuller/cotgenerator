@@ -8,6 +8,14 @@
     <string name="transmittedDataGps">GPS Position</string>
     <string name="transmittedDataFake">Fake Icons</string>
 
+    <string name="transmissionProtocolTcp">TCP</string>
+    <string name="transmissionProtocolUdp">UDP</string>
+
     <string name="tcpFreetakserver">Public FreeTakServer</string>
+    <string name="freetakserverIp">204.48.30.216</string>
+    <string name="freetakserverPort">8087</string>
+
     <string name="tcpTakserver">Public TAK Server</string>
+    <string name="takserverIp">54.189.86.157</string>
+    <string name="takserverPort">8088</string>
 </resources>

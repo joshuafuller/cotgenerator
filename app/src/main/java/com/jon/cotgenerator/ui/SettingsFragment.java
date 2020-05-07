@@ -12,6 +12,7 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
+import androidx.preference.SeekBarPreference;
 
 import com.jon.cotgenerator.R;
 import com.jon.cotgenerator.enums.ServerPreset;
@@ -46,20 +47,14 @@ public class SettingsFragment extends PreferenceFragmentCompat
             Key.ICON_COUNT,
             Key.MOVEMENT_RADIUS,
             Key.RADIAL_DISTRIBUTION,
-            Key.STALE_TIMER,
-            Key.TRANSMISSION_PERIOD
     };
 
-    private static final Map<String, String> SUFFIXES = new HashMap<String, String>() {
-        {
-            put(Key.CENTRE_LATITUDE, "degrees");
-            put(Key.CENTRE_LONGITUDE, "degrees");
-            put(Key.MOVEMENT_RADIUS, "metres");
-            put(Key.RADIAL_DISTRIBUTION, "metres");
-            put(Key.STALE_TIMER, "minutes");
-            put(Key.TRANSMISSION_PERIOD, "seconds");
-        }
-    };
+    private static final Map<String, String> SUFFIXES = new HashMap<String, String>() {{
+        put(Key.CENTRE_LATITUDE, "degrees");
+        put(Key.CENTRE_LONGITUDE, "degrees");
+        put(Key.MOVEMENT_RADIUS, "metres");
+        put(Key.RADIAL_DISTRIBUTION, "metres");
+    }};
 
     private static final String[] KEYS_REQUIRING_VALIDATION = new String[]{
             Key.CALLSIGN,
@@ -72,6 +67,9 @@ public class SettingsFragment extends PreferenceFragmentCompat
             Key.ICON_COUNT,
             Key.MOVEMENT_RADIUS,
             Key.RADIAL_DISTRIBUTION,
+    };
+
+    private static final String[] SEEKBARS = new String[]{
             Key.STALE_TIMER,
             Key.TRANSMISSION_PERIOD
     };
@@ -89,6 +87,10 @@ public class SettingsFragment extends PreferenceFragmentCompat
         for (final String key : KEYS_REQUIRING_VALIDATION) {
             Preference pref = findPreference(key);
             if (pref != null) pref.setOnPreferenceChangeListener(this);
+        }
+        for (final String key : SEEKBARS) {
+            SeekBarPreference seekbar = findPreference(key);
+            seekbar.setMin(1); /* I can't set the minimum in the XML for whatever reason, so here it is */
         }
     }
 
@@ -135,21 +137,25 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 break;
             case Key.TCP_IP:
             case Key.TCP_PORT:
-                ListPreference presetPref = findPreference(Key.TCP_PRESETS);
-                presetPref.setValue("");
+                if (shouldCheckTcpPresetsPreference) {
+                    shouldCheckTcpPresetsPreference = false;
+                    ListPreference presetPref = findPreference(Key.TCP_PRESETS);
+                    presetPref.setValue("");
+                    shouldCheckTcpPresetsPreference = true;
+                }
                 break;
         }
     }
 
     private void insertPresetTcpServer() {
+        shouldCheckTcpPresetsPreference = false;
         EditTextPreference addressPref = findPreference(Key.TCP_IP);
         EditTextPreference portPref = findPreference(Key.TCP_PORT);
-        ServerPreset preset = ServerPreset.fromPrefs(prefs);
         if (addressPref != null && portPref != null) {
-            shouldCheckTcpPresetsPreference = false;
+            ServerPreset preset = ServerPreset.fromPrefs(prefs);
             preset.fillPreferences(addressPref, portPref);
-            shouldCheckTcpPresetsPreference = true;
         }
+        shouldCheckTcpPresetsPreference = true;
     }
 
     private void toggleProtocolSettingVisibility() {
@@ -183,7 +189,6 @@ public class SettingsFragment extends PreferenceFragmentCompat
             case Key.ICON_COUNT:
             case Key.MOVEMENT_RADIUS:
             case Key.RADIAL_DISTRIBUTION:
-            case Key.STALE_TIMER:
             case Key.TRANSMISSION_PERIOD:
                 result = validateInt(str, 1, null);
                 break;

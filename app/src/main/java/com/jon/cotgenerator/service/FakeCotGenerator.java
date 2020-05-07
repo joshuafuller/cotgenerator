@@ -26,7 +26,7 @@ class FakeCotGenerator extends CotGenerator {
 
     FakeCotGenerator(SharedPreferences prefs) {
         super(prefs);
-        movementRadius = PrefUtils.getInt(prefs, Key.MOVEMENT_RADIUS);
+        movementRadius = PrefUtils.parseInt(prefs, Key.MOVEMENT_RADIUS);
     }
 
     @Override
@@ -43,14 +43,14 @@ class FakeCotGenerator extends CotGenerator {
     @Override
     protected List<CursorOnTarget> initialise() {
         iconsMap = new HashMap<>();
-        final int nCot = PrefUtils.getInt(prefs, Key.ICON_COUNT);
+        final int nCot = PrefUtils.parseInt(prefs, Key.ICON_COUNT);
         final String callsign = PrefUtils.getString(prefs, Key.CALLSIGN);
         final UtcTimestamp now = UtcTimestamp.now();
         final long staleTimer = 1000 * 60 * PrefUtils.getInt(prefs, Key.STALE_TIMER);
-        final double distributionRadius = PrefUtils.getDouble(prefs, Key.RADIAL_DISTRIBUTION);
+        final double distributionRadius = PrefUtils.parseDouble(prefs, Key.RADIAL_DISTRIBUTION);
         final Point centre = new Point(
-                PrefUtils.getDouble(prefs, Key.CENTRE_LATITUDE) * DEG_TO_RAD,
-                PrefUtils.getDouble(prefs, Key.CENTRE_LONGITUDE) * DEG_TO_RAD
+                PrefUtils.parseDouble(prefs, Key.CENTRE_LATITUDE) * DEG_TO_RAD,
+                PrefUtils.parseDouble(prefs, Key.CENTRE_LONGITUDE) * DEG_TO_RAD
         );
         final Random random = new Random();
         final double dlat = distributionRadius / Constants.EARTH_RADIUS;

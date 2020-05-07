@@ -59,6 +59,7 @@ final class TcpCotThread extends CotThread {
     void sendToDestination(CursorOnTarget cot) {
         try {
             outputStream.write(cot.toBytes());
+            Log.i(TAG, "Sent cot: " + cot.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -71,7 +72,7 @@ final class TcpCotThread extends CotThread {
             Log.e(TAG, "Error parsing destination address: " + prefs.getString(Key.TCP_IP, ""));
             shutdown();
         }
-        destPort = PrefUtils.getInt(prefs, Key.TCP_PORT);
+        destPort = PrefUtils.parseInt(prefs, Key.TCP_PORT);
     }
 
     private void openSocket() {

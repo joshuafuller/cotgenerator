@@ -57,7 +57,7 @@ final class UdpCotThread extends CotThread {
             Log.e(TAG, "Error parsing destination address: " + prefs.getString(Key.UDP_IP, ""));
             shutdown();
         }
-        destPort = PrefUtils.getInt(prefs, Key.UDP_PORT);
+        destPort = PrefUtils.parseInt(prefs, Key.UDP_PORT);
     }
 
     private void openSocket() {
@@ -79,6 +79,7 @@ final class UdpCotThread extends CotThread {
         try {
             final byte[] buf = cot.toBytes();
             socket.send(new DatagramPacket(buf, buf.length, destIp, destPort));
+            Log.i(TAG, "Sent cot: " + cot.toString());
         } catch (IOException e) {
             e.printStackTrace();
             shutdown();

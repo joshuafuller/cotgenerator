@@ -7,7 +7,7 @@
 
         <ListPreference
             android:key="transmittedData"
-            app:defaultValue="GPS Position"
+            app:defaultValue="@string/defaultTransmittedData"
             app:entries="@array/transmittedDataTypes"
             app:entryValues="@array/transmittedDataTypes"
             app:iconSpaceReserved="false"
@@ -21,7 +21,7 @@
         app:title="CoT Settings">
 
         <EditTextPreference
-            android:defaultValue="GENERATED"
+            android:defaultValue="@string/defaultCallsign"
             android:key="callsign"
             app:iconSpaceReserved="false"
             app:title="Callsign"
@@ -29,20 +29,23 @@
 
         <EditTextPreference
             android:key="iconCount"
-            app:defaultValue="10"
+            app:defaultValue="@string/defaultIconCount"
             app:iconSpaceReserved="false"
             app:title="Icon Count"
             app:useSimpleSummaryProvider="true" />
 
-        <EditTextPreference
+        <SeekBarPreference
             android:key="staleTimer"
-            app:defaultValue="5"
+            android:max="60"
+            app:defaultValue="@string/defaultStaleTimer"
             app:iconSpaceReserved="false"
-            app:summary="5 minutes"
-            app:title="Stale Time" />
+            app:seekBarIncrement="1"
+            app:showSeekBarValue="true"
+            app:title="Stale Timer (minutes)"
+            app:useSimpleSummaryProvider="true" />
 
         <com.jaredrummler.android.colorpicker.ColorPreferenceCompat
-            android:defaultValue="0xFF00FFFF"
+            android:defaultValue="@integer/defaultTeamColour"
             android:key="teamColour"
             app:cpv_allowCustom="false"
             app:cpv_colorPresets="@array/teamColours"
@@ -58,32 +61,29 @@
         app:iconSpaceReserved="false"
         app:title="Location Settings">
 
+        <!-- TODO: Replace these lat/lon pickers with a proper google maps API -->
         <EditTextPreference
             android:key="centreLatitude"
-            app:defaultValue="58.243527"
+            app:defaultValue="@string/defaultLatitude"
             app:iconSpaceReserved="false"
-            app:summary="58.243527 degrees"
             app:title="Centre Latitude" />
 
         <EditTextPreference
             android:key="centreLongitude"
-            app:defaultValue="-6.606301"
+            app:defaultValue="@string/defaultLongitude"
             app:iconSpaceReserved="false"
-            app:summary="-6.606301 degrees"
             app:title="Centre Longitude" />
 
         <EditTextPreference
             android:key="radialDistribution"
-            app:defaultValue="100"
+            app:defaultValue="@string/defaultRadialDistribution"
             app:iconSpaceReserved="false"
-            app:summary="100 metres"
             app:title="Radial Distribution" />
 
         <EditTextPreference
             android:key="movementRadius"
-            app:defaultValue="50"
+            app:defaultValue="@string/defaultMovementRadius"
             app:iconSpaceReserved="false"
-            app:summary="50 metres"
             app:title="Movement Radius Per Icon" />
 
     </PreferenceCategory>
@@ -94,19 +94,22 @@
 
         <ListPreference
             android:key="transmissionProtocol"
-            app:defaultValue="TCP"
+            app:defaultValue="@string/defaultTransmissionProtocol"
             app:entries="@array/transmissionProtocols"
             app:entryValues="@array/transmissionProtocols"
             app:iconSpaceReserved="false"
             app:title="Transmission Protocol"
             app:useSimpleSummaryProvider="true" />
 
-        <EditTextPreference
+        <SeekBarPreference
             android:key="transmissionPeriod"
-            app:defaultValue="10"
+            android:max="60"
+            app:defaultValue="@string/defaultTransmissionPeriod"
             app:iconSpaceReserved="false"
-            app:summary="10 seconds"
-            app:title="Transmission Period" />
+            app:seekBarIncrement="1"
+            app:showSeekBarValue="true"
+            app:title="Transmission Period (seconds)"
+            app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 
@@ -137,22 +140,24 @@
         app:title="TCP Settings">
 
         <ListPreference
+            android:defaultValue="@string/tcpTakserver"
             android:key="tcpPresets"
             app:entries="@array/tcpPresets"
             app:entryValues="@array/tcpPresets"
             app:iconSpaceReserved="false"
-            app:title="Preset Server Configurations..." />
+            app:title="Preset Server Configuration"
+            app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference
             android:key="tcpIp"
-            app:defaultValue="192.168.1.2"
+            app:defaultValue="@string/takserverIp"
             app:iconSpaceReserved="false"
             app:title="Server Address"
             app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference
             android:key="tcpPort"
-            app:defaultValue="8089"
+            app:defaultValue="@string/takserverPort"
             app:iconSpaceReserved="false"
             app:title="Server Port"
             app:useSimpleSummaryProvider="true" />

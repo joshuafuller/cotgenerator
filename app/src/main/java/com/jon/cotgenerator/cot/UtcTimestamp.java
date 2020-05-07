@@ -85,7 +85,6 @@ public class UtcTimestamp {
     }
 
     private long timestampStringToLong(String timestamp) {
-        /* TODO: Find whether this code in the try block is actually needed */
         try {
             Timestamp time = Timestamp.valueOf(fullString(timestamp));
             return time.getTime();
