@@ -19,7 +19,7 @@ public enum ServerPreset {
     }
 
     public static ServerPreset fromPrefs(SharedPreferences prefs) {
-        String choice = prefs.getString(Key.TRANSMISSION_PROTOCOL, "");
+        String choice = prefs.getString(Key.TCP_PRESETS, "Unknown");
         switch (choice) {
             case "Public FreeTakServer":
                 return FREETAKSERVER;
