@@ -8,8 +8,8 @@ android {
         applicationId "com.jon.cotgenerator"
         minSdkVersion 28
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "java.util.Date", "BUILD_TIME", "new java.util.Date(" + System.currentTimeMillis() + "L)"
     }
@@ -34,11 +34,18 @@ dependencies {
     implementation group: 'androidx.constraintlayout', name: 'constraintlayout', version: '1.1.3'
     implementation group: 'androidx.localbroadcastmanager', name: 'localbroadcastmanager', version: '1.0.0'
     implementation group: 'androidx.lifecycle', name: 'lifecycle-extensions', version: '2.2.0'
+
+    /* preferences */
     implementation group: 'androidx.preference', name: 'preference', version: '1.1.1'
     implementation group: 'com.jaredrummler', name: 'colorpicker', version: '1.1.0'
+
+    /* GPS access */
     implementation group: 'com.google.android.gms', name: 'play-services-location', version: '17.0.0'
+
+    /* Permission management */
     implementation group: 'pub.devrel', name: 'easypermissions', version: '3.0.0'
 
+    /* Testing */
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
