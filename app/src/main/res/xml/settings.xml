@@ -44,6 +44,12 @@
             app:title="Stale Timer (minutes)"
             app:useSimpleSummaryProvider="true" />
 
+        <SwitchPreference
+            android:defaultValue="@bool/defaultRandomColour"
+            android:key="randomColour"
+            app:iconSpaceReserved="false"
+            app:title="Use Random Team Colours?" />
+
         <com.jaredrummler.android.colorpicker.ColorPreferenceCompat
             android:defaultValue="@integer/defaultTeamColour"
             android:key="teamColour"

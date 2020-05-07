@@ -7,6 +7,7 @@
     <string name="defaultCallsign">GENERATED</string>
     <string name="defaultIconCount">10</string>
     <string name="defaultStaleTimer">5</string>
+    <bool name="defaultRandomColour">false</bool>
     <integer name="defaultTeamColour">0xFF00FFFF</integer>
     <string name="defaultLatitude">58.243527</string>
     <string name="defaultLongitude">-6.606301</string>

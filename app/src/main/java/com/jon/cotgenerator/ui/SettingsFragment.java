@@ -20,6 +20,7 @@ import com.jon.cotgenerator.enums.TransmissionProtocol;
 import com.jon.cotgenerator.enums.TransmittedData;
 import com.jon.cotgenerator.utils.Notify;
 import com.jon.cotgenerator.utils.Key;
+import com.jon.cotgenerator.utils.PrefUtils;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -109,6 +110,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         }
         toggleProtocolSettingVisibility();
         toggleDataTypeSettingsVisibility();
+        setColourPickerActive();
     }
 
     @Override
@@ -144,6 +146,9 @@ public class SettingsFragment extends PreferenceFragmentCompat
                     shouldCheckTcpPresetsPreference = true;
                 }
                 break;
+            case Key.RANDOM_COLOUR:
+                setColourPickerActive();
+                break;
         }
     }
 
@@ -168,6 +173,12 @@ public class SettingsFragment extends PreferenceFragmentCompat
         boolean sendGps = TransmittedData.fromPrefs(prefs) == TransmittedData.GPS;
         findPreference(Key.ICON_COUNT).setVisible(!sendGps);
         findPreference(Key.LOCATION_GROUP).setVisible(!sendGps);
+    }
+
+    private void setColourPickerActive() {
+        boolean useRandomColours = PrefUtils.getBoolean(prefs, Key.RANDOM_COLOUR);
+        Preference colourPicker = findPreference(Key.TEAM_COLOUR);
+        colourPicker.setEnabled(!useRandomColours);
     }
 
     @Override

@@ -3,6 +3,9 @@ package com.jon.cotgenerator.enums;
 import android.content.SharedPreferences;
 
 import com.jon.cotgenerator.utils.Key;
+import com.jon.cotgenerator.utils.PrefUtils;
+
+import java.util.Random;
 
 public enum TeamColour {
     PURPLE("Purple"),
@@ -21,14 +24,16 @@ public enum TeamColour {
 
     final private String team;
 
-    TeamColour(String team) {
-        this.team = team;
-    }
+    TeamColour(String team) { this.team = team; }
 
     public String team() { return team; }
 
     public static TeamColour fromPrefs(final SharedPreferences prefs) {
-        String choice = Integer.toHexString(prefs.getInt(Key.TEAM_COLOUR, 0)).toUpperCase();
+        boolean useRandom = PrefUtils.getBoolean(prefs, Key.RANDOM_COLOUR);
+        if (useRandom) {
+            return random();
+        }
+        String choice = Integer.toHexString(PrefUtils.getInt(prefs, Key.TEAM_COLOUR)).toUpperCase();
         switch (choice) {
             case "FF800080": return PURPLE;
             case "FFFF00FF": return MAGENTA;
@@ -45,5 +50,10 @@ public enum TeamColour {
             case "FF00008B": return DARK_BLUE;
             default: throw new IllegalArgumentException("Unknown team colour: " + choice);
         }
+    }
+
+    private static TeamColour random() {
+        Random random = new Random();
+        return values()[random.nextInt(values().length)];
     }
 }
