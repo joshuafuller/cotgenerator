@@ -5,6 +5,9 @@
     <string name="start">Start</string>
     <string name="about">About</string>
 
+    <string name="toggleGpsBeacon">GPS BEACON</string>
+    <string name="toggleGenerator">GENERATOR</string>
+
     <string name="transmittedDataGps">GPS Position</string>
     <string name="transmittedDataFake">Fake Icons</string>
 
@@ -18,4 +21,5 @@
     <string name="tcpTakserver">Public TAK Server</string>
     <string name="takserverIp">54.189.86.157</string>
     <string name="takserverPort">8088</string>
+
 </resources>

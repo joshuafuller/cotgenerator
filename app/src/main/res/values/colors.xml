@@ -1,13 +1,18 @@
 <resources>
     <color name="app_icon_background">#00FFFFFF</color>
 
-    <color name="colorPrimary">#101010</color>
-    <color name="colorPrimaryDark">#000000</color>
-    <color name="colorAccent">#FF0000</color>
-    <color name="colorAccentDark">#970000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="greyEvenLighter">#858585</color>
     <color name="greyLighter">#464646</color>
     <color name="greyLight">#333333</color>
     <color name="grey">#121212</color>
-    <color name="textColour">#FFFFFF</color>
+    <color name="black">#000000</color>
+
+    <color name="colorPrimary">#101010</color>
+    <color name="colorPrimaryDark">@color/black</color>
+    <color name="colorAccent">#FF0000</color>
+    <color name="colorAccentDark">#970000</color>
+
+    <color name="textColour">@color/white</color>
 
 </resources>

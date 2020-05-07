@@ -1,6 +1,26 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CotActivity" />
+    android:orientation="vertical">
+
+    <com.savvyapps.togglebuttonlayout.ToggleButtonLayout
+        android:id="@+id/toggleButtonLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        app:allowDeselection="false"
+        app:customLayout="@layout/view_toggle_button"
+        app:menu="@menu/toggles"
+        android:layout_margin="@dimen/padding"
+        app:selectedColor="@color/colorAccent"
+        app:toggleMode="even" />
+
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".CotActivity" />
+
+</LinearLayout>

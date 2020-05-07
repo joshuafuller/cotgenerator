@@ -184,7 +184,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         boolean sendGps = TransmittedData.fromPrefs(prefs) == TransmittedData.GPS;
         if (sendGps) {
             if (!EasyPermissions.hasPermissions(requireContext(), GPS_PERMISSION)) {
-                String rationale = "The GPS permission is required to access the device's location, so we can transmit it out as CoT.";
+                String rationale = "The GPS permission is required to access the device's location, so that we can transmit it out as CoT.";
                 EasyPermissions.requestPermissions(this, rationale, GPS_PERMISSION_CODE, GPS_PERMISSION);
             }
         }
@@ -243,7 +243,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
     @Override
     public boolean onPreferenceChange(Preference pref, Object newValue) {
-        Log.i(TAG, "onSharedPreferenceChanged " + pref.getKey());
+        Log.i(TAG, "onPreferenceChange " + pref.getKey());
         final String str = (String) newValue;
         boolean result = true;
         switch (pref.getKey()) {

@@ -1,20 +1,12 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory
-        app:iconSpaceReserved="false"
-        app:title="General Settings">
-
-        <ListPreference
-            android:key="transmittedData"
-            app:defaultValue="@string/defaultTransmittedData"
-            app:entries="@array/transmittedDataTypes"
-            app:entryValues="@array/transmittedDataTypes"
-            app:iconSpaceReserved="false"
-            app:title="Transmitted Data Type"
-            app:useSimpleSummaryProvider="true" />
-
-    </PreferenceCategory>
+    <ListPreference
+        android:key="transmittedData"
+        app:defaultValue="@string/defaultTransmittedData"
+        app:entries="@array/transmittedDataTypes"
+        app:entryValues="@array/transmittedDataTypes"
+        app:isPreferenceVisible="false" />
 
     <PreferenceCategory
         app:iconSpaceReserved="false"

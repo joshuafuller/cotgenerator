@@ -31,29 +31,29 @@ import com.jon.cotgenerator.enums.TransmittedData;
 import com.jon.cotgenerator.service.CotService;
 import com.jon.cotgenerator.service.GpsService;
 import com.jon.cotgenerator.utils.DeviceUid;
+import com.jon.cotgenerator.utils.Key;
+import com.savvyapps.togglebuttonlayout.ToggleButtonLayout;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
-public class CotActivity extends AppCompatActivity {
+public class CotActivity extends AppCompatActivity
+        implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String TAG = CotActivity.class.getSimpleName();
+
+    private LocalBroadcastManager broadcastManager;
+    private SharedPreferences prefs;
+    private ToggleButtonLayout toggleButtonLayout;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction() == null) {
-                return;
-            }
-            switch (intent.getAction()) {
-                case CotService.CLOSE_SERVICE_INTERNAL:
-                    invalidateOptionsMenu();
-                    break;
+            if (intent != null && intent.getAction() != null && intent.getAction().equals(CotService.CLOSE_SERVICE_INTERNAL)) {
+                invalidateOptionsMenu();
             }
         }
     };
-    private LocalBroadcastManager broadcastManager;
-    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,12 +81,26 @@ public class CotActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.registerOnSharedPreferenceChangeListener(this);
+
+        /* Link the toggle button to a shared preference */
+        toggleButtonLayout = findViewById(R.id.toggleButtonLayout);
+        toggleButtonLayout.setOnToggledListener((toggle, selected, bool) -> {
+            /* If the toggle value changes, set the shared preference appropriately */
+            boolean selectedGps = selected.getId() == R.id.toggleGpsBeacon;
+            String newValue = selectedGps ? TransmittedData.GPS.get() : TransmittedData.FAKE.get();
+            prefs.edit().putString(Key.TRANSMITTED_DATA, newValue).apply();
+            return null;
+        });
+        /* Use the current preference value to set the toggle */
+        setToggleValueFromPreferences();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         broadcastManager.unregisterReceiver(broadcastReceiver);
+        prefs.unregisterOnSharedPreferenceChangeListener(this);
     }
 
     private boolean isCotServiceRunning(Context context) {
@@ -186,4 +200,17 @@ public class CotActivity extends AppCompatActivity {
                 .setPositiveButton(android.R.string.ok, (dialog, buttonId) -> dialog.dismiss())
                 .show();
     }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(Key.TRANSMITTED_DATA)) {
+            setToggleValueFromPreferences();
+        }
+    }
+
+    private void setToggleValueFromPreferences() {
+        boolean sendGps = TransmittedData.fromPrefs(prefs) == TransmittedData.GPS;
+        toggleButtonLayout.setToggled(sendGps ? R.id.toggleGpsBeacon : R.id.toggleGenerator, true);
+    }
+
 }
