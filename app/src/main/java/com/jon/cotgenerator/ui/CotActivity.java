@@ -5,14 +5,20 @@ import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
@@ -25,10 +31,11 @@ import com.jon.cotgenerator.R;
 import com.jon.cotgenerator.enums.TransmittedData;
 import com.jon.cotgenerator.service.CotService;
 import com.jon.cotgenerator.service.GpsService;
-import com.jon.cotgenerator.utils.Key;
-import com.jon.cotgenerator.utils.PrefUtils;
 
-import java.util.Locale;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
 
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -53,7 +60,7 @@ public class CotActivity extends AppCompatActivity {
         }
     };
     private LocalBroadcastManager broadcastManager;
-    SharedPreferences prefs;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,13 +161,38 @@ public class CotActivity extends AppCompatActivity {
     }
 
     private void about() {
-        String msg = String.format(Locale.ENGLISH,
-                "Version:\n\t%s\n\nBuild Time:\n\t%s",
-                BuildConfig.VERSION_NAME, BuildConfig.BUILD_TIME);
+        List<String> titles = Arrays.asList("Version", "Build Time", "Github Repo");
+        List<String> items = Arrays.asList(
+                BuildConfig.VERSION_NAME,
+                BuildConfig.BUILD_TIME.toInstant().atZone(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("HH:mm:ss dd MMM YYYY z")),
+                "https://github.com/jonapoul/cotgenerator"
+        );
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_2, android.R.id.text1, items) {
+            @Override
+            public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                TextView text1 = view.findViewById(android.R.id.text1);
+                TextView text2 = view.findViewById(android.R.id.text2);
+                text1.setText(titles.get(position));
+                text2.setText(items.get(position));
+                return view;
+            }
+        };
+        ListView listView = (ListView) View.inflate(this, R.layout.about_listview, null);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            if (position == 2) { // github repo URL
+                /* Open the URL in the browser */
+                String url = items.get(position);
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+                startActivity(intent);
+            }
+        });
         new AlertDialog.Builder(this)
                 .setTitle("About")
-                .setMessage(msg)
-                .setPositiveButton(android.R.string.ok, (DialogInterface dialog, int buttonId) -> dialog.dismiss())
+                .setView(listView)
+                .setPositiveButton(android.R.string.ok, (dialog, buttonId) -> dialog.dismiss())
                 .show();
     }
 }
