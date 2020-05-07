@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.List;
 
@@ -70,9 +69,9 @@ final class TcpCotThread extends CotThread {
 
     private void initialiseDestAddress() {
         try {
-            destIp = InetAddress.getByName(PrefUtils.getString(prefs, Key.TCP_IP));
+            destIp = InetAddress.getByName(PrefUtils.getString(prefs, Key.TCP_ADDRESS));
         } catch (UnknownHostException e) {
-            Log.e(TAG, "Error parsing destination address: " + prefs.getString(Key.TCP_IP, ""));
+            Log.e(TAG, "Error parsing destination address: " + prefs.getString(Key.TCP_ADDRESS, ""));
             shutdown();
         }
         destPort = PrefUtils.parseInt(prefs, Key.TCP_PORT);

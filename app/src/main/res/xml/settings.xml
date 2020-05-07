@@ -59,7 +59,6 @@
         app:iconSpaceReserved="false"
         app:title="Location Settings">
 
-        <!-- TODO: Replace these lat/lon pickers with a proper google maps API -->
         <EditTextPreference
             android:key="centreLatitude"
             app:defaultValue="@string/defaultLatitude"
@@ -117,7 +116,7 @@
         app:title="UDP Settings">
 
         <EditTextPreference
-            android:key="udpIp"
+            android:key="udpAddress"
             app:defaultValue="239.2.3.1"
             app:iconSpaceReserved="false"
             app:title="UDP Destination Address"
@@ -147,7 +146,7 @@
             app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference
-            android:key="tcpIp"
+            android:key="tcpAddress"
             app:defaultValue="@string/takserverIp"
             app:iconSpaceReserved="false"
             app:title="Server Address"

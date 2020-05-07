@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -30,10 +31,13 @@ import com.jon.cotgenerator.utils.Key;
 import com.jon.cotgenerator.utils.Notify;
 import com.jon.cotgenerator.utils.PrefUtils;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -56,13 +60,16 @@ public class SettingsFragment extends PreferenceFragmentCompat
     private static final String[] PHONE_INPUT = new String[]{
             Key.CENTRE_LATITUDE,
             Key.CENTRE_LONGITUDE,
-            Key.UDP_IP,
             Key.UDP_PORT,
-            Key.TCP_IP,
             Key.TCP_PORT,
             Key.ICON_COUNT,
             Key.MOVEMENT_RADIUS,
             Key.RADIAL_DISTRIBUTION,
+    };
+
+    private static final String[] URI_INPUT = new String[]{
+            Key.UDP_ADDRESS,
+            Key.TCP_ADDRESS
     };
 
     private static final Map<String, String> SUFFIXES = new HashMap<String, String>() {{
@@ -76,9 +83,9 @@ public class SettingsFragment extends PreferenceFragmentCompat
         put(Key.CALLSIGN, "Should only contain alphanumeric characters");
         put(Key.CENTRE_LATITUDE, "Should be a number between -180 and +180");
         put(Key.CENTRE_LONGITUDE, "Should be a number between -90 and +90");
-        put(Key.UDP_IP, "Should be a valid IPv4 address");
+        put(Key.UDP_ADDRESS, "Should be a valid hostname");
         put(Key.UDP_PORT, "Should be an integer from 1 to 65535 inclusive");
-        put(Key.TCP_IP, "Should be a valid IPv4 address");
+        put(Key.TCP_ADDRESS, "Should be a valid hostname");
         put(Key.TCP_PORT, "Should be an integer from 1 to 65535 inclusive");
         put(Key.ICON_COUNT, "Should be a positive integer");
         put(Key.MOVEMENT_RADIUS, "Should be a positive integer");
@@ -90,15 +97,21 @@ public class SettingsFragment extends PreferenceFragmentCompat
             Key.TRANSMISSION_PERIOD
     };
 
-    private EditTextPreference.OnBindEditTextListener phone = (EditText text) -> text.setInputType(InputType.TYPE_CLASS_PHONE);
+
 
     @Override
     public void onCreatePreferences(Bundle savedState, String rootKey) {
         setPreferencesFromResource(R.xml.settings, rootKey);
 
+        EditTextPreference.OnBindEditTextListener phoneInputType = (EditText text) -> text.setInputType(InputType.TYPE_CLASS_PHONE);
         for (final String key : PHONE_INPUT) {
             EditTextPreference pref = findPreference(key);
-            if (pref != null) pref.setOnBindEditTextListener(phone);
+            if (pref != null) pref.setOnBindEditTextListener(phoneInputType);
+        }
+        EditTextPreference.OnBindEditTextListener uriInputType = (EditText text) -> text.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
+        for (final String key : URI_INPUT) {
+            EditTextPreference pref = findPreference(key);
+            if (pref != null) pref.setOnBindEditTextListener(uriInputType);
         }
         for (final String key : PREFS_REQUIRING_VALIDATION.keySet()) {
             Preference pref = findPreference(key);
@@ -154,7 +167,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
                     insertPresetTcpServer();
                 }
                 break;
-            case Key.TCP_IP:
+            case Key.TCP_ADDRESS:
             case Key.TCP_PORT:
                 if (shouldCheckTcpPresetsPreference) {
                     shouldCheckTcpPresetsPreference = false;
@@ -171,7 +184,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
     private void insertPresetTcpServer() {
         shouldCheckTcpPresetsPreference = false;
-        EditTextPreference addressPref = findPreference(Key.TCP_IP);
+        EditTextPreference addressPref = findPreference(Key.TCP_ADDRESS);
         EditTextPreference portPref = findPreference(Key.TCP_PORT);
         if (addressPref != null && portPref != null) {
             ServerPreset preset = ServerPreset.fromPrefs(prefs);
@@ -263,9 +276,9 @@ public class SettingsFragment extends PreferenceFragmentCompat
             case Key.TRANSMISSION_PERIOD:
                 result = validateInt(str, 1, null);
                 break;
-            case Key.TCP_IP:
-            case Key.UDP_IP:
-                result = validateIpAddress(str);
+            case Key.TCP_ADDRESS:
+            case Key.UDP_ADDRESS:
+                result = validateHostname(str);
                 break;
             case Key.TCP_PORT:
             case Key.UDP_PORT:
@@ -296,21 +309,24 @@ public class SettingsFragment extends PreferenceFragmentCompat
         }
     }
 
-    private boolean validateIpAddress(final String str) {
-        /* I would use InetAddress.getByName here, but that requires a non-UI thread and I cba doing that */
-        final String[] split = str.split("\\.");
-        if (split.length != 4) {
-            return false;
-        }
-        for (String s : split) {
+    static class ValidateHostnameTask extends AsyncTask<String, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(String... params) {
             try {
-                int value = Integer.parseInt(s);
-                if (value > 255 || value < 0) return false;
-            } catch (IllegalArgumentException e) {
+                InetAddress.getByName(params[0]);
+                return true;
+            } catch (UnknownHostException e) {
                 return false;
             }
         }
-        return true;
+    }
+
+    private boolean validateHostname(final String host) {
+        try {
+            return new ValidateHostnameTask().execute(host).get();
+        } catch (InterruptedException | ExecutionException e) {
+            return false;
+        }
     }
 
     private void setPreferenceSuffix(final SharedPreferences prefs, final String key, final String suffix) {
