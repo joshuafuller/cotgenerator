@@ -1,12 +1,18 @@
 package com.jon.cotgenerator.ui;
 
+import android.Manifest;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
@@ -14,25 +20,34 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.preference.SeekBarPreference;
 
+import com.jon.cotgenerator.BuildConfig;
 import com.jon.cotgenerator.R;
 import com.jon.cotgenerator.enums.ServerPreset;
 import com.jon.cotgenerator.enums.TransmissionProtocol;
 import com.jon.cotgenerator.enums.TransmittedData;
-import com.jon.cotgenerator.utils.Notify;
+import com.jon.cotgenerator.utils.GenerateInt;
 import com.jon.cotgenerator.utils.Key;
+import com.jon.cotgenerator.utils.Notify;
 import com.jon.cotgenerator.utils.PrefUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import pub.devrel.easypermissions.EasyPermissions;
+
 public class SettingsFragment extends PreferenceFragmentCompat
         implements SharedPreferences.OnSharedPreferenceChangeListener,
-        Preference.OnPreferenceChangeListener {
+        Preference.OnPreferenceChangeListener,
+        EasyPermissions.PermissionCallbacks {
     private static final String TAG = SettingsFragment.class.getSimpleName();
 
     private SharedPreferences prefs;
     private boolean shouldCheckTcpPresetsPreference = true;
+
+    private static final String[] GPS_PERMISSION = new String[]{Manifest.permission.ACCESS_FINE_LOCATION};
+    private static final int GPS_PERMISSION_CODE = GenerateInt.next();
 
     static SettingsFragment newInstance() {
         return new SettingsFragment();
@@ -111,6 +126,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         toggleProtocolSettingVisibility();
         toggleDataTypeSettingsVisibility();
         setColourPickerActive();
+        requestGpsPermissionIfSet();
     }
 
     @Override
@@ -131,6 +147,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 break;
             case Key.TRANSMITTED_DATA:
                 toggleDataTypeSettingsVisibility();
+                requestGpsPermissionIfSet();
                 break;
             case Key.TCP_PRESETS:
                 if (shouldCheckTcpPresetsPreference) {
@@ -161,6 +178,49 @@ public class SettingsFragment extends PreferenceFragmentCompat
             preset.fillPreferences(addressPref, portPref);
         }
         shouldCheckTcpPresetsPreference = true;
+    }
+
+    private void requestGpsPermissionIfSet() {
+        boolean sendGps = TransmittedData.fromPrefs(prefs) == TransmittedData.GPS;
+        if (sendGps) {
+            if (!EasyPermissions.hasPermissions(requireContext(), GPS_PERMISSION)) {
+                String rationale = "The GPS permission is required to access the device's location, so we can transmit it out as CoT.";
+                EasyPermissions.requestPermissions(this, rationale, GPS_PERMISSION_CODE, GPS_PERMISSION);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        if (requestCode == GPS_PERMISSION_CODE) {
+            Notify.green(requireView(), "GPS Permission successfully granted");
+        }
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        if (requestCode == GPS_PERMISSION_CODE) {
+            /* Change the GPS preference back to fake icons */
+            ListPreference transmittedDataPref = findPreference(Key.TRANSMITTED_DATA);
+            transmittedDataPref.setValue(TransmittedData.FAKE.get());
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), GPS_PERMISSION[0])) {
+                /* Permission has been permanently denied */
+                View.OnClickListener action = view -> {
+                    Uri uri = Uri.parse("package:" + BuildConfig.APPLICATION_ID);
+                    startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri));
+                };
+                String msg = "GPS permission denied! Open the Android Settings to adjust permissions manually.";
+                Notify.red(requireView(), msg, action, "OPEN");
+            } else {
+                /* Permission has been temporarily denied, so we can re-ask within the app */
+                Notify.orange(requireView(), "GPS Permission is required for the \"GPS Position\" option. Re-select it to try again!");
+            }
+        }
     }
 
     private void toggleProtocolSettingVisibility() {

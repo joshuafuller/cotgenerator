@@ -1,6 +1,5 @@
 package com.jon.cotgenerator.ui;
 
-import android.Manifest;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -32,22 +31,14 @@ import com.jon.cotgenerator.enums.TransmittedData;
 import com.jon.cotgenerator.service.CotService;
 import com.jon.cotgenerator.service.GpsService;
 import com.jon.cotgenerator.utils.DeviceUid;
-import com.jon.cotgenerator.utils.GenerateInt;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
-import pub.devrel.easypermissions.EasyPermissions;
-
 public class CotActivity extends AppCompatActivity {
     private static final String TAG = CotActivity.class.getSimpleName();
-
-    private static final String[] REQUIRED_PERMISSIONS = new String[]{
-            Manifest.permission.ACCESS_FINE_LOCATION
-    };
-
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -81,11 +72,6 @@ public class CotActivity extends AppCompatActivity {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(CotService.CLOSE_SERVICE_INTERNAL);
         broadcastManager.registerReceiver(broadcastReceiver, intentFilter);
-
-        /* Requesting permissions */
-        if (!EasyPermissions.hasPermissions(this, REQUIRED_PERMISSIONS)) {
-            EasyPermissions.requestPermissions(this, "Needed for accessing GPS data", GenerateInt.next(), REQUIRED_PERMISSIONS);
-        }
 
         /* Generate a device-specific UUID and save to file, if it doesn't already exist */
         DeviceUid.generate(this);
