@@ -18,7 +18,6 @@ import com.jon.cotgenerator.enums.ServerPreset;
 import com.jon.cotgenerator.enums.TransmissionProtocol;
 import com.jon.cotgenerator.enums.TransmittedData;
 import com.jon.cotgenerator.utils.AndroidUtils;
-import com.jon.cotgenerator.utils.Constants;
 import com.jon.cotgenerator.utils.Key;
 
 import java.util.HashMap;
@@ -31,8 +30,9 @@ public class SettingsFragment extends PreferenceFragmentCompat
     private static final String TAG = SettingsFragment.class.getSimpleName();
 
     private SharedPreferences prefs;
+    private boolean shouldCheckTcpPresetsPreference = true;
 
-    public static SettingsFragment newInstance() {
+    static SettingsFragment newInstance() {
         return new SettingsFragment();
     }
 
@@ -95,7 +95,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
     @Override
     public void onActivityCreated(@Nullable Bundle state) {
         super.onActivityCreated(state);
-        prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        prefs = PreferenceManager.getDefaultSharedPreferences(requireActivity());
         prefs.registerOnSharedPreferenceChangeListener(this);
     }
 
@@ -129,22 +129,26 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 toggleDataTypeSettingsVisibility();
                 break;
             case Key.TCP_PRESETS:
-                insertPresetTcpServer();
+                if (shouldCheckTcpPresetsPreference) {
+                    insertPresetTcpServer();
+                }
                 break;
             case Key.TCP_IP:
             case Key.TCP_PORT:
                 ListPreference presetPref = findPreference(Key.TCP_PRESETS);
-                presetPref.setValue(null);
+                presetPref.setValue("");
                 break;
         }
     }
 
     private void insertPresetTcpServer() {
-        EditTextPreference addrPref = findPreference(Key.TCP_IP);
+        EditTextPreference addressPref = findPreference(Key.TCP_IP);
         EditTextPreference portPref = findPreference(Key.TCP_PORT);
         ServerPreset preset = ServerPreset.fromPrefs(prefs);
-        if (addrPref != null && portPref != null) {
-            preset.fillPreferences(addrPref, portPref);
+        if (addressPref != null && portPref != null) {
+            shouldCheckTcpPresetsPreference = false;
+            preset.fillPreferences(addressPref, portPref);
+            shouldCheckTcpPresetsPreference = true;
         }
     }
 
@@ -240,6 +244,6 @@ public class SettingsFragment extends PreferenceFragmentCompat
             return;
         }
         String val = prefs.getString(key, "");
-        pref.setSummary(String.format(Locale.ENGLISH, "%s " + suffix, val));
+        pref.setSummary(String.format(Locale.ENGLISH, "%s %s", val, suffix));
     }
 }
