@@ -3,6 +3,7 @@ package com.jon.cotgenerator.service;
 import android.content.SharedPreferences;
 
 import com.jon.cotgenerator.cot.CursorOnTarget;
+import com.jon.cotgenerator.cot.PliCursorOnTarget;
 import com.jon.cotgenerator.cot.UtcTimestamp;
 import com.jon.cotgenerator.enums.TeamColour;
 import com.jon.cotgenerator.utils.DeviceUid;
@@ -28,7 +29,7 @@ class GpsCotGenerator extends CotGenerator {
 
     @Override
     protected List<CursorOnTarget> initialise() {
-        cot = new CursorOnTarget();
+        cot = new PliCursorOnTarget();
         cot.uid = DeviceUid.get();
         cot.callsign = PrefUtils.getString(prefs, Key.CALLSIGN);
         final UtcTimestamp now = UtcTimestamp.now();

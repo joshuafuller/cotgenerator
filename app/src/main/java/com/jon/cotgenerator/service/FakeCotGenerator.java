@@ -3,6 +3,7 @@ package com.jon.cotgenerator.service;
 import android.content.SharedPreferences;
 
 import com.jon.cotgenerator.cot.CursorOnTarget;
+import com.jon.cotgenerator.cot.PliCursorOnTarget;
 import com.jon.cotgenerator.cot.UtcTimestamp;
 import com.jon.cotgenerator.enums.TeamColour;
 import com.jon.cotgenerator.utils.Constants;
@@ -61,7 +62,7 @@ class FakeCotGenerator extends CotGenerator {
         PrimitiveIterator.OfDouble lonItr = randomIterator(random, centre.lon, dlon);
 
         for (int i = 0; i < nCot; i++) {
-            CursorOnTarget cot = new CursorOnTarget();
+            CursorOnTarget cot = new PliCursorOnTarget();
             String uid = String.format(Locale.ENGLISH, "%s_%04d", callsign, i);
             cot.uid = uid;
             cot.callsign = uid;
