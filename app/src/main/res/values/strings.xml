@@ -6,7 +6,7 @@
     <string name="about">About</string>
 
     <string name="toggleGpsBeacon">GPS BEACON</string>
-    <string name="toggleGenerator">GENERATOR</string>
+    <string name="toggleFake">FAKE ICONS</string>
 
     <string name="transmittedDataGps">GPS Position</string>
     <string name="transmittedDataFake">Fake Icons</string>

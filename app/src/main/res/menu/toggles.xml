@@ -4,5 +4,5 @@
         android:title="@string/toggleGpsBeacon" />
     <item
         android:id="@+id/toggleGenerator"
-        android:title="@string/toggleGenerator" />
+        android:title="@string/toggleFake" />
 </menu>
