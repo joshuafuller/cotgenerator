@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<event version="2.0" uid="ANDROID-869295035193297" type="a-f-G-U-C" time="2020-04-15T23:23:36.647Z" start="2020-04-15T23:23:36.647Z" stale="2020-04-15T23:24:01.647Z" how="m-g">
+    <point lat="51.902307" lon="-2.070901" hae="112.88860042789838" ce="3.2" le="9999999.0"/>
+    <detail>
+        <takv os="29" version="4.0.0.1 (3a23eb4e).1585690033-CIV" device="ONEPLUS ONEPLUS A6003" platform="ATAK-CIV"/>
+        <contact endpoint="*:-1:stcp" callsign="FREDERICK"/>
+        <uid Droid="FREDERICK"/>
+        <precisionlocation altsrc="GPS" geopointsrc="GPS"/>
+        <__group role="Team Member" name="Cyan"/>
+        <status battery="100"/>
+        <track course="31.11981041387699" speed="0.0"/>
+    </detail>
+</event>

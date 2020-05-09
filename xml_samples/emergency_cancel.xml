@@ -1,0 +1,7 @@
+<event how="m-g" stale="2020-05-08T13:02:20.261Z" start="2020-05-08T13:02:10.261Z" time="2020-05-08T13:02:10.261Z" type="b-a-o-can"
+    uid="ANDROID-971c65be8c19f5a1-9-1-1" version="2.0">
+    <point ce="4.2" hae="128.98874160753732" lat="51.902372" le="9999999.0" lon="-2.070926" />
+    <detail>
+        <emergency cancel="true">FREDERICK</emergency>
+    </detail>
+</event>
