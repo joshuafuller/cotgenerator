@@ -20,3 +20,6 @@ Note that there is a slight difference in behaviour between TAK Server and FreeT
 This mode generates a specified number of representative CoT PLI tracks around a configured latitude/longitude point. These tracks are randomly scattered within the configured "Radial Distribution". After each transmission, each track is shifted slightly to a random position within their configured "Movement Radius".
 
 This mode is mostly intended for network/server stress testing, but could also be useful for demonstration purposes.
+
+## Troubleshooting
+Note that 100% of testing has been done on a OnePlus 6 running Android 10. If there are any compatibility issues or crashes (I'm sure there are), please raise an issue!
