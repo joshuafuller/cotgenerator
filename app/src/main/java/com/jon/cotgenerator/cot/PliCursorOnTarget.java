@@ -1,30 +1,43 @@
 package com.jon.cotgenerator.cot;
 
+import android.os.Build;
+
 import androidx.annotation.NonNull;
 
-import java.util.Locale;
+import com.jon.cotgenerator.BuildConfig;
 
 public class PliCursorOnTarget extends CursorOnTarget {
+    // Group
+    public String team = null;  // cyan, green, purple, etc
+    public String role = "Team Member";  // HQ, sniper, K9, etc
+
+    // Location source
+    public String altsrc = null;
+    public String geosrc = null;
+
+    // System info
+    public Integer battery = null; // internal device battery remaining, scale of 1-100
+    public String device = String.format("%s %s", Build.MANUFACTURER.toUpperCase(), Build.MODEL.toUpperCase());
+    public String platform = "COT-GENERATOR";
+    public String os = String.valueOf(Build.VERSION.SDK_INT);
+    public String version = BuildConfig.VERSION_NAME;
+
+    public PliCursorOnTarget() {
+        how = CotHow.MG.get();
+        type = CotType.GROUND_COMBAT.get();
+    }
+
     @NonNull
     @Override
     public String toString() {
-        final Locale locale = Locale.ENGLISH; // just to keep android studio from whining at me
-
-        /* the basic required fields in a CoT message */
-        final String base = String.format(locale,
-                "<event version=\"2.0\" uid=\"%s\" type=\"%s\" time=\"%s\" start=\"%s\" stale=\"%s\" how=\"%s\"><point lat=\"%.7f\" " +
-                        "lon=\"%.7f\" hae=\"%f\" ce=\"%f\" le=\"%f\"/><detail><track speed=\"%.7f\" course=\"%.7f\"/>",
-                uid, type, time.toString(), start.toString(), stale.toString(), how, lat,
-                lon, hae, ce, le, speed, course);
-
         boolean includeEndpoint = endpoint == null;
-        String contact = includeEndpoint ? String.format(locale, "<contact callsign=\"%s\" endpoint=\"%s\"/>", callsign, endpoint)
-                : String.format(locale, "<contact callsign=\"%s\"/>", callsign);
+        String contact = includeEndpoint ?
+                String.format(locale, "<contact callsign=\"%s\" endpoint=\"%s\"/>", callsign, endpoint) :
+                String.format(locale, "<contact callsign=\"%s\"/>", callsign);
 
-        /* Create strings for the optional fields only if they have valid values */
-        String group = "", status = "", takv = "", precloc = "";
-        if (team != null && role != null) {
-            group = String.format(locale, "<__group name=\"%s\" role=\"%s\"/>", team, role);
+        String precloc = "", status = "", takv = "";
+        if (altsrc != null && geosrc != null) {
+            precloc = String.format(locale, "<precisionlocation altsrc=\"%s\" geopointsrc=\"%s\" />", altsrc, geosrc);
         }
         if (battery != null) {
             status = String.format(locale, "<status battery=\"%d\"/>", battery);
@@ -34,10 +47,11 @@ public class PliCursorOnTarget extends CursorOnTarget {
                     "<takv device=\"%s\" platform=\"%s\" os=\"%s\" version=\"%s\"/>",
                     device, platform, os, version);
         }
-        if (altsrc != null && geosrc != null) {
-            precloc = String.format(locale, "<precisionlocation altsrc=\"%s\" geopointsrc=\"%s\" />", altsrc, geosrc);
-        }
-
-        return base + contact + group + status + takv + precloc + "</detail></event>";
+        return String.format(locale,
+                "<event version=\"2.0\" uid=\"%s\" type=\"%s\" time=\"%s\" start=\"%s\" stale=\"%s\" how=\"%s\"><point lat=\"%.7f\" " +
+                        "lon=\"%.7f\" hae=\"%f\" ce=\"%f\" le=\"%f\"/><detail><track speed=\"%.7f\" course=\"%.7f\"/>%s" +
+                        "<__group name=\"%s\" role=\"%s\"/>%s%s</detail></event>",
+                uid, type, time.toString(), start.toString(), stale.toString(), how, lat,
+                lon, hae, ce, le, speed, course, contact, team, role, status, takv);
     }
 }
