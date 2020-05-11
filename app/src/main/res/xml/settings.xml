@@ -100,7 +100,7 @@
 
         <SeekBarPreference
             android:key="transmissionPeriod"
-            android:max="60"
+            android:max="30"
             app:defaultValue="@string/defaultTransmissionPeriod"
             app:iconSpaceReserved="false"
             app:seekBarIncrement="1"
