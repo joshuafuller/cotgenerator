@@ -19,17 +19,20 @@ import androidx.preference.PreferenceManager;
 import com.jon.cotgenerator.BuildConfig;
 import com.jon.cotgenerator.R;
 import com.jon.cotgenerator.ui.CotActivity;
+import com.jon.cotgenerator.utils.GenerateInt;
 
 public class CotService extends Service {
     private static final String TAG = CotService.class.getSimpleName();
     private static final String BASE_INTENT_ID = BuildConfig.APPLICATION_ID + ".CotService.";
+    private static final int LAUNCH_ACTIVITY_PENDING_INTENT = GenerateInt.next();
+    private static final int STOP_SERVICE_PENDING_INTENT = GenerateInt.next();
+
     public static final String START_SERVICE = BASE_INTENT_ID + "START";
     public static final String STOP_SERVICE = BASE_INTENT_ID + "STOP";
     public static final String CLOSE_SERVICE_INTERNAL = BASE_INTENT_ID + "CLOSE_SERVICE_INTERNAL";
     public static final String START_EMERGENCY = BASE_INTENT_ID + "SEND_EMERGENCY";
     public static final String CANCEL_EMERGENCY = BASE_INTENT_ID + "CANCEL_EMERGENCY";
 
-    private SharedPreferences prefs;
     private CotManager cotManager;
 
     @Override
@@ -41,7 +44,7 @@ public class CotService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         cotManager = new CotManager(prefs);
     }
 
@@ -54,6 +57,7 @@ public class CotService extends Service {
                     startForegroundService();
                     break;
                 case STOP_SERVICE:
+                    Log.i(TAG, "stop service");
                     cotManager.shutdown();
                     stopForegroundService();
                     LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(CLOSE_SERVICE_INTERNAL));
@@ -87,11 +91,15 @@ public class CotService extends Service {
         manager.createNotificationChannel(channel);
 
         /* Intent to launch main activity when tapping the notification */
-        Intent launchIntent = new Intent(this, CotActivity.class);
-        launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent launchPendingIntent = PendingIntent.getActivity(
-                this, 0, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT
+                this,
+                LAUNCH_ACTIVITY_PENDING_INTENT,
+                new Intent(this, CotActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK),
+                PendingIntent.FLAG_UPDATE_CURRENT
         );
+        /* Intent to stop the service when the notification button is tapped */
+        Intent stopIntent = new Intent(this, CotService.class).setAction(CotService.STOP_SERVICE);
+        PendingIntent stopPendingIntent = PendingIntent.getService(this, STOP_SERVICE_PENDING_INTENT, stopIntent, 0);
 
         Notification notification = new NotificationCompat.Builder(this, BuildConfig.APPLICATION_ID)
                 .setOngoing(true)
@@ -100,6 +108,7 @@ public class CotService extends Service {
                 .setPriority(NotificationManager.IMPORTANCE_MAX)
                 .setCategory(Notification.CATEGORY_SERVICE)
                 .setContentIntent(launchPendingIntent)
+                .addAction(R.drawable.stop, getString(R.string.stop), stopPendingIntent)
                 .build();
         /* Not sure why the number 2 is important here, but putting 0 or 1 gives no notification */
         startForeground(3, notification);
