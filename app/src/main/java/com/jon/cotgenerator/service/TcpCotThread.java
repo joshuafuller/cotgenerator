@@ -12,9 +12,8 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.List;
 
-final class TcpCotThread extends CotThread {
+class TcpCotThread extends CotThread {
     private static final String TAG = TcpCotThread.class.getSimpleName();
 
     private Socket socket;
@@ -22,6 +21,9 @@ final class TcpCotThread extends CotThread {
 
     TcpCotThread(SharedPreferences prefs) {
         super(prefs);
+    }
+    TcpCotThread(SharedPreferences prefs, CotGenerator generator) {
+        super(prefs, generator);
     }
 
     @Override
@@ -31,7 +33,7 @@ final class TcpCotThread extends CotThread {
             try {
                 socket.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                /* do nothing */
             }
             socket = null;
         }
@@ -42,23 +44,20 @@ final class TcpCotThread extends CotThread {
         super.run();
         initialiseDestAddress();
         openSocket();
-        cotGenerator = CotGenerator.getFromPrefs(prefs);
-        List<CursorOnTarget> icons = cotGenerator.generate();
-
-        int periodMilliseconds = PrefUtils.getInt(prefs, Key.TRANSMISSION_PERIOD) * 1000;
-        int bufferTimeMs = periodMilliseconds / icons.size();
+        int bufferTimeMs = periodMilliseconds() / cotIcons.size();
 
         while (isRunning) {
-            for (CursorOnTarget cot : icons) {
+            for (CursorOnTarget cot : cotIcons) {
                 sendToDestination(cot);
                 bufferSleep(bufferTimeMs);
             }
-            icons = cotGenerator.generate();
+            cotIcons = cotGenerator.generate();
         }
+        shutdown();
     }
 
     @Override
-    void sendToDestination(CursorOnTarget cot) {
+    protected void sendToDestination(CursorOnTarget cot) {
         try {
             outputStream.write(cot.toBytes());
             Log.i(TAG, "Sent cot: " + cot.toString());
@@ -67,7 +66,7 @@ final class TcpCotThread extends CotThread {
         }
     }
 
-    private void initialiseDestAddress() {
+    protected void initialiseDestAddress() {
         try {
             destIp = InetAddress.getByName(PrefUtils.getString(prefs, Key.TCP_ADDRESS));
         } catch (UnknownHostException e) {
@@ -77,7 +76,7 @@ final class TcpCotThread extends CotThread {
         destPort = PrefUtils.parseInt(prefs, Key.TCP_PORT);
     }
 
-    private void openSocket() {
+    protected void openSocket() {
         try {
             socket = new Socket(destIp, destPort);
             outputStream = socket.getOutputStream();

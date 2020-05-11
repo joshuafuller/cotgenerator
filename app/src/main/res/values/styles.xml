@@ -1,14 +1,33 @@
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.DayNight">
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorSecondary">@color/colorAccent</item>
+        <item name="android:colorBackground">@color/colorPrimary</item>
+        <item name="materialAlertDialogTheme">@style/Dialog</item>
+        <item name="alertDialogTheme">@style/Dialog</item>
+        <item name="android:alertDialogTheme">@style/Dialog</item>
+        <item name="android:dialogTheme">@style/Dialog</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Dialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="buttonBarNegativeButtonStyle">@style/ButtonStyle</item>
+        <item name="buttonBarPositiveButtonStyle">@style/ButtonStyle</item>
+        <item name="buttonBarNeutralButtonStyle">@style/ButtonStyle</item>
+        <item name="buttonBarButtonStyle">@style/ButtonStyle</item>
+        <item name="textColorAlertDialogListItem">@color/textColour</item>
+        <item name="android:textColorAlertDialogListItem">@color/textColour</item>
+    </style>
+
+    <style name="ButtonStyle" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/textColour</item>
     </style>
 
 </resources>

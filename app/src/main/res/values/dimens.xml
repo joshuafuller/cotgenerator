@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="smallPadding">10dp</dimen>
     <dimen name="padding">16dp</dimen>
-    <dimen name="toggleButtonPadding">10dp</dimen>
+    <dimen name="toggleButtonPadding">8dp</dimen>
 </resources>

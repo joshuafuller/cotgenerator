@@ -20,16 +20,6 @@ class Point {
         id = GenerateInt.next();
     }
 
-    static Point randomInCircle(final PrimitiveIterator.OfDouble lat, final PrimitiveIterator.OfDouble lon, final Point centre, final double radius) {
-        final Point point = new Point(lat.next(), lon.next());
-        if (arcdistance(centre, point) > radius) {
-            /* The generated point is outside our radius, so take the next values of lat and lon from the sequences */
-            return randomInCircle(lat, lon, centre, radius);
-        } else {
-            return point;
-        }
-    }
-
     private static double arcdistance(final Point p1, final Point p2) {
         final double phi1 = p1.lat;
         final double phi2 = p2.lat;

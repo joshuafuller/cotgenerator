@@ -13,14 +13,16 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
-import java.util.List;
 
-final class UdpCotThread extends CotThread {
+class UdpCotThread extends CotThread {
     private static final String TAG = UdpCotThread.class.getSimpleName();
     private DatagramSocket socket;
 
     UdpCotThread(SharedPreferences sharedPreferences) {
         super(sharedPreferences);
+    }
+    UdpCotThread(SharedPreferences prefs, CotGenerator generator) {
+        super(prefs, generator);
     }
 
     @Override
@@ -37,23 +39,19 @@ final class UdpCotThread extends CotThread {
         super.run();
         initialiseDestAddress();
         openSocket();
-        cotGenerator = CotGenerator.getFromPrefs(prefs);
-        List<CursorOnTarget> icons = cotGenerator.generate();
-
-        int periodMilliseconds = PrefUtils.getInt(prefs, Key.TRANSMISSION_PERIOD) * 1000;
-        int bufferTimeMs = periodMilliseconds / icons.size();
+        int bufferTimeMs = periodMilliseconds() / cotIcons.size();
 
         while (isRunning) {
-            long startTime = System.currentTimeMillis();
-            for (CursorOnTarget cot : icons) {
+            for (CursorOnTarget cot : cotIcons) {
                 sendToDestination(cot);
                 bufferSleep(bufferTimeMs);
             }
-            icons = cotGenerator.generate();
+            cotIcons = cotGenerator.generate();
         }
+        shutdown();
     }
 
-    private void initialiseDestAddress() {
+    protected void initialiseDestAddress() {
         try {
             destIp = InetAddress.getByName(PrefUtils.getString(prefs, Key.UDP_ADDRESS));
         } catch (UnknownHostException e) {
@@ -63,7 +61,7 @@ final class UdpCotThread extends CotThread {
         destPort = PrefUtils.parseInt(prefs, Key.UDP_PORT);
     }
 
-    private void openSocket() {
+    protected void openSocket() {
         try {
             if (destIp.isMulticastAddress()) {
                 socket = new MulticastSocket();
@@ -77,7 +75,7 @@ final class UdpCotThread extends CotThread {
     }
 
     @Override
-    void sendToDestination(CursorOnTarget cot) {
+    protected void sendToDestination(CursorOnTarget cot) {
         Log.i(TAG, "Sending cot: " + cot);
         try {
             final byte[] buf = cot.toBytes();

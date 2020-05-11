@@ -1,43 +1,32 @@
 package com.jon.cotgenerator.ui;
 
 import android.app.ActivityManager;
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.net.Uri;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.ColorRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.PreferenceManager;
 
-import com.jon.cotgenerator.BuildConfig;
 import com.jon.cotgenerator.R;
 import com.jon.cotgenerator.enums.TransmittedData;
 import com.jon.cotgenerator.service.CotService;
 import com.jon.cotgenerator.service.GpsService;
 import com.jon.cotgenerator.utils.DeviceUid;
 import com.jon.cotgenerator.utils.Key;
+import com.leinardi.android.speeddial.SpeedDialView;
 import com.savvyapps.togglebuttonlayout.ToggleButtonLayout;
-
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
 
 public class CotActivity extends AppCompatActivity
         implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -46,10 +35,14 @@ public class CotActivity extends AppCompatActivity
     private LocalBroadcastManager broadcastManager;
     private SharedPreferences prefs;
     private ToggleButtonLayout toggleButtonLayout;
+    private SpeedDialView speedDial;
+    private SpeedDialView speedDialDisabled;
+    private boolean serviceIsRunning;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent != null && intent.getAction() != null && intent.getAction().equals(CotService.CLOSE_SERVICE_INTERNAL)) {
+                serviceIsRunning = false;
                 invalidateOptionsMenu();
             }
         }
@@ -75,6 +68,10 @@ public class CotActivity extends AppCompatActivity
 
         /* Generate a device-specific UUID and save to file, if it doesn't already exist */
         DeviceUid.generate(this);
+
+        serviceIsRunning = isCotServiceRunning(this);
+        speedDial = SpeedDialCreator.getSpeedDial(this);
+        speedDialDisabled = SpeedDialCreator.getDisabledSpeedDial(this);
     }
 
     @Override
@@ -94,6 +91,7 @@ public class CotActivity extends AppCompatActivity
         });
         /* Use the current preference value to set the toggle */
         setToggleValueFromPreferences();
+        toggleSpeedDialVisibility();
     }
 
     @Override
@@ -116,41 +114,51 @@ public class CotActivity extends AppCompatActivity
         return false;
     }
 
-    private void createFragTransaction(Fragment fragment) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.container, fragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
-        if (isCotServiceRunning(this)) {
-            menu.findItem(R.id.start).setVisible(false);
-            menu.findItem(R.id.pause).setVisible(true);
-        } else {
-            menu.findItem(R.id.start).setVisible(true);
-            menu.findItem(R.id.pause).setVisible(false);
-        }
+        MenuItem start = menu.findItem(R.id.start);
+        MenuItem stop = menu.findItem(R.id.stop);
+        start.setVisible(!serviceIsRunning);
+        stop.setVisible(serviceIsRunning);
+        tintMenuIcon(start, android.R.color.holo_green_light);
+        tintMenuIcon(stop, android.R.color.holo_red_light);
         return true;
+    }
+
+    private void tintMenuIcon(MenuItem item, @ColorRes int color) {
+        Drawable wrapDrawable = DrawableCompat.wrap(item.getIcon());
+        DrawableCompat.setTint(wrapDrawable, getColor(color));
+        item.setIcon(wrapDrawable);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         final boolean sendGps = TransmittedData.fromPrefs(prefs) == TransmittedData.GPS;
+        Intent cotIntent = new Intent(this, CotService.class);
+        Intent gpsIntent = new Intent(this, GpsService.class);
         switch (item.getItemId()) {
             case R.id.start:
-                sendServiceIntent(new Intent(this, CotService.class), CotService.START_SERVICE);
+                serviceIsRunning = true;
+                cotIntent.setAction(CotService.START_SERVICE);
+                startService(cotIntent);
                 if (sendGps) {
-                    sendServiceIntent(new Intent(this, GpsService.class), GpsService.START_SERVICE);
+                    gpsIntent.setAction(GpsService.START_SERVICE);
+                    startService(gpsIntent);
                 }
+                invalidateOptionsMenu();
+                toggleSpeedDialVisibility();
                 return true;
-            case R.id.pause:
-                sendServiceIntent(new Intent(this, CotService.class), CotService.STOP_SERVICE);
+            case R.id.stop:
+                serviceIsRunning = false;
+                cotIntent.setAction(CotService.STOP_SERVICE);
+                startService(cotIntent);
                 if (sendGps) {
-                    sendServiceIntent(new Intent(this, GpsService.class), GpsService.STOP_SERVICE);
+                    gpsIntent.setAction(GpsService.STOP_SERVICE);
+                    startService(gpsIntent);
                 }
+                invalidateOptionsMenu();
+                toggleSpeedDialVisibility();
                 return true;
             case R.id.about:
                 AboutDialogCreator.show(this);
@@ -159,22 +167,30 @@ public class CotActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    private void sendServiceIntent(final Intent intent, final String intentId) {
-        intent.setAction(intentId);
-        startService(intent);
-        invalidateOptionsMenu();
-    }
-
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(Key.TRANSMITTED_DATA)) {
             setToggleValueFromPreferences();
+            toggleSpeedDialVisibility();
         }
     }
 
     private void setToggleValueFromPreferences() {
         boolean sendGps = TransmittedData.fromPrefs(prefs) == TransmittedData.GPS;
         toggleButtonLayout.setToggled(sendGps ? R.id.toggleGpsBeacon : R.id.toggleGenerator, true);
+    }
+
+    private void toggleSpeedDialVisibility() {
+        boolean sendGps = TransmittedData.fromPrefs(prefs) == TransmittedData.GPS;
+        if (sendGps) {
+            /* Show the active FAB only if the service is running */
+            speedDial.setVisibility(serviceIsRunning ? View.VISIBLE : View.INVISIBLE);
+            speedDialDisabled.setVisibility(serviceIsRunning ? View.INVISIBLE : View.VISIBLE);
+        } else {
+            /* No FABs unless GPS Beacon is selected */
+            speedDial.setVisibility(View.INVISIBLE);
+            speedDialDisabled.setVisibility(View.INVISIBLE);
+        }
     }
 
 }

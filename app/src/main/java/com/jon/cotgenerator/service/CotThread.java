@@ -3,10 +3,12 @@ package com.jon.cotgenerator.service;
 import android.content.SharedPreferences;
 
 import com.jon.cotgenerator.cot.CursorOnTarget;
+import com.jon.cotgenerator.enums.TransmissionProtocol;
 import com.jon.cotgenerator.utils.Key;
 import com.jon.cotgenerator.utils.PrefUtils;
 
 import java.net.InetAddress;
+import java.util.List;
 
 abstract class CotThread extends Thread {
     protected SharedPreferences prefs;
@@ -14,11 +16,38 @@ abstract class CotThread extends Thread {
     protected CotGenerator cotGenerator;
     protected InetAddress destIp;
     protected int destPort;
+    protected List<CursorOnTarget> cotIcons;
 
     abstract void sendToDestination(CursorOnTarget cot);
 
-    CotThread(SharedPreferences prefs) {
+    static CotThread fromPrefs(SharedPreferences prefs) {
+        TransmissionProtocol protocol = TransmissionProtocol.fromPrefs(prefs);
+        switch (protocol) {
+            case UDP: return new UdpCotThread(prefs);
+            case TCP: return new TcpCotThread(prefs);
+            default: throw new IllegalArgumentException("Unexpected protocol: " + protocol);
+        }
+    }
+
+    static CotThread getSingleCotThread(SharedPreferences prefs, CursorOnTarget cot) {
+        TransmissionProtocol protocol = TransmissionProtocol.fromPrefs(prefs);
+        switch (protocol) {
+            case UDP: return new UdpSingleCotThread(prefs, cot);
+            case TCP: return new TcpSingleCotThread(prefs, cot);
+            default: throw new IllegalArgumentException("Unexpected protocol: " + protocol);
+        }
+    }
+
+    protected CotThread(SharedPreferences prefs) {
         this.prefs = prefs;
+        cotGenerator = CotGenerator.getFromPrefs(prefs);
+        cotIcons = cotGenerator.generate();
+    }
+
+    protected CotThread(SharedPreferences prefs, CotGenerator generator) {
+        this(prefs);
+        cotGenerator = generator;
+        cotIcons = cotGenerator.generate();
     }
 
     boolean isRunning() {
@@ -44,5 +73,9 @@ abstract class CotThread extends Thread {
         } catch (InterruptedException e) {
             /* do nothing */
         }
+    }
+
+    protected int periodMilliseconds() {
+        return PrefUtils.getInt(prefs, Key.TRANSMISSION_PERIOD) * 1000;
     }
 }

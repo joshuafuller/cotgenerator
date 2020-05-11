@@ -26,6 +26,8 @@ public class CotService extends Service {
     public static final String START_SERVICE = BASE_INTENT_ID + "START";
     public static final String STOP_SERVICE = BASE_INTENT_ID + "STOP";
     public static final String CLOSE_SERVICE_INTERNAL = BASE_INTENT_ID + "CLOSE_SERVICE_INTERNAL";
+    public static final String START_EMERGENCY = BASE_INTENT_ID + "SEND_EMERGENCY";
+    public static final String CANCEL_EMERGENCY = BASE_INTENT_ID + "CANCEL_EMERGENCY";
 
     private SharedPreferences prefs;
     private CotManager cotManager;
@@ -55,6 +57,12 @@ public class CotService extends Service {
                     cotManager.shutdown();
                     stopForegroundService();
                     LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(CLOSE_SERVICE_INTERNAL));
+                    break;
+                case START_EMERGENCY:
+                    cotManager.startEmergency();
+                    break;
+                case CANCEL_EMERGENCY:
+                    cotManager.cancelEmergency();
                     break;
             }
         }

@@ -12,11 +12,12 @@ import com.jon.cotgenerator.utils.PrefUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 class GpsCotGenerator extends CotGenerator {
     private static final String TAG = GpsCotGenerator.class.getSimpleName();
 
-    private CursorOnTarget cot = null;
+    private PliCursorOnTarget cot = null;
 
     GpsCotGenerator(SharedPreferences prefs) {
         super(prefs);
@@ -35,16 +36,16 @@ class GpsCotGenerator extends CotGenerator {
         final UtcTimestamp now = UtcTimestamp.now();
         cot.time = now;
         cot.start = now;
-        cot.setStaleDiff(1000 * 60 * PrefUtils.getInt(prefs, Key.STALE_TIMER));
+        cot.setStaleDiff(PrefUtils.getInt(prefs, Key.STALE_TIMER), TimeUnit.MINUTES);
         cot.team = TeamColour.fromPrefs(prefs).team();
-        LastGpsLocation.updateCot(cot);
-        return result(cot);
+        LastGpsLocation.updatePli(cot);
+        return toList(cot);
     }
 
     @Override
     protected List<CursorOnTarget> update() {
-        LastGpsLocation.updateCot(cot);
-        return result(cot);
+        LastGpsLocation.updatePli(cot);
+        return toList(cot);
     }
 
     @Override
@@ -52,7 +53,7 @@ class GpsCotGenerator extends CotGenerator {
         cot = null;
     }
 
-    private List<CursorOnTarget> result(CursorOnTarget c) {
+    protected List<CursorOnTarget> toList(CursorOnTarget c) {
         return Collections.singletonList(c);
     }
 }

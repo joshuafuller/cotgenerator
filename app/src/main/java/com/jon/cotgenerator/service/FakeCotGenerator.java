@@ -17,6 +17,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.PrimitiveIterator;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 class FakeCotGenerator extends CotGenerator {
     private static final double DEG_TO_RAD = Math.PI / 180.0;
@@ -49,7 +50,7 @@ class FakeCotGenerator extends CotGenerator {
         final int nCot = PrefUtils.parseInt(prefs, Key.ICON_COUNT);
         final String callsign = PrefUtils.getString(prefs, Key.CALLSIGN);
         final UtcTimestamp now = UtcTimestamp.now();
-        final long staleTimer = 1000 * 60 * PrefUtils.getInt(prefs, Key.STALE_TIMER);
+        final long staleTimer = PrefUtils.getInt(prefs, Key.STALE_TIMER);
         final double distributionRadius = PrefUtils.parseDouble(prefs, Key.RADIAL_DISTRIBUTION);
         final Point centre = new Point(
                 PrefUtils.parseDouble(prefs, Key.CENTRE_LATITUDE) * DEG_TO_RAD,
@@ -62,13 +63,13 @@ class FakeCotGenerator extends CotGenerator {
         PrimitiveIterator.OfDouble lonItr = randomIterator(random, centre.lon, dlon);
 
         for (int i = 0; i < nCot; i++) {
-            CursorOnTarget cot = new PliCursorOnTarget();
+            PliCursorOnTarget cot = new PliCursorOnTarget();
             String uid = String.format(Locale.ENGLISH, "%s_%04d", callsign, i);
             cot.uid = uid;
             cot.callsign = uid;
             cot.time = now;
             cot.start = now;
-            cot.setStaleDiff(staleTimer);
+            cot.setStaleDiff(staleTimer, TimeUnit.MINUTES);
             cot.team = TeamColour.fromPrefs(prefs).team();
             final Point point = generatePoint(latItr, lonItr, centre, distributionRadius);
             cot.lat = point.lat * RAD_TO_DEG;
