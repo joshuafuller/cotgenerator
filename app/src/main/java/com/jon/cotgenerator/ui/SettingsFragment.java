@@ -20,6 +20,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.preference.SeekBarPreference;
+import androidx.preference.SwitchPreference;
 
 import com.jon.cotgenerator.BuildConfig;
 import com.jon.cotgenerator.R;
@@ -63,7 +64,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
             Key.UDP_PORT,
             Key.TCP_PORT,
             Key.ICON_COUNT,
-            Key.MOVEMENT_RADIUS,
+            Key.MOVEMENT_SPEED,
             Key.RADIAL_DISTRIBUTION,
     };
 
@@ -75,7 +76,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
     private static final Map<String, String> SUFFIXES = new HashMap<String, String>() {{
         put(Key.CENTRE_LATITUDE, "degrees");
         put(Key.CENTRE_LONGITUDE, "degrees");
-        put(Key.MOVEMENT_RADIUS, "metres");
+        put(Key.MOVEMENT_SPEED, "mph");
         put(Key.RADIAL_DISTRIBUTION, "metres");
     }};
 
@@ -88,7 +89,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         put(Key.TCP_ADDRESS, "Should be a valid hostname");
         put(Key.TCP_PORT, "Should be an integer from 1 to 65535 inclusive");
         put(Key.ICON_COUNT, "Should be a positive integer");
-        put(Key.MOVEMENT_RADIUS, "Should be a positive integer");
+        put(Key.MOVEMENT_SPEED, "Should be a positive number");
         put(Key.RADIAL_DISTRIBUTION, "Should be a positive integer");
     }};
 
@@ -139,6 +140,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         toggleProtocolSettingVisibility();
         toggleDataTypeSettingsVisibility();
         setColourPickerActive();
+        setPositionPrefsActive();
         requestGpsPermissionIfSet();
     }
 
@@ -162,6 +164,10 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 toggleDataTypeSettingsVisibility();
                 requestGpsPermissionIfSet();
                 break;
+            case Key.FOLLOW_GPS_LOCATION:
+                setPositionPrefsActive();
+                requestGpsPermissionIfSet();
+                break;
             case Key.TCP_PRESETS:
                 if (shouldCheckTcpPresetsPreference) {
                     insertPresetTcpServer();
@@ -182,6 +188,12 @@ public class SettingsFragment extends PreferenceFragmentCompat
         }
     }
 
+    private void setPositionPrefsActive() {
+        boolean followGps = PrefUtils.getBoolean(prefs, Key.FOLLOW_GPS_LOCATION);
+        findPreference(Key.CENTRE_LATITUDE).setEnabled(!followGps);
+        findPreference(Key.CENTRE_LONGITUDE).setEnabled(!followGps);
+    }
+
     private void insertPresetTcpServer() {
         shouldCheckTcpPresetsPreference = false;
         EditTextPreference addressPref = findPreference(Key.TCP_ADDRESS);
@@ -195,9 +207,10 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
     private void requestGpsPermissionIfSet() {
         boolean sendGps = TransmittedData.fromPrefs(prefs) == TransmittedData.GPS;
-        if (sendGps) {
+        boolean fakeIconsFollowGps = PrefUtils.getBoolean(prefs, Key.FOLLOW_GPS_LOCATION);
+        if (sendGps || fakeIconsFollowGps) {
             if (!EasyPermissions.hasPermissions(requireContext(), GPS_PERMISSION)) {
-                String rationale = "The GPS permission is required to access the device's location, so that we can transmit it out as CoT.";
+                String rationale = "The GPS permission is required to access the device's location.";
                 EasyPermissions.requestPermissions(this, rationale, GPS_PERMISSION_CODE, GPS_PERMISSION);
             }
         }
@@ -221,6 +234,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
             /* Change the GPS preference back to fake icons */
             ListPreference transmittedDataPref = findPreference(Key.TRANSMITTED_DATA);
             transmittedDataPref.setValue(TransmittedData.FAKE.get());
+            SwitchPreference followGpsPref = findPreference(Key.FOLLOW_GPS_LOCATION);
+            followGpsPref.setChecked(false);
             if (!ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), GPS_PERMISSION[0])) {
                 /* Permission has been permanently denied */
                 View.OnClickListener action = view -> {
@@ -231,7 +246,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 Notify.red(requireView(), msg, action, "OPEN");
             } else {
                 /* Permission has been temporarily denied, so we can re-ask within the app */
-                Notify.orange(requireView(), "GPS Permission is required for the \"GPS Position\" option. Re-select it to try again!");
+                Notify.orange(requireView(), "GPS Permission is required for this setting. Re-select it to try again!");
             }
         }
     }
@@ -271,10 +286,12 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 result = validateDouble(str, -180.0, 180.0);
                 break;
             case Key.ICON_COUNT:
-            case Key.MOVEMENT_RADIUS:
             case Key.RADIAL_DISTRIBUTION:
             case Key.TRANSMISSION_PERIOD:
                 result = validateInt(str, 1, null);
+                break;
+            case Key.MOVEMENT_SPEED:
+                result = validateDouble(str, 0.0, null);
                 break;
             case Key.TCP_ADDRESS:
             case Key.UDP_ADDRESS:

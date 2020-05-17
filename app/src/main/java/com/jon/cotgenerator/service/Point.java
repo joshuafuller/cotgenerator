@@ -1,33 +1,42 @@
 package com.jon.cotgenerator.service;
 
+import com.jon.cotgenerator.cot.CursorOnTarget;
 import com.jon.cotgenerator.utils.Constants;
-import com.jon.cotgenerator.utils.GenerateInt;
-
-import java.util.PrimitiveIterator;
 
 class Point {
-    private int id;
     double lat;
     double lon;
 
-    Point(final double la, final double lo) {
-        id = GenerateInt.next();
-        lat = la;
-        lon = lo;
+    Point(final double lat, final double lon) {
+        this.lat = lat;
+        this.lon = lon;
     }
 
-    Point() {
-        id = GenerateInt.next();
+    Point add(Offset offset) {
+        return new Point(
+                (this.lat + offset.dlat) % (2.0 * Math.PI),
+                (this.lon + offset.dlon) % (2.0 * Math.PI)
+        );
     }
 
-    private static double arcdistance(final Point p1, final Point p2) {
-        final double phi1 = p1.lat;
-        final double phi2 = p2.lat;
-        final double dphi = phi2 - phi1;
-        final double dtheta = (p2.lon - p1.lon);
+    static Point fromCot(CursorOnTarget cot) {
+        return new Point(
+                cot.lat * Constants.DEG_TO_RAD,
+                cot.lon * Constants.DEG_TO_RAD
+        );
+    }
 
-        /* I can feel myself getting sweaty just looking at this */
-        final double a = Math.sin(dphi/2) * Math.sin(dphi/2) + Math.cos(phi1) * Math.cos(phi2) * Math.sin(dtheta/2) * Math.sin(dtheta/2);
-        return 2 * Constants.EARTH_RADIUS * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    public static class Offset {
+        double dlat;
+        double dlon;
+
+        Offset(double dlat, double dlon) {
+            this.dlat = dlat;
+            this.dlon = dlon;
+        }
+
+        Offset add(Offset that) {
+            return new Offset(this.dlat + that.dlat, this.dlon + that.dlon);
+        }
     }
 }

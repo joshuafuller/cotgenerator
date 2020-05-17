@@ -9,10 +9,11 @@
     <string name="defaultStaleTimer">5</string>
     <bool name="defaultRandomColour">false</bool>
     <integer name="defaultTeamColour">0xFF00FFFF</integer>
+    <bool name="defaultFollowMyGpsLocation">false</bool>
     <string name="defaultLatitude">58.243527</string>
     <string name="defaultLongitude">-6.606301</string>
     <string name="defaultRadialDistribution">100</string>
-    <string name="defaultMovementRadius">5</string>
+    <string name="defaultMovementSpeed">5</string>
     <string name="defaultTransmissionProtocol">@string/transmissionProtocolTcp</string>
     <string name="defaultTransmissionPeriod">10</string>
     <string name="defaultUdpIp">239.2.3.1</string>

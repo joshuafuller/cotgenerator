@@ -25,6 +25,7 @@ import com.jon.cotgenerator.service.CotService;
 import com.jon.cotgenerator.service.GpsService;
 import com.jon.cotgenerator.utils.DeviceUid;
 import com.jon.cotgenerator.utils.Key;
+import com.jon.cotgenerator.utils.PrefUtils;
 import com.leinardi.android.speeddial.SpeedDialView;
 import com.savvyapps.togglebuttonlayout.ToggleButtonLayout;
 
@@ -135,6 +136,7 @@ public class CotActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         final boolean sendGps = TransmittedData.fromPrefs(prefs) == TransmittedData.GPS;
+        final boolean followGpsLocation = PrefUtils.getBoolean(prefs, Key.FOLLOW_GPS_LOCATION);
         Intent cotIntent = new Intent(this, CotService.class);
         Intent gpsIntent = new Intent(this, GpsService.class);
         switch (item.getItemId()) {
@@ -142,7 +144,7 @@ public class CotActivity extends AppCompatActivity
                 serviceIsRunning = true;
                 cotIntent.setAction(CotService.START_SERVICE);
                 startService(cotIntent);
-                if (sendGps) {
+                if (sendGps || followGpsLocation) {
                     gpsIntent.setAction(GpsService.START_SERVICE);
                     startService(gpsIntent);
                 }
@@ -153,7 +155,7 @@ public class CotActivity extends AppCompatActivity
                 serviceIsRunning = false;
                 cotIntent.setAction(CotService.STOP_SERVICE);
                 startService(cotIntent);
-                if (sendGps) {
+                if (sendGps || followGpsLocation) {
                     gpsIntent.setAction(GpsService.STOP_SERVICE);
                     startService(gpsIntent);
                 }

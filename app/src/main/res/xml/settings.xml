@@ -59,6 +59,12 @@
         app:iconSpaceReserved="false"
         app:title="Location Settings">
 
+        <SwitchPreference
+            android:defaultValue="@bool/defaultFollowMyGpsLocation"
+            android:key="followMyGpsLocation"
+            app:iconSpaceReserved="false"
+            app:title="Follow My GPS Location?" />
+
         <EditTextPreference
             android:key="centreLatitude"
             app:defaultValue="@string/defaultLatitude"
@@ -78,10 +84,10 @@
             app:title="Radial Distribution" />
 
         <EditTextPreference
-            android:key="movementRadius"
-            app:defaultValue="@string/defaultMovementRadius"
+            android:key="movementSpeed"
+            app:defaultValue="@string/defaultMovementSpeed"
             app:iconSpaceReserved="false"
-            app:title="Movement Radius Per Icon" />
+            app:title="Icon Movement Speed" />
 
     </PreferenceCategory>
 
