@@ -65,9 +65,11 @@ class TcpCotThread extends CotThread {
         try {
             outputStream.write(cot.toBytes());
             Log.i(TAG, "Sent cot: " + cot.toString());
-        } catch (IOException | NullPointerException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             Log.e(TAG, e.getMessage());
+            shutdown();
+        } catch (NullPointerException e) {
             shutdown();
         }
     }

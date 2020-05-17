@@ -82,9 +82,11 @@ class UdpCotThread extends CotThread {
             final byte[] buf = cot.toBytes();
             socket.send(new DatagramPacket(buf, buf.length, destIp, destPort));
             Log.i(TAG, "Sent cot: " + cot.toString());
-        } catch (IOException | NullPointerException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             Log.e(TAG, e.getMessage());
+            shutdown();
+        } catch (NullPointerException e) {
             shutdown();
         }
     }
