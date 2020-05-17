@@ -65,6 +65,7 @@ class UdpCotThread extends CotThread {
         try {
             if (destIp.isMulticastAddress()) {
                 socket = new MulticastSocket();
+                ((MulticastSocket)socket).setLoopbackMode(false);
             } else {
                 socket = new DatagramSocket();
             }
