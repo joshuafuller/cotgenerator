@@ -31,10 +31,14 @@ class TcpCotThread extends CotThread {
         super.shutdown();
         if (socket != null) {
             try {
+                outputStream.close();
                 socket.close();
             } catch (IOException e) {
+                e.printStackTrace();
+                Log.e(TAG, e.getMessage());
                 /* do nothing */
             }
+            outputStream = null;
             socket = null;
         }
     }
@@ -61,7 +65,9 @@ class TcpCotThread extends CotThread {
         try {
             outputStream.write(cot.toBytes());
             Log.i(TAG, "Sent cot: " + cot.toString());
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
             shutdown();
         }
     }
