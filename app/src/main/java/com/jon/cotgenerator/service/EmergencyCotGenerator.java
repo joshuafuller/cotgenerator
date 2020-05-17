@@ -36,7 +36,7 @@ class EmergencyCotGenerator extends GpsCotGenerator {
         final UtcTimestamp now = UtcTimestamp.now();
         cot.time = now;
         cot.start = now;
-        cot.setStaleDiff(10, TimeUnit.MINUTES);
+        cot.setStaleDiff(0, TimeUnit.MINUTES);
         LastGpsLocation.updateCot(cot);
         return cot;
     }

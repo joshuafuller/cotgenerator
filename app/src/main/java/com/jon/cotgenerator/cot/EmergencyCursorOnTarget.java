@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 public class EmergencyCursorOnTarget extends CursorOnTarget {
 
     public EmergencyCursorOnTarget() {
-        how = CotHow.HE.get();
+        how = CotHow.MG.get();
         type = CotType.EMERGENCY_SEND.get();
     }
 
