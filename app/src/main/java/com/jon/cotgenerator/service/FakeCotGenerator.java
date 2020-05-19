@@ -7,6 +7,7 @@ import com.jon.cotgenerator.cot.PliCursorOnTarget;
 import com.jon.cotgenerator.cot.UtcTimestamp;
 import com.jon.cotgenerator.enums.TeamColour;
 import com.jon.cotgenerator.utils.Constants;
+import com.jon.cotgenerator.utils.DeviceUid;
 import com.jon.cotgenerator.utils.Key;
 import com.jon.cotgenerator.utils.PrefUtils;
 
@@ -80,8 +81,8 @@ class FakeCotGenerator extends CotGenerator {
 
         for (int i = 0; i < iconCount; i++) {
             PliCursorOnTarget cot = new PliCursorOnTarget();
-            String uid = String.format(Locale.ENGLISH, "%s_%04d", callsign, i);
-            cot.uid = cot.callsign = uid;
+            cot.uid = String.format(Locale.ENGLISH, "%s_%04d", DeviceUid.get(), i);
+            cot.callsign = String.format(Locale.ENGLISH, "%s_%04d", callsign, i);
             cot.time = cot.start = now;
             cot.setStaleDiff(staleTimer, TimeUnit.MINUTES);
             cot.team = TeamColour.fromPrefs(prefs).team();
