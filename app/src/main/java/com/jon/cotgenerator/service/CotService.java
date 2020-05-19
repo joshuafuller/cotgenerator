@@ -95,9 +95,11 @@ public class CotService extends Service {
                 .setOngoing(true)
                 .setSmallIcon(R.drawable.target)
                 .setContentTitle(getString(R.string.app_name))
-                .setCategory(Notification.CATEGORY_SERVICE)
                 .setContentIntent(launchPendingIntent)
                 .addAction(R.drawable.stop, getString(R.string.stop), stopPendingIntent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            notification.setCategory(Notification.CATEGORY_SERVICE);
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
                     BuildConfig.APPLICATION_ID,
