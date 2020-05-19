@@ -22,12 +22,17 @@
         <item name="buttonBarPositiveButtonStyle">@style/ButtonStyle</item>
         <item name="buttonBarNeutralButtonStyle">@style/ButtonStyle</item>
         <item name="buttonBarButtonStyle">@style/ButtonStyle</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialogText</item>
         <item name="textColorAlertDialogListItem">@color/textColour</item>
         <item name="android:textColorAlertDialogListItem">@color/textColour</item>
     </style>
 
+    <style name="MaterialAlertDialogText" parent="@style/MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
+
     <style name="ButtonStyle" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textColor">@color/textColour</item>
+        <item name="android:textColor">@color/colorAccent</item>
     </style>
 
 </resources>
