@@ -1,15 +1,16 @@
 package com.jon.cotgenerator.ui;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.InputType;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,23 +23,26 @@ import androidx.preference.PreferenceManager;
 import androidx.preference.SeekBarPreference;
 import androidx.preference.SwitchPreference;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.jon.cotgenerator.BuildConfig;
 import com.jon.cotgenerator.R;
-import com.jon.cotgenerator.enums.ServerPreset;
-import com.jon.cotgenerator.enums.TransmissionProtocol;
+import com.jon.cotgenerator.enums.Protocol;
 import com.jon.cotgenerator.enums.TransmittedData;
 import com.jon.cotgenerator.utils.GenerateInt;
 import com.jon.cotgenerator.utils.Key;
 import com.jon.cotgenerator.utils.Notify;
+import com.jon.cotgenerator.utils.OutputPreset;
 import com.jon.cotgenerator.utils.PrefUtils;
+import com.jon.cotgenerator.utils.PresetSqlHelper;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import org.apache.commons.collections4.ListUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -49,7 +53,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
     private static final String TAG = SettingsFragment.class.getSimpleName();
 
     private SharedPreferences prefs;
-    private boolean shouldCheckTcpPresetsPreference = true;
+    private PresetSqlHelper sqlHelper;
 
     private static final String[] GPS_PERMISSION = new String[]{Manifest.permission.ACCESS_FINE_LOCATION};
     private static final int GPS_PERMISSION_CODE = GenerateInt.next();
@@ -61,16 +65,9 @@ public class SettingsFragment extends PreferenceFragmentCompat
     private static final String[] PHONE_INPUT = new String[]{
             Key.CENTRE_LATITUDE,
             Key.CENTRE_LONGITUDE,
-            Key.UDP_PORT,
-            Key.TCP_PORT,
             Key.ICON_COUNT,
             Key.MOVEMENT_SPEED,
             Key.RADIAL_DISTRIBUTION,
-    };
-
-    private static final String[] URI_INPUT = new String[]{
-            Key.UDP_ADDRESS,
-            Key.TCP_ADDRESS
     };
 
     private static final Map<String, String> SUFFIXES = new HashMap<String, String>() {{
@@ -84,11 +81,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         put(Key.CALLSIGN, "Should only contain alphanumeric characters");
         put(Key.CENTRE_LATITUDE, "Should be a number between -180 and +180");
         put(Key.CENTRE_LONGITUDE, "Should be a number between -90 and +90");
-        put(Key.UDP_ADDRESS, "Should be a valid hostname");
-        put(Key.UDP_PORT, "Should be an integer from 1 to 65535 inclusive");
-        put(Key.TCP_ADDRESS, "Should be a valid hostname");
-        put(Key.TCP_PORT, "Should be an integer from 1 to 65535 inclusive");
-        put(Key.ICON_COUNT, "Should be a positive integer");
+        put(Key.ICON_COUNT, "Should be an integer from 1 to 9999");
         put(Key.MOVEMENT_SPEED, "Should be a positive number");
         put(Key.RADIAL_DISTRIBUTION, "Should be a positive integer");
     }};
@@ -97,8 +90,6 @@ public class SettingsFragment extends PreferenceFragmentCompat
             Key.STALE_TIMER,
             Key.TRANSMISSION_PERIOD
     };
-
-
 
     @Override
     public void onCreatePreferences(Bundle savedState, String rootKey) {
@@ -109,11 +100,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
             EditTextPreference pref = findPreference(key);
             if (pref != null) pref.setOnBindEditTextListener(phoneInputType);
         }
-        EditTextPreference.OnBindEditTextListener uriInputType = (EditText text) -> text.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
-        for (final String key : URI_INPUT) {
-            EditTextPreference pref = findPreference(key);
-            if (pref != null) pref.setOnBindEditTextListener(uriInputType);
-        }
+
         for (final String key : PREFS_REQUIRING_VALIDATION.keySet()) {
             Preference pref = findPreference(key);
             if (pref != null) pref.setOnPreferenceChangeListener(this);
@@ -122,6 +109,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
             SeekBarPreference seekbar = findPreference(key);
             seekbar.setMin(1); /* I can't set the minimum in the XML for whatever reason, so here it is */
         }
+        setNewPresetListener();
+        sqlHelper = new PresetSqlHelper(requireContext());
     }
 
     @Override
@@ -142,23 +131,29 @@ public class SettingsFragment extends PreferenceFragmentCompat
         setColourPickerActive();
         setPositionPrefsActive();
         requestGpsPermissionIfSet();
+        updatePresetEntries(Protocol.UDP, Key.UDP_PRESETS);
+        updatePresetEntries(Protocol.TCP, Key.TCP_PRESETS);
+        Protocol newProtocol = Protocol.fromPrefs(prefs);
+        insertPresetAddressAndPort(newProtocol == Protocol.TCP ? Key.TCP_PRESETS : Key.UDP_PRESETS);
     }
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         prefs.unregisterOnSharedPreferenceChangeListener(this);
+        sqlHelper.close();
+        super.onDestroy();
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-        Log.i(TAG, "onSharedPreferenceChanged " + key);
         if (SUFFIXES.containsKey(key)) {
             setPreferenceSuffix(this.prefs, key, SUFFIXES.get(key));
         }
         switch (key) {
             case Key.TRANSMISSION_PROTOCOL:
                 toggleProtocolSettingVisibility();
+                Protocol newProtocol = Protocol.fromPrefs(prefs);
+                insertPresetAddressAndPort(newProtocol == Protocol.TCP ? Key.TCP_PRESETS : Key.UDP_PRESETS);
                 break;
             case Key.TRANSMITTED_DATA:
                 toggleDataTypeSettingsVisibility();
@@ -169,21 +164,15 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 requestGpsPermissionIfSet();
                 break;
             case Key.TCP_PRESETS:
-                if (shouldCheckTcpPresetsPreference) {
-                    insertPresetTcpServer();
-                }
-                break;
-            case Key.TCP_ADDRESS:
-            case Key.TCP_PORT:
-                if (shouldCheckTcpPresetsPreference) {
-                    shouldCheckTcpPresetsPreference = false;
-                    ListPreference presetPref = findPreference(Key.TCP_PRESETS);
-                    presetPref.setValue("");
-                    shouldCheckTcpPresetsPreference = true;
-                }
+            case Key.UDP_PRESETS:
+                insertPresetAddressAndPort(key);
                 break;
             case Key.RANDOM_COLOUR:
                 setColourPickerActive();
+                break;
+            case Key.NEW_PRESET_ADDED:
+                updatePresetEntries(Protocol.UDP, Key.UDP_PRESETS);
+                updatePresetEntries(Protocol.TCP, Key.TCP_PRESETS);
                 break;
         }
     }
@@ -194,15 +183,21 @@ public class SettingsFragment extends PreferenceFragmentCompat
         findPreference(Key.CENTRE_LONGITUDE).setEnabled(!followGps);
     }
 
-    private void insertPresetTcpServer() {
-        shouldCheckTcpPresetsPreference = false;
-        EditTextPreference addressPref = findPreference(Key.TCP_ADDRESS);
-        EditTextPreference portPref = findPreference(Key.TCP_PORT);
-        if (addressPref != null && portPref != null) {
-            ServerPreset preset = ServerPreset.fromPrefs(prefs);
-            preset.fillPreferences(addressPref, portPref);
+    private void insertPresetAddressAndPort(String key) {
+        EditTextPreference addressPref = findPreference(Key.DEST_ADDRESS);
+        EditTextPreference portPref = findPreference(Key.DEST_PORT);
+        ListPreference presetPref = findPreference(key);
+        if (addressPref != null && portPref != null && presetPref != null) {
+            OutputPreset preset = OutputPreset.fromString(presetPref.getValue());
+            if (preset != null) {
+                addressPref.setText(preset.address);
+                portPref.setText(Integer.toString(preset.port));
+            } else {
+                presetPref.setValue(null);
+                addressPref.setText(null);
+                portPref.setText(null);
+            }
         }
-        shouldCheckTcpPresetsPreference = true;
     }
 
     private void requestGpsPermissionIfSet() {
@@ -252,9 +247,9 @@ public class SettingsFragment extends PreferenceFragmentCompat
     }
 
     private void toggleProtocolSettingVisibility() {
-        boolean showUdpSettings = TransmissionProtocol.fromPrefs(prefs) == TransmissionProtocol.UDP;
-        findPreference(Key.UDP_GROUP).setVisible(showUdpSettings);
-        findPreference(Key.TCP_GROUP).setVisible(!showUdpSettings);
+        boolean showUdpSettings = Protocol.fromPrefs(prefs) == Protocol.UDP;
+        findPreference(Key.UDP_PRESETS).setVisible(showUdpSettings);
+        findPreference(Key.TCP_PRESETS).setVisible(!showUdpSettings);
     }
 
     private void toggleDataTypeSettingsVisibility() {
@@ -266,12 +261,13 @@ public class SettingsFragment extends PreferenceFragmentCompat
     private void setColourPickerActive() {
         boolean useRandomColours = PrefUtils.getBoolean(prefs, Key.RANDOM_COLOUR);
         Preference colourPicker = findPreference(Key.TEAM_COLOUR);
-        colourPicker.setEnabled(!useRandomColours);
+        if (colourPicker != null) {
+            colourPicker.setEnabled(!useRandomColours);
+        }
     }
 
     @Override
     public boolean onPreferenceChange(Preference pref, Object newValue) {
-        Log.i(TAG, "onPreferenceChange " + pref.getKey());
         final String str = (String) newValue;
         boolean result = true;
         switch (pref.getKey()) {
@@ -280,26 +276,20 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 result = str.matches("\\w*?");
                 break;
             case Key.CENTRE_LATITUDE:
-                result = validateDouble(str, -90.0, 90.0);
+                result = InputValidator.validateDouble(str, -90.0, 90.0);
                 break;
             case Key.CENTRE_LONGITUDE:
-                result = validateDouble(str, -180.0, 180.0);
+                result = InputValidator.validateDouble(str, -180.0, 180.0);
                 break;
             case Key.ICON_COUNT:
+                result = InputValidator.validateInt(str, 1, 9999);
+                break;
             case Key.RADIAL_DISTRIBUTION:
             case Key.TRANSMISSION_PERIOD:
-                result = validateInt(str, 1, null);
+                result = InputValidator.validateInt(str, 1, null);
                 break;
             case Key.MOVEMENT_SPEED:
-                result = validateDouble(str, 0.0, null);
-                break;
-            case Key.TCP_ADDRESS:
-            case Key.UDP_ADDRESS:
-                result = validateHostname(str);
-                break;
-            case Key.TCP_PORT:
-            case Key.UDP_PORT:
-                result = validateInt(str, 1, 65535);
+                result = InputValidator.validateDouble(str, 0.0, null);
                 break;
         }
         if (!result) {
@@ -308,51 +298,60 @@ public class SettingsFragment extends PreferenceFragmentCompat
         return result;
     }
 
-    private boolean validateInt(final String str, final Integer min, final Integer max) {
-        try {
-            int number = Integer.parseInt(str);
-            return (min == null || number >= min) && (max == null || number <= max);
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
-    }
-
-    private boolean validateDouble(final String str, final Double min, final Double max) {
-        try {
-            double number = Double.parseDouble(str);
-            return (min == null || number >= min) && (max == null || number <= max);
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
-    }
-
-    static class ValidateHostnameTask extends AsyncTask<String, Void, Boolean> {
-        @Override
-        protected Boolean doInBackground(String... params) {
-            try {
-                InetAddress.getByName(params[0]);
-                return true;
-            } catch (UnknownHostException e) {
-                return false;
-            }
-        }
-    }
-
-    private boolean validateHostname(final String host) {
-        try {
-            return new ValidateHostnameTask().execute(host).get();
-        } catch (InterruptedException | ExecutionException e) {
-            return false;
-        }
-    }
-
     private void setPreferenceSuffix(final SharedPreferences prefs, final String key, final String suffix) {
         Preference pref = findPreference(key);
-        if (pref == null) {
-            Log.e(TAG, "Couldn't find preference \"" + key + "\"");
-            return;
+        if (pref != null) {
+            String val = prefs.getString(key, "");
+            pref.setSummary(String.format(Locale.ENGLISH, "%s %s", val, suffix));
         }
-        String val = prefs.getString(key, "");
-        pref.setSummary(String.format(Locale.ENGLISH, "%s %s", val, suffix));
+    }
+
+    private void setNewPresetListener() {
+        Preference addPreference = findPreference(Key.ADD_NEW_PRESET);
+        if (addPreference != null) {
+            addPreference.setOnPreferenceClickListener(clickedPref -> {
+                NewPresetDialogCreator.show(requireContext(), requireView(), prefs, sqlHelper);
+                return true;
+            });
+        }
+        Preference deletePreference = findPreference(Key.DELETE_PRESET);
+        if (deletePreference != null) {
+            deletePreference.setOnPreferenceClickListener(clickedPref -> {
+                deletePresetDialog();
+                return true;
+            });
+        }
+    }
+
+    private void updatePresetEntries(Protocol protocol, String key) {
+        List<OutputPreset> defaults = (protocol == Protocol.TCP) ? OutputPreset.tcpDefaults() : OutputPreset.udpDefaults();
+        List<OutputPreset> presets = ListUtils.union(defaults, sqlHelper.getAllPresets(protocol));
+        List<String> entries = OutputPreset.getAliases(presets);
+        List<String> entryValues = new ArrayList<>();
+        for (OutputPreset preset : presets) {
+            entryValues.add(preset.toString());
+        }
+        ListPreference preference = findPreference(key);
+        if (preference != null) {
+            String previousValue = preference.getValue();
+            preference.setEntries(Arrays.copyOf(entries.toArray(), entries.toArray().length, String[].class));
+            preference.setEntryValues(Arrays.copyOf(entryValues.toArray(), entryValues.toArray().length, String[].class));
+            preference.setValue(previousValue);
+        }
+    }
+
+    private void deletePresetDialog() {
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Delete Presets")
+                .setMessage("At the moment I haven't got a method for deleting individual output presets. This button takes you to the " +
+                        "Android Settings screen for this app, so you can clear the storage (AKA remove all preferences/presets) and start from " +
+                        "scratch. I'll (probably) fix this in a later version!")
+                .setPositiveButton("SETTINGS", (dialog, buttonId) -> {
+                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri = Uri.fromParts("package", requireContext().getPackageName(), null);
+                    intent.setData(uri);
+                    startActivity(intent);
+                }).setNegativeButton(android.R.string.cancel, (dialog, buttonId) -> dialog.dismiss())
+                .show();
     }
 }

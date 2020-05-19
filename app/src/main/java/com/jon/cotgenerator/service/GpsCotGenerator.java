@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 class GpsCotGenerator extends CotGenerator {
-    private static final String TAG = GpsCotGenerator.class.getSimpleName();
-
     private PliCursorOnTarget cot = null;
 
     GpsCotGenerator(SharedPreferences prefs) {
@@ -53,7 +51,7 @@ class GpsCotGenerator extends CotGenerator {
         cot = null;
     }
 
-    protected List<CursorOnTarget> toList(CursorOnTarget c) {
+    private List<CursorOnTarget> toList(CursorOnTarget c) {
         return Collections.singletonList(c);
     }
 }

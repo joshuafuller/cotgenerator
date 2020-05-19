@@ -16,8 +16,8 @@
     </array>
 
     <string-array name="transmissionProtocols">
-        <item>UDP</item>
         <item>TCP</item>
+        <item>UDP</item>
     </string-array>
 
     <string-array name="transmittedDataTypes">
@@ -25,9 +25,22 @@
         <item>@string/transmittedDataFake</item>
     </string-array>
 
-    <string-array name="tcpPresets">
+    <string-array name="tcpPresetEntries">
         <item>@string/tcpFreetakserver</item>
         <item>@string/tcpTakserver</item>
+    </string-array>
+
+    <string-array name="tcpPresetValues">
+        <item>@string/tcpFreetakserverValue</item>
+        <item>@string/tcpTakserverValue</item>
+    </string-array>
+
+    <string-array name="udpPresetEntries">
+        <item>@string/udpDefaultSa</item>
+    </string-array>
+
+    <string-array name="udpPresetValues">
+        <item>@string/udpDefaultSaValue</item>
     </string-array>
 
 </resources>

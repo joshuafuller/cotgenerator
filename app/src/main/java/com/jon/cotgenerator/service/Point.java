@@ -19,14 +19,7 @@ class Point {
         );
     }
 
-    static Point fromCot(CursorOnTarget cot) {
-        return new Point(
-                cot.lat * Constants.DEG_TO_RAD,
-                cot.lon * Constants.DEG_TO_RAD
-        );
-    }
-
-    public static class Offset {
+    static class Offset {
         double dlat;
         double dlon;
 

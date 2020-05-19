@@ -3,7 +3,7 @@ package com.jon.cotgenerator.service;
 import android.content.SharedPreferences;
 
 import com.jon.cotgenerator.cot.CursorOnTarget;
-import com.jon.cotgenerator.enums.TransmissionProtocol;
+import com.jon.cotgenerator.enums.Protocol;
 import com.jon.cotgenerator.utils.Key;
 import com.jon.cotgenerator.utils.PrefUtils;
 
@@ -11,7 +11,7 @@ import java.net.InetAddress;
 import java.util.List;
 
 abstract class CotThread extends Thread {
-    protected SharedPreferences prefs;
+    protected final SharedPreferences prefs;
     protected volatile boolean isRunning = false;
     protected CotGenerator cotGenerator;
     protected InetAddress destIp;
@@ -21,7 +21,7 @@ abstract class CotThread extends Thread {
     abstract void sendToDestination(CursorOnTarget cot);
 
     static CotThread fromPrefs(SharedPreferences prefs) {
-        TransmissionProtocol protocol = TransmissionProtocol.fromPrefs(prefs);
+        Protocol protocol = Protocol.fromPrefs(prefs);
         switch (protocol) {
             case UDP: return new UdpCotThread(prefs);
             case TCP: return new TcpCotThread(prefs);
@@ -30,7 +30,7 @@ abstract class CotThread extends Thread {
     }
 
     static CotThread getSingleCotThread(SharedPreferences prefs, CursorOnTarget cot) {
-        TransmissionProtocol protocol = TransmissionProtocol.fromPrefs(prefs);
+        Protocol protocol = Protocol.fromPrefs(prefs);
         switch (protocol) {
             case UDP: return new UdpSingleCotThread(prefs, cot);
             case TCP: return new TcpSingleCotThread(prefs, cot);

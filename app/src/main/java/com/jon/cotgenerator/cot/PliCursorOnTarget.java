@@ -50,8 +50,8 @@ public class PliCursorOnTarget extends CursorOnTarget {
         return String.format(locale,
                 "<event version=\"2.0\" uid=\"%s\" type=\"%s\" time=\"%s\" start=\"%s\" stale=\"%s\" how=\"%s\"><point lat=\"%.7f\" " +
                         "lon=\"%.7f\" hae=\"%f\" ce=\"%f\" le=\"%f\"/><detail><track speed=\"%.7f\" course=\"%.7f\"/>%s" +
-                        "<__group name=\"%s\" role=\"%s\"/>%s%s</detail></event>",
+                        "<__group name=\"%s\" role=\"%s\"/>%s%s%s</detail></event>",
                 uid, type, time.toString(), start.toString(), stale.toString(), how, lat,
-                lon, hae, ce, le, speed, course, contact, team, role, status, takv);
+                lon, hae, ce, le, speed, course, contact, team, role, precloc, status, takv);
     }
 }

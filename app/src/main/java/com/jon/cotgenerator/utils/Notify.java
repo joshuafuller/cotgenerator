@@ -5,7 +5,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.jon.cotgenerator.R;
 
 public final class Notify {
     private Notify() {
@@ -28,12 +27,16 @@ public final class Notify {
         snackbar(root, str, Color.RED, Color.BLACK, action, actionMsg);
     }
 
-    public static void green(View root, String str) {
-        snackbar(root, str, Color.GREEN, Color.BLACK, null, null);
-    }
-
     public static void red(View root, String str) {
         red(root, str, null, null);
+    }
+
+    public static void blue(View root, String str) {
+        snackbar(root, str, Color.BLUE, Color.WHITE, null, null);
+    }
+
+    public static void green(View root, String str) {
+        snackbar(root, str, Color.GREEN, Color.BLACK, null, null);
     }
 
     public static void orange(View root, String str) {

@@ -1,7 +1,6 @@
 package com.jon.cotgenerator.service;
 
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.jon.cotgenerator.cot.CursorOnTarget;
 import com.jon.cotgenerator.cot.PliCursorOnTarget;
@@ -197,7 +196,9 @@ class FakeCotGenerator extends CotGenerator {
 
     private List<CursorOnTarget> getCot() {
         List<CursorOnTarget> crumbs = new ArrayList<>();
-        icons.forEach(iconData -> crumbs.add(iconData.cot));
+        for (IconData iconData : icons) {
+            crumbs.add(iconData.cot);
+        }
         return crumbs;
     }
 }

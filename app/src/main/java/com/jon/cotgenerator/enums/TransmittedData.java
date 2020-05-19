@@ -8,7 +8,7 @@ public enum TransmittedData {
     GPS("GPS Position"),
     FAKE("Fake Icons");
 
-    private String name;
+    private final String name;
 
     TransmittedData(String name) { this.name = name; }
 

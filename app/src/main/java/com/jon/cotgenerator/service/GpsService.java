@@ -15,19 +15,17 @@ import com.jon.cotgenerator.BuildConfig;
 import com.jon.cotgenerator.R;
 
 public class GpsService extends Service {
-    private static final String TAG = GpsService.class.getSimpleName();
-
     /* Intent IDs */
     private static final String BASE_INTENT_ID = BuildConfig.APPLICATION_ID + ".GpsService.";
     public static final String START_SERVICE = BASE_INTENT_ID + "START";
     public static final String STOP_SERVICE = BASE_INTENT_ID + "STOP";
-    public static final String CHANGE_UPDATE_RATE = BASE_INTENT_ID + "CHANGE_UPDATE_RATE";
-    public static final String NEW_UPDATE_RATE_SECONDS = BASE_INTENT_ID + "NEW_UPDATE_RATE_SECONDS";
+    private static final String CHANGE_UPDATE_RATE = BASE_INTENT_ID + "CHANGE_UPDATE_RATE";
+    private static final String NEW_UPDATE_RATE_SECONDS = BASE_INTENT_ID + "NEW_UPDATE_RATE_SECONDS";
 
     private int updateRateSeconds;
     private FusedLocationProviderClient fusedLocationClient;
     private LocationRequest locationRequest;
-    private LocationCallback locationCallback = new LocationCallback() {
+    private final LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
             if (locationResult == null) return;

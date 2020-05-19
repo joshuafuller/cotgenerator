@@ -1,19 +1,27 @@
 package com.jon.cotgenerator.cot;
 
+import androidx.annotation.NonNull;
+
 import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /* For "easier" translating between milliseconds and strings without littering annoying little
-* utility functions all over the place. */
+ * utility functions all over the place. */
 public class UtcTimestamp {
-    private static final String TAG = UtcTimestamp.class.getSimpleName();
     private String isoTimestamp;
     private long milliseconds;
 
-    public long toLong() { return milliseconds; }
-    @Override public String toString() { return isoTimestamp; }
+    public long toLong() {
+        return milliseconds;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return isoTimestamp;
+    }
 
     public static UtcTimestamp now() {
         return new UtcTimestamp(System.currentTimeMillis());
@@ -60,12 +68,12 @@ public class UtcTimestamp {
      *       "yyyy-mm-dd hh:mm:ss.sss"
      *       "yyyy-mm-ddThh:mm:ss.sssZ" */
     private boolean isValidString(String timestamp) {
-        final String pattern = "(\\d{4}-\\d{2}-\\d{2}.{1}\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?Z*$)";
+        final String pattern = "(\\d{4}-\\d{2}-\\d{2}.\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?Z*$)";
         return timestamp.matches(pattern);
     }
 
     /* I don't quite remember why this was needed, but I'd better not delete it or I'll soon need
-    * it again */
+     * it again */
     private String cleanedString(String str) {
         return str.replace("T", " ").replace("Z", "");
     }
@@ -81,7 +89,7 @@ public class UtcTimestamp {
                 lastDigit = i;
             }
         }
-        return str.substring(0, 10) + "T" + str.substring(11, lastDigit+1) + "Z";
+        return str.substring(0, 10) + "T" + str.substring(11, lastDigit + 1) + "Z";
     }
 
     private long timestampStringToLong(String timestamp) {
@@ -95,8 +103,7 @@ public class UtcTimestamp {
     }
 
     private String timestampLongToString(long ms) {
-        return Instant.ofEpochMilli(ms)
-                .atZone(ZoneId.of("UTC"))
-                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
+        Date date = new Date(ms);
+        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH).format(date);
     }
 }

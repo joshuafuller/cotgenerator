@@ -8,9 +8,9 @@ import com.jon.cotgenerator.enums.TransmittedData;
 import java.util.List;
 
 abstract class CotGenerator {
-    protected SharedPreferences prefs;
+    final SharedPreferences prefs;
 
-    protected CotGenerator(SharedPreferences prefs) {
+    CotGenerator(SharedPreferences prefs) {
         this.prefs = prefs;
     }
 

@@ -76,12 +76,12 @@ class TcpCotThread extends CotThread {
 
     protected void initialiseDestAddress() {
         try {
-            destIp = InetAddress.getByName(PrefUtils.getString(prefs, Key.TCP_ADDRESS));
+            destIp = InetAddress.getByName(PrefUtils.getString(prefs, Key.DEST_ADDRESS));
         } catch (UnknownHostException e) {
-            Log.e(TAG, "Error parsing destination address: " + prefs.getString(Key.TCP_ADDRESS, ""));
+            Log.e(TAG, "Error parsing destination address: " + prefs.getString(Key.DEST_ADDRESS, ""));
             shutdown();
         }
-        destPort = PrefUtils.parseInt(prefs, Key.TCP_PORT);
+        destPort = PrefUtils.parseInt(prefs, Key.DEST_PORT);
     }
 
     protected void openSocket() {

@@ -6,7 +6,7 @@ public enum CotType {
     EMERGENCY_CANCEL("b-a-o-can"),
     GEOCHAT("b-t-f");
 
-    private String value;
+    private final String value;
 
     CotType(String type) {
         this.value = type;

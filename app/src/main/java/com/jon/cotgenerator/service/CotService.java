@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -74,22 +75,6 @@ public class CotService extends Service {
     }
 
     private void startForegroundService() {
-        /* minimum importance -> no heads-up service notification */
-        NotificationChannel channel = new NotificationChannel(
-                BuildConfig.APPLICATION_ID, getString(R.string.app_name), NotificationManager.IMPORTANCE_HIGH);
-        channel.setLightColor(Color.BLUE);
-        channel.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
-        channel.enableVibration(false);
-        channel.setSound(null, null);
-        channel.setShowBadge(false);
-
-        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if (manager == null) {
-            Log.e(TAG, "NotificationManager == null");
-            return;
-        }
-        manager.createNotificationChannel(channel);
-
         /* Intent to launch main activity when tapping the notification */
         PendingIntent launchPendingIntent = PendingIntent.getActivity(
                 this,
@@ -101,17 +86,34 @@ public class CotService extends Service {
         Intent stopIntent = new Intent(this, CotService.class).setAction(CotService.STOP_SERVICE);
         PendingIntent stopPendingIntent = PendingIntent.getService(this, STOP_SERVICE_PENDING_INTENT, stopIntent, 0);
 
-        Notification notification = new NotificationCompat.Builder(this, BuildConfig.APPLICATION_ID)
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (manager == null) {
+            Log.e(TAG, "NotificationManager == null");
+            return;
+        }
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(this, BuildConfig.APPLICATION_ID)
                 .setOngoing(true)
                 .setSmallIcon(R.drawable.target)
                 .setContentTitle(getString(R.string.app_name))
-                .setPriority(NotificationManager.IMPORTANCE_MAX)
                 .setCategory(Notification.CATEGORY_SERVICE)
                 .setContentIntent(launchPendingIntent)
-                .addAction(R.drawable.stop, getString(R.string.stop), stopPendingIntent)
-                .build();
-        /* Not sure why the number 2 is important here, but putting 0 or 1 gives no notification */
-        startForeground(3, notification);
+                .addAction(R.drawable.stop, getString(R.string.stop), stopPendingIntent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    BuildConfig.APPLICATION_ID,
+                    getString(R.string.app_name),
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            channel.setLightColor(Color.BLUE);
+            channel.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
+            channel.enableVibration(false);
+            channel.setSound(null, null);
+            channel.setShowBadge(false);
+            manager.createNotificationChannel(channel);
+        } else {
+            notification.setPriority(NotificationCompat.PRIORITY_MAX);
+        }
+        startForeground(3, notification.build());
     }
 
     private void stopForegroundService() {

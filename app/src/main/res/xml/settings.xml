@@ -19,13 +19,6 @@
             app:title="Callsign"
             app:useSimpleSummaryProvider="true" />
 
-        <EditTextPreference
-            android:key="iconCount"
-            app:defaultValue="@string/defaultIconCount"
-            app:iconSpaceReserved="false"
-            app:title="Icon Count"
-            app:useSimpleSummaryProvider="true" />
-
         <SeekBarPreference
             android:key="staleTimer"
             android:max="60"
@@ -51,6 +44,13 @@
             app:cpv_showColorShades="false"
             app:iconSpaceReserved="false"
             app:title="Team Colour" />
+
+        <EditTextPreference
+            android:key="iconCount"
+            app:defaultValue="@string/defaultIconCount"
+            app:iconSpaceReserved="false"
+            app:title="Icon Count"
+            app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 
@@ -95,15 +95,6 @@
         app:iconSpaceReserved="false"
         app:title="Transmission Settings">
 
-        <ListPreference
-            android:key="transmissionProtocol"
-            app:defaultValue="@string/defaultTransmissionProtocol"
-            app:entries="@array/transmissionProtocols"
-            app:entryValues="@array/transmissionProtocols"
-            app:iconSpaceReserved="false"
-            app:title="Transmission Protocol"
-            app:useSimpleSummaryProvider="true" />
-
         <SeekBarPreference
             android:key="transmissionPeriod"
             android:max="30"
@@ -114,57 +105,63 @@
             app:title="Transmission Period (seconds)"
             app:useSimpleSummaryProvider="true" />
 
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:key="udpGroup"
-        app:iconSpaceReserved="false"
-        app:title="UDP Settings">
-
-        <EditTextPreference
-            android:key="udpAddress"
-            app:defaultValue="239.2.3.1"
+        <ListPreference
+            android:key="transmissionProtocol"
+            app:defaultValue="@string/defaultTransmissionProtocol"
+            app:entries="@array/transmissionProtocols"
+            app:entryValues="@array/transmissionProtocols"
             app:iconSpaceReserved="false"
-            app:title="UDP Destination Address"
+            app:title="Transmission Protocol"
             app:useSimpleSummaryProvider="true" />
-
-        <EditTextPreference
-            android:key="udpPort"
-            app:defaultValue="6969"
-            app:iconSpaceReserved="false"
-            app:title="UDP Destination Port"
-            app:useSimpleSummaryProvider="true" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:key="tcpGroup"
-        app:iconSpaceReserved="false"
-        app:title="TCP Settings">
 
         <ListPreference
-            android:defaultValue="@string/tcpTakserver"
+            android:defaultValue="@string/tcpTakserverValue"
             android:key="tcpPresets"
-            app:entries="@array/tcpPresets"
-            app:entryValues="@array/tcpPresets"
+            app:entries="@array/tcpPresetEntries"
+            app:entryValues="@array/tcpPresetValues"
             app:iconSpaceReserved="false"
-            app:title="Preset Server Configuration"
+            app:title="TCP Output Destination"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            android:defaultValue="@string/udpDefaultSaValue"
+            android:key="udpPresets"
+            app:entries="@array/udpPresetEntries"
+            app:entryValues="@array/udpPresetValues"
+            app:iconSpaceReserved="false"
+            app:title="UDP Output Destination"
+            app:useSimpleSummaryProvider="true" />
+
+        <Preference
+            android:key="addNewPreset"
+            app:iconSpaceReserved="false"
+            app:title="@string/addNewPreset"
+            app:useSimpleSummaryProvider="true" />
+
+        <Preference
+            android:key="deletePreset"
+            app:iconSpaceReserved="false"
+            app:title="@string/deletePreset"
             app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference
-            android:key="tcpAddress"
-            app:defaultValue="@string/takserverIp"
+            android:key="destAddress"
+            app:enabled="false"
             app:iconSpaceReserved="false"
-            app:title="Server Address"
+            app:title="Destination Address"
             app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference
-            android:key="tcpPort"
-            app:defaultValue="@string/takserverPort"
+            android:key="destPort"
+            app:enabled="false"
             app:iconSpaceReserved="false"
-            app:title="Server Port"
+            app:title="Destination Port"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
+
+    <EditTextPreference
+        android:key="newPresetAdded"
+        app:defaultValue="0" />
 
 </PreferenceScreen>

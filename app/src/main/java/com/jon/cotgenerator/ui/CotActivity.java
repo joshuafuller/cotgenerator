@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,6 +16,7 @@ import android.view.View;
 import androidx.annotation.ColorRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.PreferenceManager;
@@ -25,13 +27,13 @@ import com.jon.cotgenerator.service.CotService;
 import com.jon.cotgenerator.service.GpsService;
 import com.jon.cotgenerator.utils.DeviceUid;
 import com.jon.cotgenerator.utils.Key;
+import com.jon.cotgenerator.utils.Notify;
 import com.jon.cotgenerator.utils.PrefUtils;
 import com.leinardi.android.speeddial.SpeedDialView;
 import com.savvyapps.togglebuttonlayout.ToggleButtonLayout;
 
 public class CotActivity extends AppCompatActivity
         implements SharedPreferences.OnSharedPreferenceChangeListener {
-    private static final String TAG = CotActivity.class.getSimpleName();
 
     private LocalBroadcastManager broadcastManager;
     private SharedPreferences prefs;
@@ -39,7 +41,7 @@ public class CotActivity extends AppCompatActivity
     private SpeedDialView speedDial;
     private SpeedDialView speedDialDisabled;
     private boolean serviceIsRunning;
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent != null && intent.getAction() != null && intent.getAction().equals(CotService.CLOSE_SERVICE_INTERNAL)) {
@@ -83,13 +85,25 @@ public class CotActivity extends AppCompatActivity
 
         /* Link the toggle button to a shared preference */
         toggleButtonLayout = findViewById(R.id.toggleButtonLayout);
-        toggleButtonLayout.setOnToggledListener((toggle, selected, bool) -> {
-            /* If the toggle value changes, set the shared preference appropriately */
-            boolean selectedGps = selected.getId() == R.id.toggleGpsBeacon;
-            String newValue = selectedGps ? TransmittedData.GPS.get() : TransmittedData.FAKE.get();
-            prefs.edit().putString(Key.TRANSMITTED_DATA, newValue).apply();
-            return null;
-        });
+        if (canUseFakeIcons()) {
+            toggleButtonLayout.setOnToggledListener((toggle, selected, bool) -> {
+                /* If the toggle value changes, set the shared preference appropriately */
+                boolean selectedGps = selected.getId() == R.id.toggleGpsBeacon;
+                String newValue = selectedGps ? TransmittedData.GPS.get() : TransmittedData.FAKE.get();
+                prefs.edit().putString(Key.TRANSMITTED_DATA, newValue).apply();
+                return null;
+            });
+        } else {
+            /* Remove the option to select Fake Icons for API level <24 */
+            toggleButtonLayout.setToggled(R.id.toggleGpsBeacon, true);
+            toggleButtonLayout.setOnToggledListener((toggle, selected, bool) -> {
+                /* If the toggle value changes, set the shared preference appropriately */
+                Notify.red(findViewById(android.R.id.content), "This device has an API level of " + Build.VERSION.SDK_INT +
+                        ". Fake Icons mode requires a minimum of " + Build.VERSION_CODES.N);
+                toggleButtonLayout.setToggled(R.id.toggleGpsBeacon, true);
+                return null;
+            });
+        }
         /* Use the current preference value to set the toggle */
         setToggleValueFromPreferences();
         toggleSpeedDialVisibility();
@@ -129,7 +143,7 @@ public class CotActivity extends AppCompatActivity
 
     private void tintMenuIcon(MenuItem item, @ColorRes int color) {
         Drawable wrapDrawable = DrawableCompat.wrap(item.getIcon());
-        DrawableCompat.setTint(wrapDrawable, getColor(color));
+        DrawableCompat.setTint(wrapDrawable, ContextCompat.getColor(this, color));
         item.setIcon(wrapDrawable);
     }
 
@@ -141,15 +155,19 @@ public class CotActivity extends AppCompatActivity
         Intent gpsIntent = new Intent(this, GpsService.class);
         switch (item.getItemId()) {
             case R.id.start:
-                serviceIsRunning = true;
-                cotIntent.setAction(CotService.START_SERVICE);
-                startService(cotIntent);
-                if (sendGps || followGpsLocation) {
-                    gpsIntent.setAction(GpsService.START_SERVICE);
-                    startService(gpsIntent);
+                if (presetIsSelected()) {
+                    serviceIsRunning = true;
+                    cotIntent.setAction(CotService.START_SERVICE);
+                    startService(cotIntent);
+                    if (sendGps || followGpsLocation) {
+                        gpsIntent.setAction(GpsService.START_SERVICE);
+                        startService(gpsIntent);
+                    }
+                    invalidateOptionsMenu();
+                    toggleSpeedDialVisibility();
+                } else {
+                    Notify.red(findViewById(android.R.id.content), "Select an output destination first!");
                 }
-                invalidateOptionsMenu();
-                toggleSpeedDialVisibility();
                 return true;
             case R.id.stop:
                 serviceIsRunning = false;
@@ -178,8 +196,10 @@ public class CotActivity extends AppCompatActivity
     }
 
     private void setToggleValueFromPreferences() {
-        boolean sendGps = TransmittedData.fromPrefs(prefs) == TransmittedData.GPS;
-        toggleButtonLayout.setToggled(sendGps ? R.id.toggleGpsBeacon : R.id.toggleGenerator, true);
+        if (canUseFakeIcons()) {
+            boolean sendGps = TransmittedData.fromPrefs(prefs) == TransmittedData.GPS;
+            toggleButtonLayout.setToggled(sendGps ? R.id.toggleGpsBeacon : R.id.toggleGenerator, true);
+        }
     }
 
     private void toggleSpeedDialVisibility() {
@@ -193,6 +213,15 @@ public class CotActivity extends AppCompatActivity
             speedDial.setVisibility(View.INVISIBLE);
             speedDialDisabled.setVisibility(View.INVISIBLE);
         }
+    }
+
+    private boolean presetIsSelected() {
+        return PrefUtils.getString(prefs, Key.DEST_ADDRESS).length() > 0
+                && PrefUtils.getString(prefs, Key.DEST_PORT).length() > 0;
+    }
+
+    private boolean canUseFakeIcons() {
+        return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
     }
 
 }

@@ -1,6 +1,7 @@
 package com.jon.cotgenerator.service;
 
 import android.location.Location;
+import android.os.Build;
 
 import androidx.annotation.Nullable;
 
@@ -18,12 +19,16 @@ class LastGpsLocation {
     }
 
     static void updateCot(CursorOnTarget cot) {
-        if (hasFix()) {
+        if (lastLocation != null) {
             cot.lat = lastLocation.getLatitude();
             cot.lon = lastLocation.getLongitude();
             cot.hae = lastLocation.hasAltitude() ? lastLocation.getAltitude() : ZERO;
             cot.ce = lastLocation.hasAccuracy() ? lastLocation.getAccuracy() : UNKNOWN;
-            cot.le = lastLocation.hasVerticalAccuracy() ? lastLocation.getVerticalAccuracyMeters() : UNKNOWN;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                cot.le = lastLocation.hasVerticalAccuracy() ? lastLocation.getVerticalAccuracyMeters() : UNKNOWN;
+            } else {
+                cot.le = UNKNOWN;
+            }
         } else {
             cot.ce = UNKNOWN;
             cot.le = UNKNOWN;
@@ -32,7 +37,7 @@ class LastGpsLocation {
 
     static void updatePli(PliCursorOnTarget cot) {
         updateCot(cot);
-        if (hasFix()) {
+        if (lastLocation != null) {
             cot.altsrc = "GPS";
             cot.geosrc = "GPS";
             cot.course = lastLocation.hasBearing() ? lastLocation.getBearing() : ZERO;
@@ -45,15 +50,11 @@ class LastGpsLocation {
         }
     }
 
-    private static boolean hasFix() {
-        return lastLocation != null;
-    }
-
     static double latitude() {
-        return hasFix() ? lastLocation.getLatitude() : ZERO;
+        return lastLocation != null ? lastLocation.getLatitude() : ZERO;
     }
 
     static double longitude() {
-        return hasFix() ? lastLocation.getLongitude() : ZERO;
+        return lastLocation != null ? lastLocation.getLongitude() : ZERO;
     }
 }

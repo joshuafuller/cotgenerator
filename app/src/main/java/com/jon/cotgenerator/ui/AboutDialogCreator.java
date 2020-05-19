@@ -15,10 +15,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.jon.cotgenerator.BuildConfig;
 import com.jon.cotgenerator.R;
 
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 class AboutDialogCreator {
     private AboutDialogCreator() {
@@ -28,7 +28,7 @@ class AboutDialogCreator {
         List<String> titles = Arrays.asList("Version", "Build Time", "Github Repository");
         List<String> items = Arrays.asList(
                 BuildConfig.VERSION_NAME,
-                BuildConfig.BUILD_TIME.toInstant().atZone(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("HH:mm:ss dd MMM YYYY z")),
+                new SimpleDateFormat("HH:mm:ss dd MMM yyyy z", Locale.ENGLISH).format(BuildConfig.BUILD_TIME),
                 "https://github.com/jonapoul/cotgenerator"
         );
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_2, android.R.id.text1, items) {

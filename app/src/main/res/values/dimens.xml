@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="smallPadding">10dp</dimen>
+    <dimen name="smallPadding">8dp</dimen>
     <dimen name="padding">16dp</dimen>
     <dimen name="toggleButtonPadding">8dp</dimen>
+    <dimen name="addNewPresetTitleSize">14sp</dimen>
 </resources>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/padding">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/smallPadding">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Protocol:"
+            android:textSize="@dimen/addNewPresetTitleSize"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/presetProtocol"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:drawSelectorOnTop="true"
+            android:entries="@array/transmissionProtocols" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/smallPadding">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Alias:"
+            android:textSize="@dimen/addNewPresetTitleSize"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/presetAlias"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:hint="e.g. My Output Preset"
+            android:importantForAutofill="no"
+            android:inputType="textCapSentences" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/smallPadding">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Address:"
+            android:textSize="@dimen/addNewPresetTitleSize"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/presetAddress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:hint="e.g. 192.168.1.2"
+            android:importantForAutofill="no"
+            android:inputType="textUri" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/smallPadding">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Port:"
+            android:textSize="@dimen/addNewPresetTitleSize" />
+
+        <EditText
+            android:id="@+id/presetPort"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:hint="e.g. 8088"
+            android:importantForAutofill="no"
+            android:inputType="phone" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

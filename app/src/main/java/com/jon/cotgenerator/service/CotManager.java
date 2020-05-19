@@ -6,8 +6,7 @@ import com.jon.cotgenerator.cot.EmergencyCancelCursorOnTarget;
 import com.jon.cotgenerator.cot.EmergencyCursorOnTarget;
 
 class CotManager implements SharedPreferences.OnSharedPreferenceChangeListener {
-    private static final String TAG = CotManager.class.getSimpleName();
-    private SharedPreferences prefs;
+    private final SharedPreferences prefs;
     private CotThread thread;
 
     CotManager(SharedPreferences prefs) {

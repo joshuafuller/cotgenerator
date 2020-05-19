@@ -5,7 +5,7 @@ public enum CotHow {
     MG("m-g"),
     HGIGO("h-g-i-g-o");
 
-    private String value;
+    private final String value;
 
     CotHow(String how) {
         this.value = how;

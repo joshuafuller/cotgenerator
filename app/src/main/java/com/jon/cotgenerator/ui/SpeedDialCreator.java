@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.core.content.ContextCompat;
+
 import com.jon.cotgenerator.R;
 import com.jon.cotgenerator.service.CotService;
 import com.jon.cotgenerator.utils.Notify;
@@ -11,8 +13,6 @@ import com.leinardi.android.speeddial.SpeedDialActionItem;
 import com.leinardi.android.speeddial.SpeedDialView;
 
 class SpeedDialCreator {
-    private static final String TAG = SpeedDialCreator.class.getSimpleName();
-
     private SpeedDialCreator() {
     }
 
@@ -46,8 +46,8 @@ class SpeedDialCreator {
     }
 
     private static SpeedDialActionItem buildSpeedDialViewItem(Context context, int itemId, int iconId, int textId) {
-        int textColour = context.getColor(R.color.colorAccent);
-        int backgroundColour = context.getColor(R.color.white);
+        int textColour = ContextCompat.getColor(context, R.color.colorAccent);
+        int backgroundColour = ContextCompat.getColor(context, R.color.white);
         return new SpeedDialActionItem.Builder(itemId, iconId)
                 .setFabBackgroundColor(backgroundColour)
                 .setFabImageTintColor(textColour)

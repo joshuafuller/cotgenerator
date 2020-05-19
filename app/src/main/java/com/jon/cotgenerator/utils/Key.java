@@ -15,13 +15,13 @@ public final class Key {
     public static final String LOCATION_GROUP = "locationGroup";
     public static final String RADIAL_DISTRIBUTION = "radialDistribution";
     public static final String MOVEMENT_SPEED = "movementSpeed";
-    public static final String TRANSMISSION_PROTOCOL = "transmissionProtocol";
     public static final String TRANSMISSION_PERIOD = "transmissionPeriod";
-    public static final String UDP_GROUP = "udpGroup";
-    public static final String UDP_ADDRESS = "udpAddress";
-    public static final String UDP_PORT = "udpPort";
+    public static final String TRANSMISSION_PROTOCOL = "transmissionProtocol";
     public static final String TCP_PRESETS = "tcpPresets";
-    public static final String TCP_GROUP = "tcpGroup";
-    public static final String TCP_ADDRESS = "tcpAddress";
-    public static final String TCP_PORT = "tcpPort";
+    public static final String UDP_PRESETS = "udpPresets";
+    public static final String ADD_NEW_PRESET = "addNewPreset";
+    public static final String DELETE_PRESET = "deletePreset";
+    public static final String DEST_ADDRESS = "destAddress";
+    public static final String DEST_PORT = "destPort";
+    public static final String NEW_PRESET_ADDED = "newPresetAdded";
 }
