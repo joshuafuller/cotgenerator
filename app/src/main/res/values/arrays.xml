@@ -25,6 +25,17 @@
         <item>@string/transmittedDataFake</item>
     </string-array>
 
+    <string-array name="iconRoles">
+        <item>@string/roleTeamMember</item>
+        <item>@string/roleTeamLeader</item>
+        <item>@string/roleHq</item>
+        <item>@string/roleSniper</item>
+        <item>@string/roleMedic</item>
+        <item>@string/roleForwardObserver</item>
+        <item>@string/roleRto</item>
+        <item>@string/roleK9</item>
+    </string-array>
+
     <string-array name="tcpPresetEntries">
         <item>@string/tcpFreetakserver</item>
         <item>@string/tcpTakserver</item>

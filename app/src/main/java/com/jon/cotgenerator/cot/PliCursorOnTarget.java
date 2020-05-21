@@ -9,7 +9,7 @@ import com.jon.cotgenerator.BuildConfig;
 public class PliCursorOnTarget extends CursorOnTarget {
     // Group
     public String team = null;  // cyan, green, purple, etc
-    public String role = "Team Member";  // HQ, sniper, K9, etc
+    public CotRole role = CotRole.TEAM_MEMBER;  // HQ, sniper, K9, etc
 
     // Location source
     public String altsrc = null;
@@ -52,6 +52,6 @@ public class PliCursorOnTarget extends CursorOnTarget {
                         "lon=\"%.7f\" hae=\"%f\" ce=\"%f\" le=\"%f\"/><detail><track speed=\"%.7f\" course=\"%.7f\"/>%s" +
                         "<__group name=\"%s\" role=\"%s\"/>%s%s%s</detail></event>",
                 uid, type, time.toString(), start.toString(), stale.toString(), how, lat,
-                lon, hae, ce, le, speed, course, contact, team, role, precloc, status, takv);
+                lon, hae, ce, le, speed, course, contact, team, role.toString(), precloc, status, takv);
     }
 }

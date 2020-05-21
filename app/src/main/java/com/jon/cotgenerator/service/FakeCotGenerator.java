@@ -2,6 +2,7 @@ package com.jon.cotgenerator.service;
 
 import android.content.SharedPreferences;
 
+import com.jon.cotgenerator.cot.CotRole;
 import com.jon.cotgenerator.cot.CursorOnTarget;
 import com.jon.cotgenerator.cot.PliCursorOnTarget;
 import com.jon.cotgenerator.cot.UtcTimestamp;
@@ -86,6 +87,7 @@ class FakeCotGenerator extends CotGenerator {
             cot.time = cot.start = now;
             cot.setStaleDiff(staleTimer, TimeUnit.MINUTES);
             cot.team = TeamColour.fromPrefs(prefs).team();
+            cot.role = CotRole.TEAM_MEMBER;
             cot.speed = movementSpeed;
             cot.course = courseItr.next();
             Point.Offset initialOffset = generateOffset(latItr, lonItr, distributionCentre, distributionRadius);

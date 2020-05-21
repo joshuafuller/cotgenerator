@@ -256,6 +256,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         boolean sendGps = TransmittedData.fromPrefs(prefs) == TransmittedData.GPS;
         findPreference(Key.ICON_COUNT).setVisible(!sendGps);
         findPreference(Key.LOCATION_GROUP).setVisible(!sendGps);
+        findPreference(Key.ICON_ROLE).setVisible(sendGps);
     }
 
     private void setColourPickerActive() {
