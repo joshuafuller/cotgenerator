@@ -39,7 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:background="@color/icon_background"
+        android:background="@color/app_icon_background"
         android:tint="@color/colorAccent"
         tools:src="@drawable/go_to" />
 
