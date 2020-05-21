@@ -1,0 +1,46 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="false"
+    android:descendantFocusability="blocksDescendants"
+    android:focusable="false"
+    android:minHeight="?attr/listPreferredItemHeight"
+    android:orientation="horizontal"
+    android:paddingStart="?attr/listPreferredItemPaddingStart"
+    android:paddingEnd="?attr/listPreferredItemPaddingEnd">
+
+    <TwoLineListItem
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:mode="twoLine">
+
+        <TextView
+            android:id="@+id/aboutItemTextTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textAppearance="?attr/textAppearanceListItem"
+            tools:text="Title" />
+
+        <TextView
+            android:id="@+id/aboutItemTextSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/aboutItemTextTitle"
+            android:layout_alignStart="@id/aboutItemTextTitle"
+            android:textAppearance="?attr/textAppearanceListItemSecondary"
+            tools:text="Subtitle" />
+    </TwoLineListItem>
+
+    <ImageView
+        android:id="@+id/aboutItemIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:background="@color/icon_background"
+        android:tint="@color/colorAccent"
+        tools:src="@drawable/go_to" />
+
+</RelativeLayout>
