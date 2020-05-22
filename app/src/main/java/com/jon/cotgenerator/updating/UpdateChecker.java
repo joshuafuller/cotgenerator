@@ -22,10 +22,10 @@ public class UpdateChecker {
     public static JsonRelease getLatestRelease(List<JsonRelease> releases) {
         if (releases == null) return null;
         JsonRelease latestRelease = null;
-        long latestPublishDate = Long.MAX_VALUE;
+        long latestPublishDate = 0;
         for (JsonRelease release : releases) {
             UtcTimestamp publishDate = new UtcTimestamp(release.getPublishedAt());
-            if (publishDate.toLong() < latestPublishDate) {
+            if (publishDate.toLong() > latestPublishDate) {
                 latestPublishDate = publishDate.toLong();
                 latestRelease = release;
             }
