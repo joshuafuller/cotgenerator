@@ -1,5 +1,8 @@
 # Cursor On Target Generator
 
+## Note
+This is semi-retired in favour of [CoT Beacon](https://github.com/jonapoul/cotbeacon).
+
 ## Quick Start
 1. Download the installer APK from [the GitHub releases page](https://github.com/jonapoul/cotgenerator/releases), then copy the file to your device and open it in a file browser to install.
 2. Open the app and grant permissions for GPS access.
