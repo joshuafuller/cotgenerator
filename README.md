@@ -1,7 +1,7 @@
 # Cursor On Target Generator
 
 ## Note
-This is semi-retired in favour of [CoT Beacon](https://github.com/jonapoul/cotbeacon).
+This is the sister app of [CoT Beacon](https://github.com/jonapoul/cotbeacon). CoT Generator generates fake data, CoT Beacon generates a single self icon only.
 
 ## Quick Start
 1. Download the installer APK from [the GitHub releases page](https://github.com/jonapoul/cotgenerator/releases), then copy the file to your device and open it in a file browser to install.
