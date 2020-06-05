@@ -162,8 +162,8 @@ public class SettingsFragment
 
     private void setPositionPrefsActive() {
         boolean followGps = PrefUtils.getBoolean(prefs, Key.FOLLOW_GPS_LOCATION);
-        findPreference(Key.CENTRE_LATITUDE).setEnabled(!followGps);
-        findPreference(Key.CENTRE_LONGITUDE).setEnabled(!followGps);
+        findPreference(Key.CENTRE_LATITUDE).setVisible(!followGps);
+        findPreference(Key.CENTRE_LONGITUDE).setVisible(!followGps);
     }
 
     private void insertPresetAddressAndPort(String key) {
