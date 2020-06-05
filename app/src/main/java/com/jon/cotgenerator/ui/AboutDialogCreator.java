@@ -33,12 +33,13 @@ class AboutDialogCreator {
     private static final String LOADING = "Loading...";
     private static final List<Row> ROWS = Arrays.asList(
             new Row("Build Time", getBuildDate(), null),
+            new Row("Build Type", BuildConfig.DEBUG ? "Debug" : "Release", null),
             new Row("Installed Version", BuildConfig.VERSION_NAME, null),
             new Row("Latest Github Release", LOADING, R.drawable.refresh),
             new Row("Github Repository", "https://github.com/jonapoul/cotgenerator", R.drawable.go_to)
     );
-    private static final int LATEST_INDEX = 2;
-    private static final int GITHUB_INDEX = 3;
+    private static final int LATEST_INDEX = 3;
+    private static final int GITHUB_INDEX = 4;
     private static final Callback<List<Release>> callback = new Callback<List<Release>>() {
         @Override public void onResponse(@NonNull Call<List<Release>> call, @NonNull Response<List<Release>> response) {
             Release latest = UpdateChecker.getLatestRelease(response.body());
