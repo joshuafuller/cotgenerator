@@ -1,5 +1,5 @@
 <resources>
-    <color name="app_icon_background">#00FFFFFF</color>
+    <color name="transparent">#00FFFFFF</color>
 
     <color name="white">#FFFFFF</color>
     <color name="grey">#A3A3A3</color>

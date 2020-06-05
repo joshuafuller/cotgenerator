@@ -26,7 +26,7 @@ public enum TeamColour {
 
     TeamColour(String team) { this.team = team; }
 
-    public String team() { return team; }
+    public String get() { return team; }
 
     public static TeamColour fromPrefs(final SharedPreferences prefs) {
         boolean useRandom = PrefUtils.getBoolean(prefs, Key.RANDOM_COLOUR);
@@ -52,7 +52,7 @@ public enum TeamColour {
         }
     }
 
-    private static TeamColour random() {
+    public static TeamColour random() {
         Random random = new Random();
         return values()[random.nextInt(values().length)];
     }

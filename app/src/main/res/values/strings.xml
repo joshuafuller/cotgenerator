@@ -1,15 +1,12 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="ButtonCase">
     <string name="app_name">CoT Generator</string>
 
+    <string name="permissionRationale">GPS access is required for this app. If you don\'t accept, it won\'t work!</string>
+    <string name="permissionBegging">GPS permission has been denied! You\'ll have to manually change this in the Android settings.</string>
+
     <string name="stop">Stop</string>
     <string name="start">Start</string>
     <string name="about">About</string>
-
-    <string name="toggleGpsBeacon">GPS BEACON</string>
-    <string name="toggleFake">FAKE ICONS</string>
-
-    <string name="transmittedDataGps">GPS Position</string>
-    <string name="transmittedDataFake">Fake Icons</string>
 
     <string name="transmissionProtocolTcp">TCP</string>
     <string name="transmissionProtocolUdp">UDP</string>
@@ -38,10 +35,11 @@
     <string name="defaultSaIp">239.2.3.1</string>
     <string name="defaultSaPort">6969</string>
 
-    <string name="fabEmergency">EMERGENCY</string>
-    <string name="startEmergency">SEND EMERGENCY</string>
-    <string name="cancelEmergency">CANCEL EMERGENCY</string>
-
     <string name="addNewPreset">Add New Preset…</string>
-    <string name="deletePreset">Delete Preset…</string>
+    <string name="addNewPresetProtocol">Protocol:</string>
+    <string name="addNewPresetAlias">Alias:</string>
+    <string name="addNewPresetAddress">Address:</string>
+    <string name="addNewPresetPort">Port:</string>
+
+    <string name="deletePresets">Delete Presets…</string>
 </resources>

@@ -1,8 +1,5 @@
 package com.jon.cotgenerator.service;
 
-import com.jon.cotgenerator.cot.CursorOnTarget;
-import com.jon.cotgenerator.utils.Constants;
-
 class Point {
     double lat;
     double lon;

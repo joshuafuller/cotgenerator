@@ -2,6 +2,8 @@ package com.jon.cotgenerator.utils;
 
 import android.content.SharedPreferences;
 
+import com.jon.cotgenerator.enums.Protocol;
+
 /* Some QoL utility methods for preferences that are known to be valid beforehand */
 public final class PrefUtils {
     private PrefUtils() {
@@ -45,5 +47,17 @@ public final class PrefUtils {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public static String getPresetInfoString(final SharedPreferences prefs) {
+        Protocol protocol = Protocol.fromPrefs(prefs);
+        String selectedPreset;
+        switch (protocol) {
+            case TCP: selectedPreset = getString(prefs, Key.TCP_PRESETS); break;
+            case UDP: selectedPreset = getString(prefs, Key.UDP_PRESETS); break;
+            default: throw new IllegalArgumentException("Unknown protocol: " + protocol.get());
+        }
+        OutputPreset preset = OutputPreset.fromString(selectedPreset);
+        return protocol.get() + (preset == null ? ": Unknown" : ": " + preset.alias);
     }
 }

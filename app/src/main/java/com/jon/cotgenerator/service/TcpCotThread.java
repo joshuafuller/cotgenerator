@@ -1,7 +1,6 @@
 package com.jon.cotgenerator.service;
 
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.jon.cotgenerator.cot.CursorOnTarget;
 import com.jon.cotgenerator.utils.Key;
@@ -13,9 +12,9 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-class TcpCotThread extends CotThread {
-    private static final String TAG = TcpCotThread.class.getSimpleName();
+import timber.log.Timber;
 
+class TcpCotThread extends CotThread {
     private Socket socket;
     private OutputStream outputStream;
 
@@ -35,8 +34,7 @@ class TcpCotThread extends CotThread {
                 socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.e(TAG, e.getMessage());
-                /* do nothing */
+                Timber.e(e);
             }
             outputStream = null;
             socket = null;
@@ -64,10 +62,10 @@ class TcpCotThread extends CotThread {
     protected void sendToDestination(CursorOnTarget cot) {
         try {
             outputStream.write(cot.toBytes());
-            Log.i(TAG, "Sent cot: " + cot.toString());
+            Timber.i("Sent cot: %s", cot.toString());
         } catch (IOException e) {
             e.printStackTrace();
-            Log.e(TAG, e.getMessage());
+            Timber.e(e);
             shutdown();
         } catch (NullPointerException e) {
             shutdown();
@@ -78,7 +76,7 @@ class TcpCotThread extends CotThread {
         try {
             destIp = InetAddress.getByName(PrefUtils.getString(prefs, Key.DEST_ADDRESS));
         } catch (UnknownHostException e) {
-            Log.e(TAG, "Error parsing destination address: " + prefs.getString(Key.DEST_ADDRESS, ""));
+            Timber.e("Error parsing destination address: %s", PrefUtils.getString(prefs, Key.DEST_ADDRESS));
             shutdown();
         }
         destPort = PrefUtils.parseInt(prefs, Key.DEST_PORT);

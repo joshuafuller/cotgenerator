@@ -2,9 +2,6 @@ package com.jon.cotgenerator.service;
 
 import android.content.SharedPreferences;
 
-import com.jon.cotgenerator.cot.EmergencyCancelCursorOnTarget;
-import com.jon.cotgenerator.cot.EmergencyCursorOnTarget;
-
 class CotManager implements SharedPreferences.OnSharedPreferenceChangeListener {
     private final SharedPreferences prefs;
     private CotThread thread;
@@ -28,7 +25,6 @@ class CotManager implements SharedPreferences.OnSharedPreferenceChangeListener {
             thread.shutdown();
             thread = null;
         }
-        prefs.unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -38,19 +34,5 @@ class CotManager implements SharedPreferences.OnSharedPreferenceChangeListener {
             shutdown();
             start();
         }
-    }
-
-    void startEmergency() {
-        EmergencyCotGenerator generator = new EmergencyCotGenerator(prefs);
-        EmergencyCursorOnTarget cot = generator.getEmergency();
-        CotThread emergencyThread = CotThread.getSingleCotThread(prefs, cot);
-        emergencyThread.start();
-    }
-
-    void cancelEmergency() {
-        EmergencyCotGenerator generator = new EmergencyCotGenerator(prefs);
-        EmergencyCancelCursorOnTarget cot = generator.getEmergencyCancel();
-        CotThread cancellingThread = CotThread.getSingleCotThread(prefs, cot);
-        cancellingThread.start();
     }
 }

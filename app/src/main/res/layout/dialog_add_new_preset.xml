@@ -15,7 +15,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Protocol:"
+            android:text="@string/addNewPresetProtocol"
             android:textSize="@dimen/addNewPresetTitleSize"
             android:textStyle="bold" />
 
@@ -39,7 +39,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Alias:"
+            android:text="@string/addNewPresetAlias"
             android:textSize="@dimen/addNewPresetTitleSize"
             android:textStyle="bold" />
 
@@ -64,7 +64,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Address:"
+            android:text="@string/addNewPresetAddress"
             android:textSize="@dimen/addNewPresetTitleSize"
             android:textStyle="bold" />
 
@@ -89,7 +89,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Port:"
+            android:text="@string/addNewPresetPort"
             android:textSize="@dimen/addNewPresetTitleSize" />
 
         <EditText

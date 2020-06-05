@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.jon.cotgenerator.R;
 import com.jon.cotgenerator.enums.Protocol;
+import com.jon.cotgenerator.utils.InputValidator;
 import com.jon.cotgenerator.utils.Key;
 import com.jon.cotgenerator.utils.Notify;
 import com.jon.cotgenerator.utils.OutputPreset;

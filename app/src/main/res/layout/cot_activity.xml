@@ -1,92 +1,13 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true">
 
-    <LinearLayout
+    <FrameLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/black">
-
-            <com.savvyapps.togglebuttonlayout.ToggleButtonLayout
-                android:id="@+id/toggleButtonLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                app:allowDeselection="false"
-                app:customLayout="@layout/view_toggle_button"
-                app:menu="@menu/toggles"
-                app:selectedColor="@color/colorAccent"
-                app:toggleMode="even" />
-
-        </FrameLayout>
-
-        <FrameLayout
-            android:id="@+id/container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context=".CotActivity" />
-
-    </LinearLayout>
-
-    <com.leinardi.android.speeddial.SpeedDialView
-        android:id="@+id/speedDial"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/padding"
-        android:tooltipText="@string/fabEmergency"
-        app:layout_behavior="@string/speeddial_snackbar_behavior"
-        app:sdExpansionMode="top"
-        app:sdMainFabAnimationRotateAngle="90"
-        app:sdMainFabClosedIconColor="@color/white"
-        app:sdMainFabClosedSrc="@android:drawable/stat_sys_warning"
-        app:sdMainFabOpenedIconColor="@color/white"
-        app:sdMainFabOpenedSrc="@drawable/cross" />
-
-    <com.leinardi.android.speeddial.SpeedDialView
-        android:id="@+id/speedDialDisabled"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/padding"
-        android:tooltipText="@string/fabEmergency"
-        app:layout_behavior="@string/speeddial_snackbar_behavior"
-        app:sdExpansionMode="top"
-        app:sdMainFabAnimationRotateAngle="90"
-        app:sdMainFabClosedBackgroundColor="@color/disabled"
-        app:sdMainFabClosedIconColor="@color/grey"
-        app:sdMainFabClosedSrc="@android:drawable/stat_sys_warning"
-        tools:visibility="invisible" />
-
-    <!--    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton-->
-    <!--        android:id="@+id/fab"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_gravity="bottom|center"-->
-    <!--        android:gravity="center"-->
-    <!--        android:layout_margin="@dimen/padding"-->
-    <!--        android:icon="@drawable/start"-->
-    <!--        android:text="Whatever"-->
-    <!--        tools:backgroundTint="@android:color/holo_green_light"-->
-    <!--        app:iconGravity="start|end" />-->
-
-    <!--    <com.google.android.material.bottomappbar.BottomAppBar-->
-    <!--        android:id="@+id/bar"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_gravity="bottom"-->
-    <!--        android:backgroundTint="@color/colorPrimaryDark"-->
-    <!--        app:fabCradleRoundedCornerRadius="15dp"-->
-    <!--        app:fabCradleMargin="20dp"-->
-    <!--        app:layout_anchor="@id/fab"-->
-    <!--        app:layout_anchorGravity="center" />-->
+        tools:context=".CotActivity" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

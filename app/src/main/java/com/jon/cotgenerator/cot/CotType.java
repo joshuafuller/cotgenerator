@@ -18,16 +18,11 @@ public enum CotType {
 
     public static CotType from(String type) {
         switch (type) {
-            case "a-f-G-U-C":
-                return GROUND_COMBAT;
-            case "b-a-o-tbl":
-                return EMERGENCY_SEND;
-            case "b-a-o-can":
-                return EMERGENCY_CANCEL;
-            case "b-t-f":
-                return GEOCHAT;
-            default:
-                throw new IllegalArgumentException("Unknown CoT type field: " + type);
+            case "a-f-G-U-C": return GROUND_COMBAT;
+            case "b-a-o-tbl": return EMERGENCY_SEND;
+            case "b-a-o-can": return EMERGENCY_CANCEL;
+            case "b-t-f":     return GEOCHAT;
+            default:          throw new IllegalArgumentException("Unknown CoT type field: " + type);
         }
     }
 }

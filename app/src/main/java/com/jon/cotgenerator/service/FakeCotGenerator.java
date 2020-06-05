@@ -86,7 +86,7 @@ class FakeCotGenerator extends CotGenerator {
             cot.callsign = String.format(Locale.ENGLISH, "%s_%04d", callsign, i);
             cot.time = cot.start = now;
             cot.setStaleDiff(staleTimer, TimeUnit.MINUTES);
-            cot.team = TeamColour.fromPrefs(prefs).team();
+            cot.team = TeamColour.fromPrefs(prefs).get();
             cot.role = CotRole.TEAM_MEMBER;
             cot.speed = movementSpeed;
             cot.course = courseItr.next();
@@ -116,7 +116,7 @@ class FakeCotGenerator extends CotGenerator {
     }
 
     private void setPositionFromOffset(CursorOnTarget cot, Point.Offset oldOffset, Point.Offset newOffset) {
-        Point location =  distributionCentre.add(oldOffset).add(newOffset);
+        Point location = distributionCentre.add(oldOffset).add(newOffset);
         cot.lat = location.lat * Constants.RAD_TO_DEG;
         cot.lon = location.lon * Constants.RAD_TO_DEG;
     }

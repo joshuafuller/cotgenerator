@@ -1,23 +1,9 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ListPreference
-        android:key="transmittedData"
-        app:defaultValue="@string/defaultTransmittedData"
-        app:entries="@array/transmittedDataTypes"
-        app:entryValues="@array/transmittedDataTypes"
-        app:isPreferenceVisible="false" />
-
     <PreferenceCategory
         app:iconSpaceReserved="false"
         app:title="CoT Settings">
-
-        <EditTextPreference
-            android:defaultValue="@string/defaultCallsign"
-            android:key="callsign"
-            app:iconSpaceReserved="false"
-            app:title="Callsign"
-            app:useSimpleSummaryProvider="true" />
 
         <SeekBarPreference
             android:key="staleTimer"
@@ -148,9 +134,9 @@
             app:useSimpleSummaryProvider="true" />
 
         <Preference
-            android:key="deletePreset"
+            android:key="deletePresets"
             app:iconSpaceReserved="false"
-            app:title="@string/deletePreset"
+            app:title="@string/deletePresets"
             app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference

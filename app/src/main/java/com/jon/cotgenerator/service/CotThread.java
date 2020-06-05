@@ -29,15 +29,6 @@ abstract class CotThread extends Thread {
         }
     }
 
-    static CotThread getSingleCotThread(SharedPreferences prefs, CursorOnTarget cot) {
-        Protocol protocol = Protocol.fromPrefs(prefs);
-        switch (protocol) {
-            case UDP: return new UdpSingleCotThread(prefs, cot);
-            case TCP: return new TcpSingleCotThread(prefs, cot);
-            default: throw new IllegalArgumentException("Unexpected protocol: " + protocol);
-        }
-    }
-
     protected CotThread(SharedPreferences prefs) {
         this.prefs = prefs;
         cotGenerator = CotGenerator.getFromPrefs(prefs);

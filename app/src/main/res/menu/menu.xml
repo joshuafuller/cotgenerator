@@ -8,8 +8,6 @@
         android:icon="@drawable/stop"
         android:orderInCategory="1"
         android:title="@string/stop"
-        android:iconTint="@android:color/holo_red_light"
-        android:iconTintMode="src_atop"
         app:showAsAction="ifRoom" />
 
     <item
@@ -17,8 +15,6 @@
         android:icon="@drawable/start"
         android:orderInCategory="1"
         android:title="@string/start"
-        android:iconTint="@android:color/holo_green_light"
-        android:iconTintMode="src_atop"
         app:showAsAction="ifRoom" />
 
     <item

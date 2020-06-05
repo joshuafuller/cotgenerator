@@ -1,8 +1,10 @@
 package com.jon.cotgenerator.utils;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -41,6 +43,10 @@ public final class Notify {
 
     public static void orange(View root, String str) {
         snackbar(root, str, Color.parseColor("#FFA600"), Color.BLACK, null, null);
+    }
+
+    public static void toast(Context context, String str) {
+        Toast.makeText(context, str, Toast.LENGTH_LONG).show();
     }
 }
 

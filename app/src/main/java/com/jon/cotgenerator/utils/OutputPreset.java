@@ -1,7 +1,5 @@
 package com.jon.cotgenerator.utils;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -9,6 +7,8 @@ import com.jon.cotgenerator.enums.Protocol;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import timber.log.Timber;
 
 public class OutputPreset {
     private static final String SEPARATOR = "¶"; // pilcrow
@@ -60,7 +60,7 @@ public class OutputPreset {
     public static OutputPreset fromString(String str) throws IllegalArgumentException {
         String[] split = str.split(SEPARATOR);
         if (split.length != 4) {
-            Log.i("TAG", str);
+            Timber.e("There should only be 4 elements in this string: %s. Found %d", str, split.length);
             return null;
         }
         return new OutputPreset(

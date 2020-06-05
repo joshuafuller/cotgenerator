@@ -7,5 +7,5 @@ import retrofit2.http.GET;
 
 public interface GithubApi {
     @GET("/repos/jonapoul/cotgenerator/releases")
-    Call<List<JsonRelease>> getAllReleases();
+    Call<List<Release>> getAllReleases();
 }

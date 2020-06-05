@@ -20,11 +20,6 @@
         <item>UDP</item>
     </string-array>
 
-    <string-array name="transmittedDataTypes">
-        <item>@string/transmittedDataGps</item>
-        <item>@string/transmittedDataFake</item>
-    </string-array>
-
     <string-array name="iconRoles">
         <item>@string/roleTeamMember</item>
         <item>@string/roleTeamLeader</item>

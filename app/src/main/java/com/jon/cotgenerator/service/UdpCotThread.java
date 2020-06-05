@@ -1,10 +1,10 @@
 package com.jon.cotgenerator.service;
 
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.jon.cotgenerator.cot.CursorOnTarget;
 import com.jon.cotgenerator.utils.Key;
+import com.jon.cotgenerator.utils.NetworkHelper;
 import com.jon.cotgenerator.utils.PrefUtils;
 
 import java.io.IOException;
@@ -12,11 +12,16 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.NetworkInterface;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+
+import timber.log.Timber;
 
 class UdpCotThread extends CotThread {
-    private static final String TAG = UdpCotThread.class.getSimpleName();
-    private DatagramSocket socket;
+    private List<DatagramSocket> sockets = new ArrayList<>();
+    private List<String> interfaceNames = new ArrayList<>();
 
     UdpCotThread(SharedPreferences sharedPreferences) {
         super(sharedPreferences);
@@ -28,17 +33,18 @@ class UdpCotThread extends CotThread {
     @Override
     void shutdown() {
         super.shutdown();
-        if (socket != null) {
+        for (DatagramSocket socket : sockets) {
             socket.close();
-            socket = null;
         }
+        sockets.clear();
+        interfaceNames.clear();
     }
 
     @Override
     public void run() {
         super.run();
         initialiseDestAddress();
-        openSocket();
+        openSockets();
         int bufferTimeMs = periodMilliseconds() / cotIcons.size();
 
         while (isRunning) {
@@ -55,40 +61,50 @@ class UdpCotThread extends CotThread {
         try {
             destIp = InetAddress.getByName(PrefUtils.getString(prefs, Key.DEST_ADDRESS));
         } catch (UnknownHostException e) {
-            Log.e(TAG, "Error parsing destination address: " + prefs.getString(Key.DEST_ADDRESS, ""));
+            Timber.e("Error parsing destination address: %s", PrefUtils.getString(prefs, Key.DEST_ADDRESS));
             shutdown();
         }
         destPort = PrefUtils.parseInt(prefs, Key.DEST_PORT);
     }
 
-    protected void openSocket() {
+    protected void openSockets() {
         try {
             if (destIp.isMulticastAddress()) {
-                socket = new MulticastSocket();
-                ((MulticastSocket)socket).setLoopbackMode(false);
+                final List<NetworkInterface> interfaces = NetworkHelper.getValidInterfaces();
+                for (NetworkInterface ni : interfaces) {
+                    InetAddress address = NetworkHelper.getAddressFromInterface(ni);
+                    if (address != null) {
+                        Timber.i("Interface %s is valid with address %s", ni.getName(), address.getHostAddress());
+                        MulticastSocket socket = new MulticastSocket();
+                        socket.setNetworkInterface(ni);
+                        socket.setLoopbackMode(false);
+                        sockets.add(socket);
+                        interfaceNames.add(ni.getName());
+                    }
+                }
             } else {
-                socket = new DatagramSocket();
+                sockets.add(new DatagramSocket());
+                interfaceNames.add("all interfaces");
             }
         } catch (IOException e) {
-            Log.e(TAG, "Error when building transmit UDP socket");
+            Timber.e("Error when building transmit UDP socket");
             shutdown();
         }
     }
 
     @Override
     protected void sendToDestination(CursorOnTarget cot) {
-        Log.i(TAG, "Sending cot: " + cot);
         try {
             final byte[] buf = cot.toBytes();
-            socket.send(new DatagramPacket(buf, buf.length, destIp, destPort));
-            Log.i(TAG, "Sent cot: " + cot.toString());
+            for (int i = 0; i < sockets.size(); i++) {
+                sockets.get(i).send(new DatagramPacket(buf, buf.length, destIp, destPort));
+                Timber.i("Sent cot over %s: %s", interfaceNames.get(i), cot.toString());
+            }
         } catch (IOException e) {
-            e.printStackTrace();
-            Log.e(TAG, e.getMessage());
+            Timber.w(e);
             shutdown();
         } catch (NullPointerException e) {
             shutdown();
         }
     }
-
 }

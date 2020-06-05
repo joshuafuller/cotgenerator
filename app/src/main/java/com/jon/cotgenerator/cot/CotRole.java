@@ -2,7 +2,6 @@ package com.jon.cotgenerator.cot;
 
 import android.content.SharedPreferences;
 
-import com.jon.cotgenerator.enums.TransmittedData;
 import com.jon.cotgenerator.utils.Key;
 
 public enum CotRole {

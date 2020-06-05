@@ -12,18 +12,18 @@ import retrofit2.Callback;
 public class UpdateChecker {
     private UpdateChecker() { }
 
-    public static void check(Callback<List<JsonRelease>> callback) {
+    public static void check(Callback<List<Release>> callback) {
         GithubApi updateChecker = RetrofitClient.get().create(GithubApi.class);
-        Call<List<JsonRelease>> call = updateChecker.getAllReleases();
+        Call<List<Release>> call = updateChecker.getAllReleases();
         call.enqueue(callback);
     }
 
     @Nullable
-    public static JsonRelease getLatestRelease(List<JsonRelease> releases) {
+    public static Release getLatestRelease(List<Release> releases) {
         if (releases == null) return null;
-        JsonRelease latestRelease = null;
+        Release latestRelease = null;
         long latestPublishDate = 0;
-        for (JsonRelease release : releases) {
+        for (Release release : releases) {
             UtcTimestamp publishDate = new UtcTimestamp(release.getPublishedAt());
             if (publishDate.toLong() > latestPublishDate) {
                 latestPublishDate = publishDate.toLong();

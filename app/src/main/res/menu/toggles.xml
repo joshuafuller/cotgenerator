@@ -1,8 +1,0 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/toggleGpsBeacon"
-        android:title="@string/toggleGpsBeacon" />
-    <item
-        android:id="@+id/toggleGenerator"
-        android:title="@string/toggleFake" />
-</menu>

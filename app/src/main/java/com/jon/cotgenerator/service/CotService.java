@@ -9,69 +9,123 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.location.Location;
+import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
-import android.util.Log;
+import android.os.Looper;
 
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.PreferenceManager;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.jon.cotgenerator.BuildConfig;
 import com.jon.cotgenerator.R;
 import com.jon.cotgenerator.ui.CotActivity;
 import com.jon.cotgenerator.utils.GenerateInt;
+import com.jon.cotgenerator.utils.Notify;
+import com.jon.cotgenerator.utils.PrefUtils;
+
+import timber.log.Timber;
 
 public class CotService extends Service {
-    private static final String TAG = CotService.class.getSimpleName();
+    public class ServiceBinder extends Binder {
+        public CotService getService() { return CotService.this; }
+    }
+
+    public enum State { RUNNING, STOPPED, ERROR }
+
+    public interface StateListener { void onStateChanged(CotService.State state, @Nullable Throwable throwable); }
+
     private static final String BASE_INTENT_ID = BuildConfig.APPLICATION_ID + ".CotService.";
     private static final int LAUNCH_ACTIVITY_PENDING_INTENT = GenerateInt.next();
     private static final int STOP_SERVICE_PENDING_INTENT = GenerateInt.next();
-
     public static final String START_SERVICE = BASE_INTENT_ID + "START";
     public static final String STOP_SERVICE = BASE_INTENT_ID + "STOP";
-    public static final String CLOSE_SERVICE_INTERNAL = BASE_INTENT_ID + "CLOSE_SERVICE_INTERNAL";
-    public static final String START_EMERGENCY = BASE_INTENT_ID + "SEND_EMERGENCY";
-    public static final String CANCEL_EMERGENCY = BASE_INTENT_ID + "CANCEL_EMERGENCY";
+
+    private int updateRateSeconds;
+    private FusedLocationProviderClient fusedLocationClient;
+    private LocationRequest locationRequest;
+    private final LocationCallback locationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            if (locationResult == null) return;
+            for (Location location : locationResult.getLocations()) {
+                LastGpsLocation.update(location);
+            }
+        }
+    };
 
     private CotManager cotManager;
+    private SharedPreferences prefs;
+    private IBinder binder = new ServiceBinder();
+    private State state = State.STOPPED;
+    private StateListener stateListener;
 
     @Override
     public IBinder onBind(Intent intent) {
-        /* TODO: Return the communication channel to the service */
-        throw new UnsupportedOperationException("Not yet implemented");
+        return binder;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
         cotManager = new CotManager(prefs);
+        try {
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+            fusedLocationClient.getLastLocation().addOnSuccessListener(LastGpsLocation::update);
+            initialiseLocationRequest();
+        } catch (SecurityException e) {
+            e.printStackTrace();
+            Timber.e("Failed to initialise Fused Location Client");
+            error(e);
+        }
     }
 
-    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null && intent.getAction() != null) {
             switch (intent.getAction()) {
-                case START_SERVICE:
-                    cotManager.start();
-                    startForegroundService();
-                    break;
-                case STOP_SERVICE:
-                    Log.i(TAG, "stop service");
-                    cotManager.shutdown();
-                    stopForegroundService();
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(CLOSE_SERVICE_INTERNAL));
-                    break;
-                case START_EMERGENCY:
-                    cotManager.startEmergency();
-                    break;
-                case CANCEL_EMERGENCY:
-                    cotManager.cancelEmergency();
-                    break;
+                case START_SERVICE: start(); break;
+                case STOP_SERVICE:  stop();  break;
             }
         }
         return Service.START_STICKY;
+    }
+
+    public void start() {
+        Timber.i("Starting service");
+        state = State.RUNNING;
+        stateListener.onStateChanged(state, null);
+        cotManager.start();
+        startForegroundService();
+    }
+
+    public void stop() {
+        Timber.i("Stopping service");
+        state = State.STOPPED;
+        stateListener.onStateChanged(state, null);
+        cotManager.shutdown();
+        stopForegroundService();
+    }
+
+    public void error(Throwable throwable) {
+        Timber.e("Error in the service: %s", throwable.getMessage());
+        state = State.STOPPED;
+        stateListener.onStateChanged(State.ERROR, throwable);
+        cotManager.shutdown();
+        Notify.toast(this, "Error in service: " + throwable.getMessage());
+        stopForegroundService();
+    }
+
+    public void updateGpsPeriod(int newPeriodSeconds) {
+        updateRateSeconds = newPeriodSeconds;
+        initialiseLocationRequest();
     }
 
     private void startForegroundService() {
@@ -88,13 +142,15 @@ public class CotService extends Service {
 
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if (manager == null) {
-            Log.e(TAG, "NotificationManager == null");
+            Timber.e("NotificationManager == null");
             return;
         }
+
         NotificationCompat.Builder notification = new NotificationCompat.Builder(this, BuildConfig.APPLICATION_ID)
                 .setOngoing(true)
                 .setSmallIcon(R.drawable.target)
                 .setContentTitle(getString(R.string.app_name))
+                .setContentText(PrefUtils.getPresetInfoString(prefs))
                 .setContentIntent(launchPendingIntent)
                 .addAction(R.drawable.stop, getString(R.string.stop), stopPendingIntent);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -119,7 +175,41 @@ public class CotService extends Service {
     }
 
     private void stopForegroundService() {
+        state = State.STOPPED;
         stopForeground(true);
         stopSelf();
+    }
+
+    private void initialiseLocationRequest() {
+        unregisterGpsUpdates();
+        locationRequest = LocationRequest.create()
+                .setInterval(updateRateSeconds * 1000)
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        registerGpsUpdates();
+    }
+
+    private void registerGpsUpdates() {
+        try {
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+        } catch (SecurityException e) {
+            e.printStackTrace();
+            Timber.e("Failed to request location update from Fused Location Client");
+            error(e);
+        }
+    }
+
+    private void unregisterGpsUpdates() {
+        fusedLocationClient.removeLocationUpdates(locationCallback);
+    }
+
+    public State getState() { return state; }
+
+    public void registerStateListener(StateListener listener) {
+        this.stateListener = listener;
+        listener.onStateChanged(state, null);
+    }
+
+    public void unregisterStateListener() {
+        stateListener = null;
     }
 }

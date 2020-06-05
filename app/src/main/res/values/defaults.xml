@@ -1,24 +1,17 @@
 <resources>
-    <!-- GpsService -->
-    <string name="defaultGpsUpdateRate">5</string>
-
     <!-- Settings -->
-    <string name="defaultTransmittedData">@string/transmittedDataGps</string>
-    <string name="defaultCallsign">GENERATED</string>
     <string name="defaultIconRole">@string/roleTeamMember</string>
     <string name="defaultIconCount">10</string>
     <string name="defaultStaleTimer">5</string>
     <bool name="defaultRandomColour">false</bool>
     <integer name="defaultTeamColour">0xFF00FFFF</integer>
-    <bool name="defaultFollowMyGpsLocation">false</bool>
-    <string name="defaultLatitude">58.243527</string>
-    <string name="defaultLongitude">-6.606301</string>
+    <bool name="defaultFollowMyGpsLocation">true</bool>
+    <string name="defaultLatitude">53.725103</string>
+    <string name="defaultLongitude">-1.351375</string>
     <string name="defaultRadialDistribution">100</string>
     <string name="defaultMovementSpeed">5</string>
     <string name="defaultTransmissionProtocol">@string/transmissionProtocolTcp</string>
-    <string name="defaultTransmissionPeriod">5</string>
-    <string name="defaultUdpIp">239.2.3.1</string>
-    <string name="defaultUdpPort">6969</string>
+    <string name="defaultTransmissionPeriod">3</string>
     <string name="defaultTcpPreset">@string/tcpTakserver</string>
     <string name="defaultTcpIp">@string/takserverIp</string>
     <string name="defaultTcpPort">@string/takserverPort</string>

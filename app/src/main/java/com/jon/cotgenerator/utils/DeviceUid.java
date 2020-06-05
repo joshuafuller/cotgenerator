@@ -1,7 +1,6 @@
 package com.jon.cotgenerator.utils;
 
 import android.content.Context;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,8 +10,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.UUID;
 
+import timber.log.Timber;
+
 public class DeviceUid {
-    private static final String TAG = DeviceUid.class.getSimpleName();
     private static final String FILENAME = "uuid.txt";
 
     private DeviceUid() { }
@@ -27,18 +27,18 @@ public class DeviceUid {
         try {
             File file = new File(context.getFilesDir(), FILENAME);
             if (file.exists()) {
-                Log.i(TAG, "Reading UID from file...");
+                Timber.i("Reading UID from file...");
                 uid = readUid(context);
-                Log.i(TAG, "Successfully read UID " + uid);
+                Timber.i("Successfully read UID %s", uid);
             } else {
-                Log.i(TAG, "Writing new UID to file...");
+                Timber.i("Writing new UID to file...");
                 uid = writeUid(context);
-                Log.i(TAG, "Successfully written UID " + uid);
+                Timber.i("Successfully written UID %s", uid);
             }
         } catch (IOException e) {
             e.printStackTrace();
             uid = UUID.randomUUID().toString();
-            Log.e(TAG, "Failed to read/write UID from/to file. Using a temporary one instead: " + uid);
+            Timber.e("Failed to read/write UID from/to file. Using a temporary one instead: %s", uid);
         }
     }
 

@@ -5,9 +5,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Environment;
 
+import com.jon.cotgenerator.BuildConfig;
 import com.jon.cotgenerator.enums.Protocol;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,5 +85,10 @@ public class PresetSqlHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         return presets;
+    }
+
+    public static boolean deleteDatabase() {
+        String dbPath = Environment.getDataDirectory() + "/data/" + BuildConfig.APPLICATION_ID + "/databases/";
+        return new File(dbPath, DATABASE_NAME).delete();
     }
 }
