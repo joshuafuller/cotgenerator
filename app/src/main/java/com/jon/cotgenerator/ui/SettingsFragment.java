@@ -193,7 +193,7 @@ public class SettingsFragment
         boolean useRandomColours = PrefUtils.getBoolean(prefs, Key.RANDOM_COLOUR);
         Preference colourPicker = findPreference(Key.TEAM_COLOUR);
         if (colourPicker != null) {
-            colourPicker.setEnabled(!useRandomColours);
+            colourPicker.setVisible(!useRandomColours);
         }
     }
 
