@@ -1,7 +1,10 @@
 package com.jon.cotgenerator.service;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.jon.cotgenerator.CotApplication;
+import com.jon.cotgenerator.R;
 import com.jon.cotgenerator.cot.CotRole;
 import com.jon.cotgenerator.cot.CursorOnTarget;
 import com.jon.cotgenerator.cot.PliCursorOnTarget;
@@ -9,10 +12,14 @@ import com.jon.cotgenerator.cot.UtcTimestamp;
 import com.jon.cotgenerator.enums.TeamColour;
 import com.jon.cotgenerator.utils.Constants;
 import com.jon.cotgenerator.utils.DeviceUid;
+import com.jon.cotgenerator.utils.GenerateInt;
 import com.jon.cotgenerator.utils.Key;
 import com.jon.cotgenerator.utils.PrefUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Locale;
 import java.util.PrimitiveIterator;
@@ -22,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 class FakeCotGenerator extends CotGenerator {
     private Random random = new Random();
     private List<IconData> icons;
+    private List<String> callsigns;
     private double movementSpeed;
     private double transmissionPeriod;
     private double distributionRadius;
@@ -42,6 +50,7 @@ class FakeCotGenerator extends CotGenerator {
 
     FakeCotGenerator(SharedPreferences prefs) {
         super(prefs);
+        callsigns = getShuffledCallsigns();
         distributionRadius = PrefUtils.parseDouble(prefs, Key.RADIAL_DISTRIBUTION);
         movementSpeed = PrefUtils.parseDouble(prefs, Key.MOVEMENT_SPEED) * Constants.MPH_TO_METRES_PER_SECOND;
         transmissionPeriod = PrefUtils.getInt(prefs, Key.TRANSMISSION_PERIOD);
@@ -64,7 +73,11 @@ class FakeCotGenerator extends CotGenerator {
 
     @Override
     protected List<CursorOnTarget> generate() {
-        return (icons == null) ? initialise() : update();
+        try {
+            return (icons == null) ? initialise() : update();
+        } catch (ConcurrentModificationException e) {
+            return new ArrayList<>();
+        }
     }
 
     @Override
@@ -72,7 +85,6 @@ class FakeCotGenerator extends CotGenerator {
         icons = new ArrayList<>();
         updateDistributionCentre();
         final int iconCount = PrefUtils.parseInt(prefs, Key.ICON_COUNT);
-        final String callsign = PrefUtils.getString(prefs, Key.CALLSIGN);
         final UtcTimestamp now = UtcTimestamp.now();
         final double max_dLat = distributionRadius / Constants.EARTH_RADIUS;
         final double max_dLon = Math.abs(max_dLat / Math.cos(distributionCentre.lat));
@@ -83,7 +95,7 @@ class FakeCotGenerator extends CotGenerator {
         for (int i = 0; i < iconCount; i++) {
             PliCursorOnTarget cot = new PliCursorOnTarget();
             cot.uid = String.format(Locale.ENGLISH, "%s_%04d", DeviceUid.get(), i);
-            cot.callsign = String.format(Locale.ENGLISH, "%s_%04d", callsign, i);
+            cot.callsign = randomCallsign(iconCount, i);
             cot.time = cot.start = now;
             cot.setStaleDiff(staleTimer, TimeUnit.MINUTES);
             cot.team = TeamColour.fromPrefs(prefs).get();
@@ -113,6 +125,21 @@ class FakeCotGenerator extends CotGenerator {
             icon.cot.course = bearing(distributionCentre.add(oldOffset), distributionCentre.add(icon.offset));
         }
         return getCot();
+    }
+
+    private List<String> getShuffledCallsigns() {
+        Context context = CotApplication.getContext();
+        List<String> callsigns = Arrays.asList(context.getResources().getStringArray(R.array.atakCallsigns));
+        Collections.shuffle(callsigns);
+        return callsigns;
+    }
+
+    private String randomCallsign(int iconCount, int iconIndex) {
+        String callsign = callsigns.get(GenerateInt.random(callsigns.size()));
+        if (iconCount > callsigns.size()) {
+            callsign += "_" + iconIndex;
+        }
+        return callsign;
     }
 
     private void setPositionFromOffset(CursorOnTarget cot, Point.Offset oldOffset, Point.Offset newOffset) {
