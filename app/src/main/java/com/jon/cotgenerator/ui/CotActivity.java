@@ -5,23 +5,17 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.preference.PreferenceManager;
 
 import com.jon.cotgenerator.BuildConfig;
@@ -69,7 +63,6 @@ public class CotActivity
         /* Regular setup */
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cot_activity);
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container, SettingsFragment.newInstance())
@@ -124,15 +117,7 @@ public class CotActivity
             start.setVisible(true);
             stop.setVisible(false);
         }
-        tintMenuIcon(start, android.R.color.holo_green_light);
-        tintMenuIcon(stop, android.R.color.holo_red_light);
         return true;
-    }
-
-    private void tintMenuIcon(MenuItem item, @ColorRes int color) {
-        Drawable wrapDrawable = DrawableCompat.wrap(item.getIcon());
-        DrawableCompat.setTint(wrapDrawable, ContextCompat.getColor(this, color));
-        item.setIcon(wrapDrawable);
     }
 
     @Override
@@ -212,10 +197,9 @@ public class CotActivity
     @Override
     public void onStateChanged(CotService.State state, @Nullable Throwable throwable) {
         invalidateOptionsMenu();
-    }
-
-    private boolean canUseFakeIcons() {
-        return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        if (state == CotService.State.ERROR && throwable != null) {
+            Notify.red(getRootView(), "Error: " + throwable.getMessage());
+        }
     }
 
     @Override
