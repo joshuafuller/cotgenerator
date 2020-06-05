@@ -1,6 +1,10 @@
 package com.jon.cotgenerator.service;
 
+import com.jon.cotgenerator.cot.CursorOnTarget;
+import com.jon.cotgenerator.utils.Constants;
+
 class Point {
+    /* Both in radians */
     double lat;
     double lon;
 
@@ -10,23 +14,26 @@ class Point {
     }
 
     Point add(Offset offset) {
-        return new Point(
-                (this.lat + offset.dlat) % (2.0 * Math.PI),
-                (this.lon + offset.dlon) % (2.0 * Math.PI)
-        );
+        final double rOverR = offset.R / Constants.EARTH_RADIUS;
+        final double theta = Math.toRadians(offset.theta);  // travel bearing in radians
+        final double lat1 = this.lat;                       // start latitude in radians
+        final double lon1 = this.lon;                       // start longitude in radians
+        final double lat2 = Math.asin( Math.sin(lat1)*Math.cos(rOverR) + Math.cos(lat1)*Math.sin(rOverR)*Math.cos(theta) );
+        final double lon2 = lon1 + Math.atan2( Math.sin(theta)*Math.sin(rOverR)*Math.cos(lat1), Math.cos(rOverR)-Math.sin(lat1)*Math.sin(lat2) );
+        return new Point(lat2, lon2);
+    }
+
+    static Point fromCot(CursorOnTarget cot) {
+        return new Point(cot.lat * Constants.DEG_TO_RAD, cot.lon * Constants.DEG_TO_RAD);
     }
 
     static class Offset {
-        double dlat;
-        double dlon;
+        double R;     /* travel distance in metres */
+        double theta; /* bearing in degrees */
 
-        Offset(double dlat, double dlon) {
-            this.dlat = dlat;
-            this.dlon = dlon;
-        }
-
-        Offset add(Offset that) {
-            return new Offset(this.dlat + that.dlat, this.dlon + that.dlon);
+        Offset(double R, double theta) {
+            this.R = R;
+            this.theta = theta;
         }
     }
 }

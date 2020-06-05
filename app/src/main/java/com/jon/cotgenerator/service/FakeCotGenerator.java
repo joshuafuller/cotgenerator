@@ -25,13 +25,14 @@ import java.util.Locale;
 import java.util.PrimitiveIterator;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.DoubleStream;
 
 class FakeCotGenerator extends CotGenerator {
     private Random random = new Random();
     private List<IconData> icons;
     private List<String> callsigns;
     private double movementSpeed;
-    private double transmissionPeriod;
+    private double travelDistance;
     private double distributionRadius;
     private boolean followGps;
     private double centreLat;
@@ -53,7 +54,6 @@ class FakeCotGenerator extends CotGenerator {
         callsigns = getShuffledCallsigns();
         distributionRadius = PrefUtils.parseDouble(prefs, Key.RADIAL_DISTRIBUTION);
         movementSpeed = PrefUtils.parseDouble(prefs, Key.MOVEMENT_SPEED) * Constants.MPH_TO_METRES_PER_SECOND;
-        transmissionPeriod = PrefUtils.getInt(prefs, Key.TRANSMISSION_PERIOD);
         followGps = PrefUtils.getBoolean(prefs, Key.FOLLOW_GPS_LOCATION);
         centreLat = PrefUtils.parseDouble(prefs, Key.CENTRE_LATITUDE);
         centreLon = PrefUtils.parseDouble(prefs, Key.CENTRE_LONGITUDE);
@@ -61,6 +61,7 @@ class FakeCotGenerator extends CotGenerator {
 
         /* Stop any fuckery with distribution radii */
         movementSpeed = Math.min(movementSpeed, distributionRadius/2.0);
+        travelDistance = movementSpeed * PrefUtils.getInt(prefs, Key.TRANSMISSION_PERIOD);
     }
 
     @Override
@@ -86,12 +87,8 @@ class FakeCotGenerator extends CotGenerator {
         updateDistributionCentre();
         final int iconCount = PrefUtils.parseInt(prefs, Key.ICON_COUNT);
         final UtcTimestamp now = UtcTimestamp.now();
-        final double max_dLat = distributionRadius / Constants.EARTH_RADIUS;
-        final double max_dLon = Math.abs(max_dLat / Math.cos(distributionCentre.lat));
-        PrimitiveIterator.OfDouble latItr = randomIterator(max_dLat);
-        PrimitiveIterator.OfDouble lonItr = randomIterator(max_dLon);
+        PrimitiveIterator.OfDouble distanceItr = weightedRadialIterator();
         PrimitiveIterator.OfDouble courseItr = randomIterator(0.0, 360.0);
-
         for (int i = 0; i < iconCount; i++) {
             PliCursorOnTarget cot = new PliCursorOnTarget();
             cot.uid = String.format(Locale.ENGLISH, "%s_%04d", DeviceUid.get(), i);
@@ -99,11 +96,13 @@ class FakeCotGenerator extends CotGenerator {
             cot.time = cot.start = now;
             cot.setStaleDiff(staleTimer, TimeUnit.MINUTES);
             cot.team = TeamColour.fromPrefs(prefs).get();
-            cot.role = CotRole.TEAM_MEMBER;
+            cot.role = CotRole.fromPrefs(prefs);
             cot.speed = movementSpeed;
-            cot.course = courseItr.next();
-            Point.Offset initialOffset = generateOffset(latItr, lonItr, distributionCentre, distributionRadius);
-            setPositionFromOffset(cot, new Point.Offset(0.0,0.0), initialOffset);
+            cot.lat = distributionCentre.lat * Constants.RAD_TO_DEG;
+            cot.lon = distributionCentre.lon * Constants.RAD_TO_DEG;
+            Point.Offset initialOffset = generateInitialOffset(distanceItr, courseItr);
+            setPositionFromOffset(cot, initialOffset);
+            cot.course = initialOffset.theta;
             icons.add(new IconData(cot, initialOffset));
         }
         return getCot();
@@ -111,18 +110,15 @@ class FakeCotGenerator extends CotGenerator {
 
     protected List<CursorOnTarget> update() {
         updateDistributionCentre();
-        double travelDistance = movementSpeed * transmissionPeriod; // metres
-        final double dlat = travelDistance / Constants.EARTH_RADIUS;
         final UtcTimestamp now = UtcTimestamp.now();
-        PrimitiveIterator.OfDouble dlatItr = randomIterator(dlat);
+        PrimitiveIterator.OfDouble courseItr = randomIterator(0.0, 360.0);
         for (IconData icon : icons) {
             icon.cot.time = icon.cot.start = now;
             icon.cot.setStaleDiff(staleTimer, TimeUnit.MINUTES);
-            PrimitiveIterator.OfDouble dlonItr = randomIterator(dlat / Math.cos(distributionCentre.lat));
-            Point.Offset oldOffset = icon.offset;
-            icon.offset = generateBoundedOffset(dlatItr, dlonItr, distributionCentre, distributionRadius, oldOffset, travelDistance);
-            setPositionFromOffset(icon.cot, oldOffset, icon.offset);
-            icon.cot.course = bearing(distributionCentre.add(oldOffset), distributionCentre.add(icon.offset));
+            icon.offset = generateBoundedOffset(courseItr, Point.fromCot(icon.cot));
+            Point oldPoint = Point.fromCot(icon.cot);
+            setPositionFromOffset(icon.cot, icon.offset);
+            icon.cot.course = bearing(oldPoint, Point.fromCot(icon.cot));
         }
         return getCot();
     }
@@ -142,8 +138,8 @@ class FakeCotGenerator extends CotGenerator {
         return callsign;
     }
 
-    private void setPositionFromOffset(CursorOnTarget cot, Point.Offset oldOffset, Point.Offset newOffset) {
-        Point location = distributionCentre.add(oldOffset).add(newOffset);
+    private void setPositionFromOffset(CursorOnTarget cot, Point.Offset newOffset) {
+        Point location = Point.fromCot(cot).add(newOffset);
         cot.lat = location.lat * Constants.RAD_TO_DEG;
         cot.lon = location.lon * Constants.RAD_TO_DEG;
     }
@@ -155,28 +151,18 @@ class FakeCotGenerator extends CotGenerator {
         );
     }
 
-    private Point.Offset generateOffset(PrimitiveIterator.OfDouble dlat, PrimitiveIterator.OfDouble dlon, Point centre, double radius) {
-        final Point.Offset offset = new Point.Offset(dlat.next(), dlon.next());
-        final Point point = centre.add(offset);
-        if (arcdistance(point, centre) > radius) {
-            /* If the dot is outside the allowed radius, try generating again */
-            return generateOffset(dlat, dlon, centre, radius);
-        } else {
-            /* If it's valid, return it */
-            return offset;
-        }
+    private Point.Offset generateInitialOffset(PrimitiveIterator.OfDouble distanceItr, PrimitiveIterator.OfDouble courseItr) {
+        return new Point.Offset(distanceItr.next(), courseItr.next());
     }
 
-    private Point.Offset generateBoundedOffset(PrimitiveIterator.OfDouble dlat, PrimitiveIterator.OfDouble dlon, Point distributionCentre,
-                                               double distributionRadius, Point.Offset startOffset, double maxTravelDistance) {
-        final Point startPoint = distributionCentre.add(startOffset);
-        final Point.Offset offset = new Point.Offset(dlat.next(), dlon.next());
+    private Point.Offset generateBoundedOffset(final PrimitiveIterator.OfDouble courseItr, final Point startPoint) {
+        final Point.Offset offset = new Point.Offset(travelDistance, courseItr.next());
         final Point endPoint = startPoint.add(offset);
-
-        if (/*arcdistance(endPoint, startPoint) > maxTravelDistance ||*/ arcdistance(endPoint, distributionCentre) > distributionRadius) {
-            return generateBoundedOffset(dlat, dlon, distributionCentre, distributionRadius, startOffset, maxTravelDistance);
+        if (arcdistance(endPoint, distributionCentre) > distributionRadius) {
+            /* Invalid offset, so try again */
+            return generateBoundedOffset(courseItr, startPoint);
         } else {
-            return offset.add(startOffset);
+            return offset;
         }
     }
 
@@ -191,12 +177,8 @@ class FakeCotGenerator extends CotGenerator {
     }
 
     private double bearing(Point start, Point end) {
-        final double lat1 = start.lat;
-        final double lat2 = end.lat;
-        final double dlon = end.lon-start.lon;
-
-        final double y = Math.sin(dlon) * Math.cos(lat2);
-        final double x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dlon);
+        final double y = Math.sin(end.lon-start.lon) * Math.cos(end.lat);
+        final double x = Math.cos(start.lat) * Math.sin(end.lat) - Math.sin(start.lat) * Math.cos(end.lat) * Math.cos(end.lon-start.lon);
         return ( Math.atan2(y, x) * Constants.RAD_TO_DEG + 360.0 ) % 360.0;
     }
 
@@ -206,6 +188,13 @@ class FakeCotGenerator extends CotGenerator {
 
     private PrimitiveIterator.OfDouble randomIterator(double min, double max) {
         return random.doubles(min, max).iterator();
+    }
+
+    private PrimitiveIterator.OfDouble weightedRadialIterator() {
+        final Random random = new Random();
+        final double bound = Math.pow(distributionRadius, 2.0);
+        /* p(x) proportional to sqrt(x), hopefully?  */
+        return DoubleStream.generate(() -> Math.sqrt(random.nextDouble() * bound)).iterator();
     }
 
     private double getCentreLatitudeDegrees() {
