@@ -13,6 +13,6 @@
     <string name="defaultTransmissionProtocol">@string/transmissionProtocolTcp</string>
     <string name="defaultTransmissionPeriod">3</string>
     <string name="defaultTcpPreset">@string/tcpTakserver</string>
-    <string name="defaultTcpIp">@string/takserverIp</string>
-    <string name="defaultTcpPort">@string/takserverPort</string>
+    <string name="defaultTcpIp">@string/tcpTakserverIp</string>
+    <string name="defaultTcpPort">@string/tcpTakserverPort</string>
 </resources>

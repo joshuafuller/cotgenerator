@@ -22,18 +22,18 @@
 
     <string name="tcpFreetakserverValue">TCP¶Public FreeTakServer¶204.48.30.216¶8087</string>
     <string name="tcpFreetakserver">Public FreeTakServer</string>
-    <string name="freetakserverIp">204.48.30.216</string>
-    <string name="freetakserverPort">8087</string>
+    <string name="tcpFreetakserverIp">204.48.30.216</string>
+    <string name="tcpFreetakserverPort">8087</string>
 
     <string name="tcpTakserverValue">TCP¶Public TAK Server¶54.189.86.157¶8088</string>
     <string name="tcpTakserver">Public TAK Server</string>
-    <string name="takserverIp">54.189.86.157</string>
-    <string name="takserverPort">8088</string>
+    <string name="tcpTakserverIp">54.189.86.157</string>
+    <string name="tcpTakserverPort">8088</string>
 
     <string name="udpDefaultSaValue">UDP¶Default Multicast SA¶239.2.3.1¶6969</string>
     <string name="udpDefaultSa">Default Multicast SA</string>
-    <string name="defaultSaIp">239.2.3.1</string>
-    <string name="defaultSaPort">6969</string>
+    <string name="udpDefaultSaIp">239.2.3.1</string>
+    <string name="udpDefaultSaPort">6969</string>
 
     <string name="addNewPreset">Add New Preset…</string>
     <string name="addNewPresetProtocol">Protocol:</string>
