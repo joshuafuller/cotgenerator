@@ -15,7 +15,7 @@ import androidx.preference.SeekBarPreference;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.jon.cotgenerator.R;
-import com.jon.cotgenerator.enums.Protocol;
+import com.jon.cotgenerator.utils.Protocol;
 import com.jon.cotgenerator.presets.OutputPreset;
 import com.jon.cotgenerator.presets.PresetRepository;
 import com.jon.cotgenerator.utils.InputValidator;

@@ -1,8 +1,6 @@
-package com.jon.cotgenerator.enums;
+package com.jon.cotgenerator.utils;
 
 import android.content.SharedPreferences;
-
-import com.jon.cotgenerator.utils.Key;
 
 public enum DataFormat {
     XML("XML"),

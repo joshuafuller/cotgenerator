@@ -1,4 +1,4 @@
-package com.jon.cotgenerator.enums;
+package com.jon.cotgenerator.cot;
 
 import android.content.SharedPreferences;
 
@@ -7,7 +7,7 @@ import com.jon.cotgenerator.utils.PrefUtils;
 
 import java.util.Random;
 
-public enum TeamColour {
+public enum CotTeam {
     PURPLE("Purple"),
     MAGENTA("Magenta"),
     MAROON("Maroon"),
@@ -22,13 +22,13 @@ public enum TeamColour {
     BLUE("Blue"),
     DARK_BLUE("Dark Blue");
 
-    final private String team;
+    final private String colour;
 
-    TeamColour(String team) { this.team = team; }
+    CotTeam(String colour) { this.colour = colour; }
 
-    public String get() { return team; }
+    public String get() { return colour; }
 
-    public static TeamColour fromPrefs(final SharedPreferences prefs) {
+    public static CotTeam fromPrefs(final SharedPreferences prefs) {
         boolean useRandom = PrefUtils.getBoolean(prefs, Key.RANDOM_COLOUR);
         if (useRandom) {
             return random();
@@ -52,7 +52,7 @@ public enum TeamColour {
         }
     }
 
-    public static TeamColour random() {
+    public static CotTeam random() {
         Random random = new Random();
         return values()[random.nextInt(values().length)];
     }

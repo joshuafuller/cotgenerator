@@ -1,4 +1,4 @@
-package com.jon.cotgenerator.updating;
+package com.jon.cotgenerator.versioncheck;
 
 import androidx.annotation.Nullable;
 

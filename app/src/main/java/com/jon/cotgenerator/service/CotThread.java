@@ -3,10 +3,10 @@ package com.jon.cotgenerator.service;
 import android.content.SharedPreferences;
 
 import com.jon.cotgenerator.cot.CursorOnTarget;
-import com.jon.cotgenerator.enums.DataFormat;
-import com.jon.cotgenerator.enums.Protocol;
+import com.jon.cotgenerator.utils.DataFormat;
 import com.jon.cotgenerator.utils.Key;
 import com.jon.cotgenerator.utils.PrefUtils;
+import com.jon.cotgenerator.utils.Protocol;
 
 import java.net.InetAddress;
 import java.util.List;

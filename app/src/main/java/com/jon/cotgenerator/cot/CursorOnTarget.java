@@ -11,7 +11,7 @@ import com.jon.cotgenerator.cot.proto.StatusOuterClass.Status;
 import com.jon.cotgenerator.cot.proto.Takmessage.TakMessage;
 import com.jon.cotgenerator.cot.proto.TakvOuterClass.Takv;
 import com.jon.cotgenerator.cot.proto.TrackOuterClass.Track;
-import com.jon.cotgenerator.enums.DataFormat;
+import com.jon.cotgenerator.utils.DataFormat;
 
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -44,7 +44,7 @@ public class CursorOnTarget {
     public double speed = 0.0;  // ground velocity in m/s. Doesn't include altitude climb rate
 
     // Group
-    public String team = null;  // cyan, green, purple, etc
+    public CotTeam team = CotTeam.CYAN;  // cyan, green, purple, etc
     public CotRole role = CotRole.TEAM_MEMBER;  // HQ, sniper, K9, etc
 
     // Location source
@@ -90,7 +90,7 @@ public class CursorOnTarget {
                         "<__group name=\"%s\" role=\"%s\"/><takv device=\"%s\" platform=\"%s\" os=\"%s\" version=\"%s\"/><status battery=\"%d\"/>" +
                         "<precisionlocation altsrc=\"%s\" geopointsrc=\"%s\" /></detail></event>",
                 uid, type.get(), time.toString(), start.toString(), stale.toString(), how.get(), lat, lon, hae, ce, le, speed,
-                course, callsign, team, role.toString(), device, platform, os, version, battery, altsrc, geosrc)
+                course, callsign, team.get(), role.toString(), device, platform, os, version, battery, altsrc, geosrc)
                 .getBytes();
     }
 
@@ -110,7 +110,7 @@ public class CursorOnTarget {
                         .setLe(le)
                         .setDetail(Detail.newBuilder()
                                 .setGroup(Group.newBuilder()
-                                        .setName(team)
+                                        .setName(team.get())
                                         .setRole(role.get())
                                         .build())
                                 .setTakv(Takv.newBuilder()

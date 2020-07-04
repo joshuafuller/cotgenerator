@@ -1,4 +1,4 @@
-package com.jon.cotgenerator.updating;
+package com.jon.cotgenerator.versioncheck;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

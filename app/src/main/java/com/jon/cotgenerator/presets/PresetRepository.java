@@ -4,7 +4,7 @@ import androidx.room.Room;
 
 import com.jon.cotgenerator.CotApplication;
 import com.jon.cotgenerator.R;
-import com.jon.cotgenerator.enums.Protocol;
+import com.jon.cotgenerator.utils.Protocol;
 
 import org.apache.commons.collections4.ListUtils;
 

@@ -7,7 +7,7 @@ import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-import com.jon.cotgenerator.enums.Protocol;
+import com.jon.cotgenerator.utils.Protocol;
 
 import java.util.ArrayList;
 import java.util.List;

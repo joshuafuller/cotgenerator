@@ -16,8 +16,8 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.jon.cotgenerator.BuildConfig;
 import com.jon.cotgenerator.R;
-import com.jon.cotgenerator.updating.Release;
-import com.jon.cotgenerator.updating.UpdateChecker;
+import com.jon.cotgenerator.versioncheck.Release;
+import com.jon.cotgenerator.versioncheck.UpdateChecker;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;

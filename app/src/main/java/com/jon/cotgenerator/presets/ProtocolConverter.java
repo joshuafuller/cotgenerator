@@ -2,7 +2,7 @@ package com.jon.cotgenerator.presets;
 
 import androidx.room.TypeConverter;
 
-import com.jon.cotgenerator.enums.Protocol;
+import com.jon.cotgenerator.utils.Protocol;
 
 class ProtocolConverter {
     @TypeConverter

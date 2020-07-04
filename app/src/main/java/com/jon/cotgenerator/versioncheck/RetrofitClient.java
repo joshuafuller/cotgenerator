@@ -1,4 +1,4 @@
-package com.jon.cotgenerator.updating;
+package com.jon.cotgenerator.versioncheck;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

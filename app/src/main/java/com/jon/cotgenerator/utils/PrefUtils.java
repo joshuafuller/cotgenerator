@@ -3,7 +3,6 @@ package com.jon.cotgenerator.utils;
 import android.content.SharedPreferences;
 
 import com.jon.cotgenerator.presets.OutputPreset;
-import com.jon.cotgenerator.enums.Protocol;
 
 /* Some QoL utility methods for preferences that are known to be valid beforehand */
 public final class PrefUtils {

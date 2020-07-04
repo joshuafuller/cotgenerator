@@ -1,12 +1,11 @@
-package com.jon.cotgenerator.enums;
+package com.jon.cotgenerator.utils;
 
 import android.content.SharedPreferences;
 
-import com.jon.cotgenerator.utils.Key;
-
 public enum Protocol {
-    UDP("UDP"),
-    TCP("TCP");
+    SSL("SSL"),
+    TCP("TCP"),
+    UDP("UDP");
 
     private final String protocol;
 
@@ -24,8 +23,9 @@ public enum Protocol {
 
     public static Protocol fromString(String str) {
         switch (str) {
-            case "UDP": return UDP;
+            case "SSL": return SSL;
             case "TCP": return TCP;
+            case "UDP": return UDP;
             default: throw new IllegalArgumentException("Unknown transmission protocol: " + str);
         }
     }
