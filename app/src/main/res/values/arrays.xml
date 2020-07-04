@@ -38,12 +38,10 @@
 
     <string-array name="tcpPresetEntries">
         <item>@string/tcpFreetakserver</item>
-        <item>@string/tcpTakserver</item>
     </string-array>
 
     <string-array name="tcpPresetValues">
         <item>@string/tcpFreetakserverValue</item>
-        <item>@string/tcpTakserverValue</item>
     </string-array>
 
     <string-array name="udpPresetEntries">

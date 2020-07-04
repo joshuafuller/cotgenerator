@@ -27,12 +27,6 @@ public class PresetRepository {
     private static final List<OutputPreset> TCP_DEFAULTS = new ArrayList<OutputPreset>() {{
         add(new OutputPreset(
                 Protocol.TCP,
-                CotApplication.getContext().getString(R.string.tcpTakserver),
-                CotApplication.getContext().getString(R.string.tcpTakserverIp),
-                Integer.parseInt(CotApplication.getContext().getString(R.string.tcpTakserverPort))
-        ));
-        add(new OutputPreset(
-                Protocol.TCP,
                 CotApplication.getContext().getString(R.string.tcpFreetakserver),
                 CotApplication.getContext().getString(R.string.tcpFreetakserverIp),
                 Integer.parseInt(CotApplication.getContext().getString(R.string.tcpFreetakserverPort))

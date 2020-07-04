@@ -139,7 +139,7 @@
             app:useSimpleSummaryProvider="true" />
 
         <ListPreference
-            android:defaultValue="@string/tcpTakserverValue"
+            android:defaultValue="@string/defaultTcpPreset"
             android:key="tcpPresets"
             app:entries="@array/tcpPresetEntries"
             app:entryValues="@array/tcpPresetValues"
@@ -148,7 +148,7 @@
             app:useSimpleSummaryProvider="true" />
 
         <ListPreference
-            android:defaultValue="@string/udpDefaultSaValue"
+            android:defaultValue="@string/defaultUdpPreset"
             android:key="udpPresets"
             app:entries="@array/udpPresetEntries"
             app:entryValues="@array/udpPresetValues"

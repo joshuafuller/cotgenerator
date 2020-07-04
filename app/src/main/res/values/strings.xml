@@ -28,11 +28,6 @@
     <string name="tcpFreetakserverIp">204.48.30.216</string>
     <string name="tcpFreetakserverPort">8087</string>
 
-    <string name="tcpTakserverValue">TCP¶Public TAK Server¶54.189.86.157¶8088</string>
-    <string name="tcpTakserver">Public TAK Server</string>
-    <string name="tcpTakserverIp">54.189.86.157</string>
-    <string name="tcpTakserverPort">8088</string>
-
     <string name="udpDefaultSaValue">UDP¶Default Multicast SA¶239.2.3.1¶6969</string>
     <string name="udpDefaultSa">Default Multicast SA</string>
     <string name="udpDefaultSaIp">239.2.3.1</string>

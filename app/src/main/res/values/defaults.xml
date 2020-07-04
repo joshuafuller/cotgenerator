@@ -16,7 +16,6 @@
     <string name="defaultDataFormat">@string/dataFormatProtobuf</string>
     <string name="defaultTransmissionProtocol">@string/transmissionProtocolTcp</string>
     <string name="defaultTransmissionPeriod">3</string>
-    <string name="defaultTcpPreset">@string/tcpTakserver</string>
-    <string name="defaultTcpIp">@string/tcpTakserverIp</string>
-    <string name="defaultTcpPort">@string/tcpTakserverPort</string>
+    <string name="defaultTcpPreset">@string/tcpFreetakserver</string>
+    <string name="defaultUdpPreset">@string/udpDefaultSaValue</string>
 </resources>
