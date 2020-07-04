@@ -137,7 +137,7 @@ class FakeCotGenerator extends CotGenerator {
             /* Use custom callsign as entered in the settings */
             final String baseCallsign = PrefUtils.getString(prefs, Key.CALLSIGN);
             for (int i = 0; i < iconCount; i++) {
-                callsigns.add(String.format(Locale.ENGLISH, "%s_%04d", baseCallsign, i));
+                callsigns.add(String.format(Locale.ENGLISH, "%s-%d", baseCallsign, i));
             }
         }
         return callsigns;
