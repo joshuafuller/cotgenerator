@@ -118,6 +118,7 @@ public class SettingsFragment
 
     private void updatePreferences() {
         toggleCallsignSettingVisibility();
+        toggleRoleSettingVisibility();
         toggleProtocolSettingVisibility();
         toggleDataFormatSettingVisibility();
         setColourPickerActive();
@@ -143,6 +144,9 @@ public class SettingsFragment
         switch (key) {
             case Key.RANDOM_CALLSIGNS:
                 toggleCallsignSettingVisibility();
+                break;
+            case Key.RANDOM_ROLE:
+                toggleRoleSettingVisibility();
                 break;
             case Key.TRANSMISSION_PROTOCOL:
                 toggleProtocolSettingVisibility();
@@ -196,6 +200,15 @@ public class SettingsFragment
             /* Show the 'custom callsign' setting only when 'use random callsigns' is false */
             boolean showCallsignSetting = !PrefUtils.getBoolean(prefs, Key.RANDOM_CALLSIGNS);
             callsignPref.setVisible(showCallsignSetting);
+        }
+    }
+
+    private void toggleRoleSettingVisibility() {
+        Preference rolePref = findPreference(Key.ICON_ROLE);
+        if (rolePref != null) {
+            /* Show the 'custom role' setting only when 'use random role' is false */
+            boolean showRoleSetting = !PrefUtils.getBoolean(prefs, Key.RANDOM_ROLE);
+            rolePref.setVisible(showRoleSetting);
         }
     }
 

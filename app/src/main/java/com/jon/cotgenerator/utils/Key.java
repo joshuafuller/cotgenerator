@@ -9,6 +9,7 @@ public final class Key {
     public static final String STALE_TIMER = "staleTimer";
     public static final String RANDOM_COLOUR = "randomColour";
     public static final String TEAM_COLOUR = "teamColour";
+    public static final String RANDOM_ROLE = "randomRole";
     public static final String ICON_ROLE = "iconRole";
     public static final String FOLLOW_GPS_LOCATION = "followMyGpsLocation";
     public static final String CENTRE_LATITUDE = "centreLatitude";

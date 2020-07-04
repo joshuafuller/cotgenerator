@@ -35,6 +35,12 @@
             app:iconSpaceReserved="false"
             app:title="@string/teamColour" />
 
+        <SwitchPreference
+            android:defaultValue="@bool/defaultRandomRole"
+            android:key="randomRole"
+            app:iconSpaceReserved="false"
+            app:title="@string/randomRole" />
+
         <ListPreference
             android:key="iconRole"
             app:defaultValue="@string/defaultIconRole"

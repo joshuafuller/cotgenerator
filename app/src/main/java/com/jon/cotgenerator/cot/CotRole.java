@@ -3,6 +3,9 @@ package com.jon.cotgenerator.cot;
 import android.content.SharedPreferences;
 
 import com.jon.cotgenerator.utils.Key;
+import com.jon.cotgenerator.utils.PrefUtils;
+
+import java.util.Random;
 
 public enum CotRole {
     TEAM_MEMBER("Team Member"),
@@ -39,7 +42,13 @@ public enum CotRole {
     }
 
     public static CotRole fromPrefs(SharedPreferences prefs) {
-        String role = prefs.getString(Key.ICON_ROLE, "");
-        return fromString(role);
+        boolean useRandom = PrefUtils.getBoolean(prefs, Key.RANDOM_ROLE);
+        if (useRandom) {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        } else {
+            String role = PrefUtils.getString(prefs, Key.ICON_ROLE);
+            return fromString(role);
+        }
     }
 }
