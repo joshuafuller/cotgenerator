@@ -92,18 +92,6 @@
             app:iconSpaceReserved="false"
             app:title="@string/centreLongitude" />
 
-        <EditTextPreference
-            android:key="radialDistribution"
-            app:defaultValue="@string/defaultRadialDistribution"
-            app:iconSpaceReserved="false"
-            app:title="@string/radialDistribution" />
-
-        <EditTextPreference
-            android:key="movementSpeed"
-            app:defaultValue="@string/defaultMovementSpeed"
-            app:iconSpaceReserved="false"
-            app:title="@string/movementSpeed" />
-
         <SwitchPreference
             android:defaultValue="@bool/defaultStayAtGroundLevel"
             android:key="stayAtGroundLevel"
@@ -119,6 +107,18 @@
             app:showSeekBarValue="true"
             app:title="@string/centreAltitude"
             app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            android:key="radialDistribution"
+            app:defaultValue="@string/defaultRadialDistribution"
+            app:iconSpaceReserved="false"
+            app:title="@string/radialDistribution" />
+
+        <EditTextPreference
+            android:key="movementSpeed"
+            app:defaultValue="@string/defaultMovementSpeed"
+            app:iconSpaceReserved="false"
+            app:title="@string/movementSpeed" />
 
     </PreferenceCategory>
 
