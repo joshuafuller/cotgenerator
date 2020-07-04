@@ -27,6 +27,17 @@ public class InputValidator {
         }
     }
 
+    public static boolean validateCallsign(String callsign) {
+        /* These characters break TAK parsing when using XML, but not protobuf. I'll block them from both just to be safe */
+        final Character[] disallowedCharacters = new Character[] {
+                '<', '>',
+        };
+        for (Character character : disallowedCharacters) {
+            if (callsign.indexOf(character) != -1) return false;
+        }
+        return true;
+    }
+
     private static class ValidateHostnameTask extends AsyncTask<String, Void, Boolean> {
         @Override
         protected Boolean doInBackground(String... params) {

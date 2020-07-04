@@ -59,6 +59,7 @@ public class SettingsFragment
     }};
 
     private static final Map<String, String> PREFS_REQUIRING_VALIDATION = new HashMap<String, String>() {{
+        put(Key.CALLSIGN, "Contains invalid character(s)");
         put(Key.CENTRE_LATITUDE, "Should be a number between -180 and +180");
         put(Key.CENTRE_LONGITUDE, "Should be a number between -90 and +90");
         put(Key.ICON_COUNT, "Should be an integer from 1 to 9999");
@@ -116,6 +117,7 @@ public class SettingsFragment
     }
 
     private void updatePreferences() {
+        toggleCallsignSettingVisibility();
         toggleProtocolSettingVisibility();
         toggleDataFormatSettingVisibility();
         setColourPickerActive();
@@ -139,6 +141,9 @@ public class SettingsFragment
             setPreferenceSuffix(this.prefs, key, SUFFIXES.get(key));
         }
         switch (key) {
+            case Key.RANDOM_CALLSIGNS:
+                toggleCallsignSettingVisibility();
+                break;
             case Key.TRANSMISSION_PROTOCOL:
                 toggleProtocolSettingVisibility();
                 toggleDataFormatSettingVisibility();
@@ -185,6 +190,15 @@ public class SettingsFragment
         }
     }
 
+    private void toggleCallsignSettingVisibility() {
+        Preference callsignPref = findPreference(Key.CALLSIGN);
+        if (callsignPref != null) {
+            /* Show the 'custom callsign' setting only when 'use random callsigns' is false */
+            boolean showCallsignSetting = !PrefUtils.getBoolean(prefs, Key.RANDOM_CALLSIGNS);
+            callsignPref.setVisible(showCallsignSetting);
+        }
+    }
+
     private void toggleProtocolSettingVisibility() {
         boolean showUdpSettings = Protocol.fromPrefs(prefs) == Protocol.UDP;
         findPreference(Key.UDP_PRESETS).setVisible(showUdpSettings);
@@ -212,6 +226,9 @@ public class SettingsFragment
         final String str = (String) newValue;
         boolean result = true;
         switch (pref.getKey()) {
+            case Key.CALLSIGN:
+                result = InputValidator.validateCallsign(str);
+                break;
             case Key.CENTRE_LATITUDE:
                 result = InputValidator.validateDouble(str, -90.0, 90.0);
                 break;

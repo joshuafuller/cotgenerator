@@ -5,14 +5,18 @@
         app:iconSpaceReserved="false"
         app:title="CoT Settings">
 
-        <SeekBarPreference
-            android:key="staleTimer"
-            android:max="60"
-            app:defaultValue="@string/defaultStaleTimer"
+        <SwitchPreference
+            android:defaultValue="@bool/defaultRandomCallsigns"
+            android:key="randomCallsigns"
             app:iconSpaceReserved="false"
-            app:seekBarIncrement="1"
-            app:showSeekBarValue="true"
-            app:title="Stale Timer (minutes)"
+            app:title="Use Random Icon Callsigns?"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            android:key="callsign"
+            app:defaultValue="@string/defaultCallsign"
+            app:iconSpaceReserved="false"
+            app:title="Callsign"
             app:useSimpleSummaryProvider="true" />
 
         <SwitchPreference
@@ -45,6 +49,16 @@
             app:defaultValue="@string/defaultIconCount"
             app:iconSpaceReserved="false"
             app:title="Icon Count"
+            app:useSimpleSummaryProvider="true" />
+
+        <SeekBarPreference
+            android:key="staleTimer"
+            android:max="60"
+            app:defaultValue="@string/defaultStaleTimer"
+            app:iconSpaceReserved="false"
+            app:seekBarIncrement="1"
+            app:showSeekBarValue="true"
+            app:title="Stale Timer (minutes)"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>

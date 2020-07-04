@@ -3,6 +3,8 @@ package com.jon.cotgenerator.utils;
 public final class Key {
     private Key() { }
 
+    public static final String RANDOM_CALLSIGNS = "randomCallsigns";
+    public static final String CALLSIGN = "callsign";
     public static final String ICON_COUNT = "iconCount";
     public static final String STALE_TIMER = "staleTimer";
     public static final String RANDOM_COLOUR = "randomColour";

@@ -30,6 +30,7 @@ class FakeCotGenerator extends CotGenerator {
     private Random random = new Random();
     private List<IconData> icons;
     private List<String> callsigns;
+    private int iconCount;
     private double movementSpeed;
     private double travelDistance;
     private double distributionRadius;
@@ -50,7 +51,8 @@ class FakeCotGenerator extends CotGenerator {
 
     FakeCotGenerator(SharedPreferences prefs) {
         super(prefs);
-        callsigns = getShuffledCallsigns();
+        iconCount = PrefUtils.parseInt(prefs, Key.ICON_COUNT);
+        callsigns = getCallsigns();
         distributionRadius = PrefUtils.parseDouble(prefs, Key.RADIAL_DISTRIBUTION);
         movementSpeed = PrefUtils.parseDouble(prefs, Key.MOVEMENT_SPEED) * Constants.MPH_TO_METRES_PER_SECOND;
         followGps = PrefUtils.getBoolean(prefs, Key.FOLLOW_GPS_LOCATION);
@@ -84,14 +86,13 @@ class FakeCotGenerator extends CotGenerator {
     protected List<CursorOnTarget> initialise() {
         icons = new ArrayList<>();
         updateDistributionCentre();
-        final int iconCount = PrefUtils.parseInt(prefs, Key.ICON_COUNT);
         final UtcTimestamp now = UtcTimestamp.now();
         PrimitiveIterator.OfDouble distanceItr = weightedRadialIterator();
         PrimitiveIterator.OfDouble courseItr = randomIterator(0.0, 360.0);
         for (int i = 0; i < iconCount; i++) {
             CursorOnTarget cot = new CursorOnTarget();
             cot.uid = String.format(Locale.ENGLISH, "%s_%04d", DeviceUid.get(), i);
-            cot.callsign = randomCallsign(iconCount, i);
+            cot.callsign = callsigns.get(i);
             cot.time = cot.start = now;
             cot.setStaleDiff(staleTimer, TimeUnit.MINUTES);
             cot.team = TeamColour.fromPrefs(prefs).get();
@@ -122,19 +123,25 @@ class FakeCotGenerator extends CotGenerator {
         return getCot();
     }
 
-    private List<String> getShuffledCallsigns() {
-        Context context = CotApplication.getContext();
-        List<String> callsigns = Arrays.asList(context.getResources().getStringArray(R.array.atakCallsigns));
-        Collections.shuffle(callsigns);
-        return callsigns;
-    }
-
-    private String randomCallsign(int iconCount, int iconIndex) {
-        String callsign = callsigns.get(GenerateInt.random(callsigns.size()));
-        if (iconCount > callsigns.size()) {
-            callsign += "_" + iconIndex;
+    private List<String> getCallsigns() {
+        List<String> callsigns = new ArrayList<>();
+        if (PrefUtils.getBoolean(prefs, Key.RANDOM_CALLSIGNS)) {
+            /* Grab the list of all valid callsigns and shuffle it into a random order */
+            Context context = CotApplication.getContext();
+            List<String> allCallsigns = Arrays.asList(context.getResources().getStringArray(R.array.atakCallsigns));
+            Collections.shuffle(allCallsigns);
+            /* Extract some at random */
+            for (int i = 0; i < iconCount; i++) {
+                callsigns.add(allCallsigns.get(i % allCallsigns.size())); // modulus, just in case iconCount > allCallsigns.size
+            }
+        } else {
+            /* Use custom callsign as entered in the settings */
+            final String baseCallsign = PrefUtils.getString(prefs, Key.CALLSIGN);
+            for (int i = 0; i < iconCount; i++) {
+                callsigns.add(String.format(Locale.ENGLISH, "%s_%04d", baseCallsign, i));
+            }
         }
-        return callsign;
+        return callsigns;
     }
 
     private void setPositionFromOffset(CursorOnTarget cot, Point.Offset newOffset) {

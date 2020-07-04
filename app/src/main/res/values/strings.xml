@@ -11,6 +11,9 @@
     <string name="transmissionProtocolTcp">TCP</string>
     <string name="transmissionProtocolUdp">UDP</string>
 
+    <string name="dataFormatXml">XML</string>
+    <string name="dataFormatProtobuf">Protobuf</string>
+
     <string name="roleTeamMember">Team Member</string>
     <string name="roleTeamLeader">Team Leader</string>
     <string name="roleHq">HQ</string>

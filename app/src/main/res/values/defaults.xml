@@ -1,5 +1,7 @@
 <resources>
     <!-- Settings -->
+    <bool name="defaultRandomCallsigns">true</bool>
+    <string name="defaultCallsign">GENERATED</string>
     <string name="defaultIconRole">@string/roleTeamMember</string>
     <string name="defaultIconCount">10</string>
     <string name="defaultStaleTimer">5</string>
