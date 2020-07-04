@@ -72,6 +72,7 @@ public class SettingsFragment
 
     private static final String[] SEEKBARS = new String[]{
             Key.STALE_TIMER,
+            Key.CENTRE_ALTITUDE,
             Key.TRANSMISSION_PERIOD
     };
 
@@ -91,7 +92,7 @@ public class SettingsFragment
         }
         for (final String key : SEEKBARS) {
             SeekBarPreference seekbar = findPreference(key);
-            seekbar.setMin(1); /* I can't set the minimum in the XML for whatever reason, so here it is */
+            if (seekbar != null) seekbar.setMin(1); /* I can't set the minimum in the XML for whatever reason, so here it is */
         }
         setPresetPreferenceListeners();
     }
@@ -125,6 +126,7 @@ public class SettingsFragment
         toggleProtocolSettingVisibility();
         toggleDataFormatSettingVisibility();
         toggleColourPickerVisibility();
+        toggleAltitudeSettingVisibility();
         toggleLatLonSettingsVisibility();
 
         /* Fetch presets from the database */
@@ -158,6 +160,9 @@ public class SettingsFragment
                 break;
             case Key.FOLLOW_GPS_LOCATION:
                 toggleLatLonSettingsVisibility();
+                break;
+            case Key.STAY_AT_GROUND_LEVEL:
+                toggleAltitudeSettingVisibility();
                 break;
             case Key.TCP_PRESETS:
             case Key.UDP_PRESETS:
@@ -211,6 +216,11 @@ public class SettingsFragment
         /* The Colour Picker option should only be visible if Random Colours is disabled  */
         boolean randomColoursEnabled = PrefUtils.getBoolean(prefs, Key.RANDOM_COLOUR);
         setPrefVisibleIfCondition(Key.TEAM_COLOUR, !randomColoursEnabled);
+    }
+
+    private void toggleAltitudeSettingVisibility() {
+        boolean showAltitudeSetting = PrefUtils.getBoolean(prefs, Key.STAY_AT_GROUND_LEVEL);
+        setPrefVisibleIfCondition(Key.CENTRE_ALTITUDE, !showAltitudeSetting);
     }
 
     @Override

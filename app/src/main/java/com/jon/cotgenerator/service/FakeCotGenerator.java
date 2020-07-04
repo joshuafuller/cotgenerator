@@ -36,6 +36,8 @@ class FakeCotGenerator extends CotGenerator {
     private boolean followGps;
     private double centreLat;
     private double centreLon;
+    private boolean stayAtGroundLevel;
+    private double centreAlt;
     private long staleTimer;
     private Point distributionCentre;
 
@@ -57,6 +59,8 @@ class FakeCotGenerator extends CotGenerator {
         followGps = PrefUtils.getBoolean(prefs, Key.FOLLOW_GPS_LOCATION);
         centreLat = PrefUtils.parseDouble(prefs, Key.CENTRE_LATITUDE);
         centreLon = PrefUtils.parseDouble(prefs, Key.CENTRE_LONGITUDE);
+        stayAtGroundLevel = PrefUtils.getBoolean(prefs, Key.STAY_AT_GROUND_LEVEL);
+        centreAlt = stayAtGroundLevel ? 0.0 : (double)PrefUtils.getInt(prefs, Key.CENTRE_ALTITUDE);
         staleTimer = PrefUtils.getInt(prefs, Key.STALE_TIMER);
 
         /* Stop any fuckery with distribution radii */
@@ -88,6 +92,7 @@ class FakeCotGenerator extends CotGenerator {
         final UtcTimestamp now = UtcTimestamp.now();
         PrimitiveIterator.OfDouble distanceItr = weightedRadialIterator();
         PrimitiveIterator.OfDouble courseItr = randomIterator(0.0, 360.0);
+        PrimitiveIterator.OfDouble altitudeItr = randomIterator(centreAlt-distributionRadius, centreAlt+distributionRadius);
         for (int i = 0; i < iconCount; i++) {
             CursorOnTarget cot = new CursorOnTarget();
             cot.uid = String.format(Locale.ENGLISH, "%s_%04d", DeviceUid.get(), i);
@@ -99,6 +104,7 @@ class FakeCotGenerator extends CotGenerator {
             cot.speed = movementSpeed;
             cot.lat = distributionCentre.lat * Constants.RAD_TO_DEG;
             cot.lon = distributionCentre.lon * Constants.RAD_TO_DEG;
+            cot.hae = initialiseAltitude(altitudeItr);
             Point.Offset initialOffset = generateInitialOffset(distanceItr, courseItr);
             setPositionFromOffset(cot, initialOffset);
             cot.course = initialOffset.theta;
@@ -118,6 +124,7 @@ class FakeCotGenerator extends CotGenerator {
             Point oldPoint = Point.fromCot(icon.cot);
             setPositionFromOffset(icon.cot, icon.offset);
             icon.cot.course = bearing(oldPoint, Point.fromCot(icon.cot));
+            icon.cot.hae = updateAltitude(icon.cot.hae);
         }
         return getCot();
     }
@@ -196,7 +203,6 @@ class FakeCotGenerator extends CotGenerator {
     }
 
     private PrimitiveIterator.OfDouble weightedRadialIterator() {
-        final Random random = new Random();
         final double bound = Math.pow(distributionRadius, 2.0);
         /* p(x) proportional to sqrt(x), hopefully?  */
         return DoubleStream.generate(() -> Math.sqrt(random.nextDouble() * bound)).iterator();
@@ -224,5 +230,33 @@ class FakeCotGenerator extends CotGenerator {
             crumbs.add(iconData.cot);
         }
         return crumbs;
+    }
+
+    private double initialiseAltitude(PrimitiveIterator.OfDouble altitudeIterator) {
+        if (stayAtGroundLevel) {
+            return 0.0;
+        } else {
+            /* Can't have altitude below 0 */
+            return Math.max(0.0, altitudeIterator.next());
+        }
+    }
+
+    private double updateAltitude(double altitude) {
+        if (stayAtGroundLevel) {
+            return 0.0;
+        } else {
+            /* Direction is either -1, 0 or +1; representing falling, staying steady or rising */
+            final int direction = random.ints(1, -1, 1).iterator().next();
+            double newAltitude = altitude + (direction * movementSpeed);
+
+            /* Not going below ground */
+            if (newAltitude < 0.0) newAltitude = 0.0;
+
+            /* Clip within the bounds of the distribution radius*/
+            if (newAltitude < centreAlt-distributionRadius) newAltitude = centreAlt-distributionRadius;
+            if (newAltitude > centreAlt+distributionRadius) newAltitude = centreAlt+distributionRadius;
+
+            return newAltitude;
+        }
     }
 }

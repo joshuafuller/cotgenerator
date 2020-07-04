@@ -16,6 +16,8 @@
     <string name="centreLongitude">Centre Longitude</string>
     <string name="radialDistribution">Radial Distribution</string>
     <string name="movementSpeed">Icon Movement Speed</string>
+    <string name="stayAtGroundLevel">Stay At Ground Level?</string>
+    <string name="centreAltitude">Centre Altitude (metres)</string>
 
     <string name="transmissionSettings">Transmission Settings</string>
     <string name="transmissionPeriod">Transmission Period (seconds)</string>

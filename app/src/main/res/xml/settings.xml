@@ -104,6 +104,22 @@
             app:iconSpaceReserved="false"
             app:title="@string/movementSpeed" />
 
+        <SwitchPreference
+            android:defaultValue="@bool/defaultStayAtGroundLevel"
+            android:key="stayAtGroundLevel"
+            app:iconSpaceReserved="false"
+            app:title="@string/stayAtGroundLevel" />
+
+        <SeekBarPreference
+            android:key="centreAltitude"
+            android:max="5000"
+            app:defaultValue="@string/defaultCentreAltitude"
+            app:iconSpaceReserved="false"
+            app:seekBarIncrement="100"
+            app:showSeekBarValue="true"
+            app:title="@string/centreAltitude"
+            app:useSimpleSummaryProvider="true" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

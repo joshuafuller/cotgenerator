@@ -16,6 +16,8 @@ public final class Key {
     public static final String CENTRE_LONGITUDE = "centreLongitude";
     public static final String RADIAL_DISTRIBUTION = "radialDistribution";
     public static final String MOVEMENT_SPEED = "movementSpeed";
+    public static final String STAY_AT_GROUND_LEVEL = "stayAtGroundLevel";
+    public static final String CENTRE_ALTITUDE = "centreAltitude";
     public static final String TRANSMISSION_PERIOD = "transmissionPeriod";
     public static final String TRANSMISSION_PROTOCOL = "transmissionProtocol";
     public static final String DATA_FORMAT = "dataFormat";
