@@ -117,16 +117,16 @@ public class SettingsFragment
     }
 
     private void updatePreferences() {
+        /* If any toggles are enabled, hide the accompanying custom setting boxes */
         toggleCallsignSettingVisibility();
         toggleRoleSettingVisibility();
         toggleProtocolSettingVisibility();
         toggleDataFormatSettingVisibility();
-        setColourPickerActive();
-        setPositionPrefsActive();
-        updatePresetEntries(Protocol.UDP, Key.UDP_PRESETS);
-        updatePresetEntries(Protocol.TCP, Key.TCP_PRESETS);
-        Protocol newProtocol = Protocol.fromPrefs(prefs);
-        insertPresetAddressAndPort(newProtocol == Protocol.TCP ? Key.TCP_PRESETS : Key.UDP_PRESETS);
+        toggleColourPickerVisibility();
+        toggleLatLonSettingsVisibility();
+
+        /* Fetch presets from the database */
+        insertPresetAddressAndPort(Protocol.fromPrefs(prefs) == Protocol.TCP ? Key.TCP_PRESETS : Key.UDP_PRESETS);
     }
 
     @Override
@@ -151,18 +151,17 @@ public class SettingsFragment
             case Key.TRANSMISSION_PROTOCOL:
                 toggleProtocolSettingVisibility();
                 toggleDataFormatSettingVisibility();
-                Protocol newProtocol = Protocol.fromPrefs(prefs);
-                insertPresetAddressAndPort(newProtocol == Protocol.TCP ? Key.TCP_PRESETS : Key.UDP_PRESETS);
+                insertPresetAddressAndPort(Protocol.fromPrefs(prefs) == Protocol.TCP ? Key.TCP_PRESETS : Key.UDP_PRESETS);
                 break;
             case Key.FOLLOW_GPS_LOCATION:
-                setPositionPrefsActive();
+                toggleLatLonSettingsVisibility();
                 break;
             case Key.TCP_PRESETS:
             case Key.UDP_PRESETS:
                 insertPresetAddressAndPort(key);
                 break;
             case Key.RANDOM_COLOUR:
-                setColourPickerActive();
+                toggleColourPickerVisibility();
                 break;
             case Key.NEW_PRESET_ADDED:
                 updatePresetEntries(Protocol.UDP, Key.UDP_PRESETS);
@@ -171,68 +170,45 @@ public class SettingsFragment
         }
     }
 
-    private void setPositionPrefsActive() {
-        boolean followGps = PrefUtils.getBoolean(prefs, Key.FOLLOW_GPS_LOCATION);
-        findPreference(Key.CENTRE_LATITUDE).setVisible(!followGps);
-        findPreference(Key.CENTRE_LONGITUDE).setVisible(!followGps);
+    private void setPrefVisibleIfCondition(String key, boolean condition) {
+        Preference preference = findPreference(key);
+        if (preference != null) {
+            preference.setVisible(condition);
+        }
     }
 
-    private void insertPresetAddressAndPort(String key) {
-        EditTextPreference addressPref = findPreference(Key.DEST_ADDRESS);
-        EditTextPreference portPref = findPreference(Key.DEST_PORT);
-        ListPreference presetPref = findPreference(key);
-        if (addressPref != null && portPref != null && presetPref != null) {
-            OutputPreset preset = OutputPreset.fromString(presetPref.getValue());
-            if (preset != null) {
-                addressPref.setText(preset.address);
-                portPref.setText(Integer.toString(preset.port));
-            } else {
-                presetPref.setValue(null);
-                addressPref.setText(null);
-                portPref.setText(null);
-            }
-        }
+    private void toggleLatLonSettingsVisibility() {
+        boolean followGps = PrefUtils.getBoolean(prefs, Key.FOLLOW_GPS_LOCATION);
+        setPrefVisibleIfCondition(Key.CENTRE_LATITUDE, !followGps);
+        setPrefVisibleIfCondition(Key.CENTRE_LONGITUDE, !followGps);
     }
 
     private void toggleCallsignSettingVisibility() {
-        Preference callsignPref = findPreference(Key.CALLSIGN);
-        if (callsignPref != null) {
-            /* Show the 'custom callsign' setting only when 'use random callsigns' is false */
-            boolean showCallsignSetting = !PrefUtils.getBoolean(prefs, Key.RANDOM_CALLSIGNS);
-            callsignPref.setVisible(showCallsignSetting);
-        }
+        boolean randomCallsignEnabled = PrefUtils.getBoolean(prefs, Key.RANDOM_CALLSIGNS);
+        setPrefVisibleIfCondition(Key.CALLSIGN, !randomCallsignEnabled);
     }
 
     private void toggleRoleSettingVisibility() {
-        Preference rolePref = findPreference(Key.ICON_ROLE);
-        if (rolePref != null) {
-            /* Show the 'custom role' setting only when 'use random role' is false */
-            boolean showRoleSetting = !PrefUtils.getBoolean(prefs, Key.RANDOM_ROLE);
-            rolePref.setVisible(showRoleSetting);
-        }
+        boolean randomRoleEnabled = PrefUtils.getBoolean(prefs, Key.RANDOM_ROLE);
+        setPrefVisibleIfCondition(Key.ICON_ROLE, !randomRoleEnabled);
     }
 
     private void toggleProtocolSettingVisibility() {
         boolean showUdpSettings = Protocol.fromPrefs(prefs) == Protocol.UDP;
-        findPreference(Key.UDP_PRESETS).setVisible(showUdpSettings);
-        findPreference(Key.TCP_PRESETS).setVisible(!showUdpSettings);
+        setPrefVisibleIfCondition(Key.UDP_PRESETS, showUdpSettings);
+        setPrefVisibleIfCondition(Key.TCP_PRESETS, !showUdpSettings);
+    }
 
     private void toggleDataFormatSettingVisibility() {
         /* Data format is only relevant for UDP, since TAK Server only takes XML data */
-        boolean showDataFormatSettings = Protocol.fromPrefs(prefs) == Protocol.UDP;
-        Preference dataFormat = findPreference(Key.DATA_FORMAT);
-        if (dataFormat != null) {
-            dataFormat.setVisible(showDataFormatSettings);
-        }
+        boolean showDataFormatSetting = Protocol.fromPrefs(prefs) == Protocol.UDP;
+        setPrefVisibleIfCondition(Key.DATA_FORMAT, showDataFormatSetting);
     }
 
-    private void setColourPickerActive() {
+    private void toggleColourPickerVisibility() {
         /* The Colour Picker option should only be visible if Random Colours is disabled  */
-        boolean useRandomColours = PrefUtils.getBoolean(prefs, Key.RANDOM_COLOUR);
-        Preference colourPicker = findPreference(Key.TEAM_COLOUR);
-        if (colourPicker != null) {
-            colourPicker.setVisible(!useRandomColours);
-        }
+        boolean randomColoursEnabled = PrefUtils.getBoolean(prefs, Key.RANDOM_COLOUR);
+        setPrefVisibleIfCondition(Key.TEAM_COLOUR, !randomColoursEnabled);
     }
 
     @Override
@@ -291,9 +267,23 @@ public class SettingsFragment
         }
     }
 
-    private void updatePresetEntries(Protocol protocol, String key) {
-        List<OutputPreset> defaults = (protocol == Protocol.TCP) ? OutputPreset.tcpDefaults() : OutputPreset.udpDefaults();
-        List<OutputPreset> presets = ListUtils.union(defaults, sqlHelper.getAllPresets(protocol));
+    private void insertPresetAddressAndPort(String key) {
+        EditTextPreference addressPref = findPreference(Key.DEST_ADDRESS);
+        EditTextPreference portPref = findPreference(Key.DEST_PORT);
+        ListPreference presetPref = findPreference(key);
+        if (addressPref != null && portPref != null && presetPref != null) {
+            OutputPreset preset = OutputPreset.fromString(presetPref.getValue());
+            if (preset != null) {
+                addressPref.setText(preset.address);
+                portPref.setText(Integer.toString(preset.port));
+            } else {
+                presetPref.setValue(null);
+                addressPref.setText(null);
+                portPref.setText(null);
+            }
+        }
+    }
+
         List<String> entries = OutputPreset.getAliases(presets);
         List<String> entryValues = new ArrayList<>();
         for (OutputPreset preset : presets) {
