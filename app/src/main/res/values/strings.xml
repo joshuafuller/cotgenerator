@@ -38,11 +38,8 @@
     <string name="udpDefaultSaIp">239.2.3.1</string>
     <string name="udpDefaultSaPort">6969</string>
 
-    <string name="addNewPreset">Add New Preset…</string>
     <string name="addNewPresetProtocol">Protocol:</string>
     <string name="addNewPresetAlias">Alias:</string>
     <string name="addNewPresetAddress">Address:</string>
     <string name="addNewPresetPort">Port:</string>
-
-    <string name="deletePresets">Delete Presets…</string>
 </resources>

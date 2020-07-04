@@ -3,27 +3,27 @@
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
-        app:title="CoT Settings">
+        app:title="@string/cotSettings">
 
         <SwitchPreference
             android:defaultValue="@bool/defaultRandomCallsigns"
             android:key="randomCallsigns"
             app:iconSpaceReserved="false"
-            app:title="Use Random Icon Callsigns?"
+            app:title="@string/randomCallsigns"
             app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference
             android:key="callsign"
             app:defaultValue="@string/defaultCallsign"
             app:iconSpaceReserved="false"
-            app:title="Callsign"
+            app:title="@string/baseCallsign"
             app:useSimpleSummaryProvider="true" />
 
         <SwitchPreference
             android:defaultValue="@bool/defaultRandomColour"
             android:key="randomColour"
             app:iconSpaceReserved="false"
-            app:title="Use Random Team Colours?" />
+            app:title="@string/randomColour" />
 
         <com.jaredrummler.android.colorpicker.ColorPreferenceCompat
             android:defaultValue="@integer/defaultTeamColour"
@@ -33,7 +33,7 @@
             app:cpv_colorShape="circle"
             app:cpv_showColorShades="false"
             app:iconSpaceReserved="false"
-            app:title="Team Colour" />
+            app:title="@string/teamColour" />
 
         <ListPreference
             android:key="iconRole"
@@ -41,14 +41,14 @@
             app:entries="@array/iconRoles"
             app:entryValues="@array/iconRoles"
             app:iconSpaceReserved="false"
-            app:title="Team Role"
+            app:title="@string/teamRole"
             app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference
             android:key="iconCount"
             app:defaultValue="@string/defaultIconCount"
             app:iconSpaceReserved="false"
-            app:title="Icon Count"
+            app:title="@string/iconCount"
             app:useSimpleSummaryProvider="true" />
 
         <SeekBarPreference
@@ -58,7 +58,7 @@
             app:iconSpaceReserved="false"
             app:seekBarIncrement="1"
             app:showSeekBarValue="true"
-            app:title="Stale Timer (minutes)"
+            app:title="@string/staleTimer"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
@@ -66,43 +66,43 @@
     <PreferenceCategory
         android:key="locationGroup"
         app:iconSpaceReserved="false"
-        app:title="Location Settings">
+        app:title="@string/locationSettings">
 
         <SwitchPreference
             android:defaultValue="@bool/defaultFollowMyGpsLocation"
             android:key="followMyGpsLocation"
             app:iconSpaceReserved="false"
-            app:title="Follow My GPS Location?" />
+            app:title="@string/followMyGpsLocation" />
 
         <EditTextPreference
             android:key="centreLatitude"
             app:defaultValue="@string/defaultLatitude"
             app:iconSpaceReserved="false"
-            app:title="Centre Latitude" />
+            app:title="@string/centreLatitude" />
 
         <EditTextPreference
             android:key="centreLongitude"
             app:defaultValue="@string/defaultLongitude"
             app:iconSpaceReserved="false"
-            app:title="Centre Longitude" />
+            app:title="@string/centreLongitude" />
 
         <EditTextPreference
             android:key="radialDistribution"
             app:defaultValue="@string/defaultRadialDistribution"
             app:iconSpaceReserved="false"
-            app:title="Radial Distribution" />
+            app:title="@string/radialDistribution" />
 
         <EditTextPreference
             android:key="movementSpeed"
             app:defaultValue="@string/defaultMovementSpeed"
             app:iconSpaceReserved="false"
-            app:title="Icon Movement Speed" />
+            app:title="@string/movementSpeed" />
 
     </PreferenceCategory>
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
-        app:title="Transmission Settings">
+        app:title="@string/transmissionSettings">
 
         <SeekBarPreference
             android:key="transmissionPeriod"
@@ -111,7 +111,7 @@
             app:iconSpaceReserved="false"
             app:seekBarIncrement="1"
             app:showSeekBarValue="true"
-            app:title="Transmission Period (seconds)"
+            app:title="@string/transmissionPeriod"
             app:useSimpleSummaryProvider="true" />
 
         <ListPreference
@@ -120,7 +120,7 @@
             app:entries="@array/transmissionProtocols"
             app:entryValues="@array/transmissionProtocols"
             app:iconSpaceReserved="false"
-            app:title="Transmission Protocol"
+            app:title="@string/transmissionProtocol"
             app:useSimpleSummaryProvider="true" />
 
         <ListPreference
@@ -129,7 +129,7 @@
             app:entries="@array/dataFormats"
             app:entryValues="@array/dataFormats"
             app:iconSpaceReserved="false"
-            app:title="Data Format"
+            app:title="@string/dataFormat"
             app:useSimpleSummaryProvider="true" />
 
         <ListPreference
@@ -138,7 +138,7 @@
             app:entries="@array/tcpPresetEntries"
             app:entryValues="@array/tcpPresetValues"
             app:iconSpaceReserved="false"
-            app:title="TCP Output Destination"
+            app:title="@string/tcpOutputDestination"
             app:useSimpleSummaryProvider="true" />
 
         <ListPreference
@@ -147,7 +147,7 @@
             app:entries="@array/udpPresetEntries"
             app:entryValues="@array/udpPresetValues"
             app:iconSpaceReserved="false"
-            app:title="UDP Output Destination"
+            app:title="@string/udpOutputDestination"
             app:useSimpleSummaryProvider="true" />
 
         <Preference
@@ -166,14 +166,14 @@
             android:key="destAddress"
             app:enabled="false"
             app:iconSpaceReserved="false"
-            app:title="Destination Address"
+            app:title="@string/destAddress"
             app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference
             android:key="destPort"
             app:enabled="false"
             app:iconSpaceReserved="false"
-            app:title="Destination Port"
+            app:title="@string/destPort"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
