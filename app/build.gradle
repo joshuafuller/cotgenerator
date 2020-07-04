@@ -63,7 +63,7 @@ dependencies {
     implementation group: 'androidx.lifecycle', name: 'lifecycle-extensions', version: '2.2.0'
     implementation group: 'com.google.android.material', name: 'material', version: '1.1.0'
 
-    /* preferences */
+    /* Preferences */
     implementation group: 'androidx.preference', name: 'preference', version: '1.1.1'
     implementation group: 'com.jaredrummler', name: 'colorpicker', version: '1.1.0'
 
@@ -73,9 +73,15 @@ dependencies {
     /* Permission management */
     implementation group: 'pub.devrel', name: 'easypermissions', version: '3.0.0'
 
-    /* SQLite */
-    implementation group: 'androidx.sqlite', name: 'sqlite', version: '2.1.0'
-    implementation group: 'androidx.sqlite', name: 'sqlite-framework', version: '2.1.0'
+    /* Database */
+    implementation group: 'androidx.room', name: 'room-runtime', version: '2.2.5'
+    implementation group: 'androidx.room', name: 'room-rxjava2', version: '2.2.5'
+    annotationProcessor group: 'androidx.room', name: 'room-compiler', version: '2.2.5'
+    testImplementation group: 'androidx.room', name: 'room-testing', version: '2.2.5'
+
+    /* RxJava */
+    implementation group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.2.19'
+    implementation group: 'io.reactivex.rxjava2', name: 'rxandroid', version: '2.1.1'
 
     /* HTTP */
     implementation group: 'com.squareup.retrofit2', name: 'retrofit', version: '2.9.0'

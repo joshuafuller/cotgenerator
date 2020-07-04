@@ -1,7 +1,11 @@
-package com.jon.cotgenerator.utils;
+package com.jon.cotgenerator.presets;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
 
 import com.jon.cotgenerator.enums.Protocol;
 
@@ -10,13 +14,15 @@ import java.util.List;
 
 import timber.log.Timber;
 
+@Entity(tableName = "Presets", indices = { @Index(value = {"Address", "Port", "Protocol"}, unique = true) } )
 public class OutputPreset {
     private static final String SEPARATOR = "¶"; // pilcrow
 
-    public final Protocol protocol;
-    public final String alias;
-    public final String address;
-    public final int port;
+    @PrimaryKey int id;
+    @ColumnInfo(name = "Protocol") public final Protocol protocol;
+    @ColumnInfo(name = "Alias")    public final String alias;
+    @ColumnInfo(name = "Address")  public final String address;
+    @ColumnInfo(name = "Port")     public final int port;
 
     public OutputPreset(String protocolString, String alias, String address, int port) {
         this(Protocol.fromString(protocolString), alias, address, port);
@@ -33,19 +39,6 @@ public class OutputPreset {
     @Override
     public String toString() {
         return protocol.get() + SEPARATOR + alias + SEPARATOR + address + SEPARATOR + port;
-    }
-
-    public static List<OutputPreset> udpDefaults() {
-        return new ArrayList<OutputPreset>() {{
-            add(new OutputPreset(Protocol.UDP, "Default Multicast SA", "239.2.3.1", 6969));
-        }};
-    }
-
-    public static List<OutputPreset> tcpDefaults() {
-        return new ArrayList<OutputPreset>() {{
-            add(new OutputPreset(Protocol.TCP, "Public TAK Server", "54.189.86.157", 8088));
-            add(new OutputPreset(Protocol.TCP, "Public FreeTakServer", "204.48.30.216", 8087));
-        }};
     }
 
     public static List<String> getAliases(List<OutputPreset> presets) {

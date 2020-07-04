@@ -16,12 +16,12 @@ import androidx.preference.SeekBarPreference;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.jon.cotgenerator.R;
 import com.jon.cotgenerator.enums.Protocol;
+import com.jon.cotgenerator.presets.OutputPreset;
+import com.jon.cotgenerator.presets.PresetRepository;
 import com.jon.cotgenerator.utils.InputValidator;
 import com.jon.cotgenerator.utils.Key;
 import com.jon.cotgenerator.utils.Notify;
-import com.jon.cotgenerator.utils.OutputPreset;
 import com.jon.cotgenerator.utils.PrefUtils;
-import com.jon.cotgenerator.utils.PresetSqlHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +30,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class SettingsFragment
@@ -37,7 +40,7 @@ public class SettingsFragment
         implements SharedPreferences.OnSharedPreferenceChangeListener,
                    Preference.OnPreferenceChangeListener {
     private SharedPreferences prefs;
-    private PresetSqlHelper sqlHelper;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     static SettingsFragment newInstance() {
         return new SettingsFragment();
@@ -91,7 +94,6 @@ public class SettingsFragment
             seekbar.setMin(1); /* I can't set the minimum in the XML for whatever reason, so here it is */
         }
         setPresetPreferenceListeners();
-        sqlHelper = new PresetSqlHelper(requireContext());
     }
 
     @Override
@@ -126,13 +128,14 @@ public class SettingsFragment
         toggleLatLonSettingsVisibility();
 
         /* Fetch presets from the database */
+        updatePresetPreferences();
         insertPresetAddressAndPort(Protocol.fromPrefs(prefs) == Protocol.TCP ? Key.TCP_PRESETS : Key.UDP_PRESETS);
     }
 
     @Override
     public void onDestroy() {
         prefs.unregisterOnSharedPreferenceChangeListener(this);
-        sqlHelper.close();
+        compositeDisposable.dispose();
         super.onDestroy();
     }
 
@@ -164,8 +167,7 @@ public class SettingsFragment
                 toggleColourPickerVisibility();
                 break;
             case Key.NEW_PRESET_ADDED:
-                updatePresetEntries(Protocol.UDP, Key.UDP_PRESETS);
-                updatePresetEntries(Protocol.TCP, Key.TCP_PRESETS);
+                updatePresetPreferences();
                 break;
         }
     }
@@ -254,7 +256,8 @@ public class SettingsFragment
         Preference addPreference = findPreference(Key.ADD_NEW_PRESET);
         if (addPreference != null) {
             addPreference.setOnPreferenceClickListener(clickedPref -> {
-                NewPresetDialogCreator.show(requireContext(), requireView(), prefs, sqlHelper);
+                PresetRepository repository = PresetRepository.getInstance();
+                NewPresetDialogCreator.show(requireContext(), requireView(), prefs, repository);
                 return true;
             });
         }
@@ -284,12 +287,25 @@ public class SettingsFragment
         }
     }
 
+    private void updatePresetPreferences() {
+        PresetRepository repository = PresetRepository.getInstance();
+        compositeDisposable.add(repository.getByProtocol(Protocol.TCP)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(presets -> updatePresetEntries(presets, Key.TCP_PRESETS), this::notifyError));
+        compositeDisposable.add(repository.getByProtocol(Protocol.UDP)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(presets -> updatePresetEntries(presets, Key.UDP_PRESETS), this::notifyError));
+    }
+
+    private void updatePresetEntries(List<OutputPreset> presets, String prefKey) {
         List<String> entries = OutputPreset.getAliases(presets);
         List<String> entryValues = new ArrayList<>();
         for (OutputPreset preset : presets) {
             entryValues.add(preset.toString());
         }
-        ListPreference preference = findPreference(key);
+        ListPreference preference = findPreference(prefKey);
         if (preference != null) {
             String previousValue = preference.getValue();
             preference.setEntries(Arrays.copyOf(entries.toArray(), entries.toArray().length, String[].class));
@@ -298,29 +314,32 @@ public class SettingsFragment
         }
     }
 
+    private void notifyError(Throwable throwable) {
+        Notify.red(requireView(), "Error: " + throwable.getMessage());
+        Timber.e(throwable);
+    }
+
     private void deletePresetDialog() {
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Delete Presets")
                 .setMessage("Clear all custom output presets? The built-in defaults will still remain.")
                 .setPositiveButton(android.R.string.ok, (dialog, buttonId) -> {
-                    resetPresetPreference(Key.UDP_PRESETS, OutputPreset.udpDefaults());
-                    resetPresetPreference(Key.TCP_PRESETS, OutputPreset.tcpDefaults());
-                    if (PresetSqlHelper.deleteDatabase()) {
-                        Notify.green(requireView(), "Successfully deleted presets");
-                    } else {
-                        Notify.red(requireView(), "Failed to delete presets");
-                    }
+                    PresetRepository repository = PresetRepository.getInstance();
+                    repository.deleteDatabase();
+                    resetPresetPreferences(repository, Protocol.UDP);
+                    resetPresetPreferences(repository, Protocol.TCP);
                 }).setNegativeButton(android.R.string.cancel, (dialog, buttonId) -> dialog.dismiss())
                 .show();
     }
 
-    private void resetPresetPreference(String prefKey, List<OutputPreset> defaults) {
+    private void resetPresetPreferences(PresetRepository repository, Protocol protocol) {
+        List<OutputPreset> defaults = repository.getDefaults(protocol);
         List<String> entries = OutputPreset.getAliases(defaults);
         List<String> values = new ArrayList<>();
         for (OutputPreset preset : defaults) {
             values.add(preset.toString());
         }
-        ListPreference preference = findPreference(prefKey);
+        ListPreference preference = findPreference(protocol == Protocol.TCP ? Key.TCP_PRESETS : Key.UDP_PRESETS);
         if (preference != null) {
             preference.setEntries(Arrays.copyOf(entries.toArray(), entries.size(), String[].class));
             preference.setEntryValues(Arrays.copyOf(values.toArray(), values.size(), String[].class));

@@ -12,19 +12,18 @@ import androidx.annotation.Nullable;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.jon.cotgenerator.R;
 import com.jon.cotgenerator.enums.Protocol;
+import com.jon.cotgenerator.presets.PresetRepository;
 import com.jon.cotgenerator.utils.InputValidator;
 import com.jon.cotgenerator.utils.Key;
 import com.jon.cotgenerator.utils.Notify;
-import com.jon.cotgenerator.utils.OutputPreset;
 import com.jon.cotgenerator.utils.PrefUtils;
-import com.jon.cotgenerator.utils.PresetSqlHelper;
 
 class NewPresetDialogCreator {
-    static void show(Context context, View root, SharedPreferences prefs, PresetSqlHelper sqlHelper) {
-        show(context, root, prefs, sqlHelper, null, null, null);
+    static void show(Context context, View root, SharedPreferences prefs, PresetRepository repository) {
+        show(context, root, prefs, repository, null, null, null);
     }
 
-    private static void show(Context context, View root, SharedPreferences prefs, PresetSqlHelper sqlHelper, @Nullable String previousAlias,
+    private static void show(Context context, View root, SharedPreferences prefs, PresetRepository repository, @Nullable String previousAlias,
                              @Nullable String previousAddress, @Nullable String previousPort) {
         View view = View.inflate(context, R.layout.dialog_add_new_preset, null);
         Spinner protocolSpinner = view.findViewById(R.id.presetProtocol);
@@ -52,7 +51,7 @@ class NewPresetDialogCreator {
                 /* All valid input, so take it and back out */
                 dialog.dismiss();
                 String protocol = protocolSpinner.getSelectedItem().toString();
-                sqlHelper.insertPreset(new OutputPreset(protocol, getString(aliasEditText), getString(addressEditText), getInt(portEditText)));
+                repository.insertPreset(protocol, getString(aliasEditText), getString(addressEditText), getInt(portEditText));
                 int currentValue = PrefUtils.parseInt(prefs, Key.NEW_PRESET_ADDED);
                 prefs.edit().putString(Key.NEW_PRESET_ADDED, Integer.toString(currentValue + 1)).apply();
                 return;
@@ -60,7 +59,7 @@ class NewPresetDialogCreator {
             /* Validation error, so inform the user and show another dialog with the previous entries */
             Notify.red(root, "Invalid input: " + reason);
             dialog.dismiss();
-            show(context, root, prefs, sqlHelper, getString(aliasEditText), getString(addressEditText), getString(portEditText));
+            show(context, root, prefs, repository, getString(aliasEditText), getString(addressEditText), getString(portEditText));
         };
 
         /* Build and show the dialog */
