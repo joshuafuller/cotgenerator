@@ -10,6 +10,7 @@
     <string name="defaultLongitude">-1.351375</string>
     <string name="defaultRadialDistribution">100</string>
     <string name="defaultMovementSpeed">5</string>
+    <string name="defaultDataFormat">@string/dataFormatXml</string>
     <string name="defaultTransmissionProtocol">@string/transmissionProtocolTcp</string>
     <string name="defaultTransmissionPeriod">3</string>
     <string name="defaultTcpPreset">@string/tcpTakserver</string>

@@ -7,7 +7,6 @@ import com.jon.cotgenerator.CotApplication;
 import com.jon.cotgenerator.R;
 import com.jon.cotgenerator.cot.CotRole;
 import com.jon.cotgenerator.cot.CursorOnTarget;
-import com.jon.cotgenerator.cot.PliCursorOnTarget;
 import com.jon.cotgenerator.cot.UtcTimestamp;
 import com.jon.cotgenerator.enums.TeamColour;
 import com.jon.cotgenerator.utils.Constants;
@@ -90,7 +89,7 @@ class FakeCotGenerator extends CotGenerator {
         PrimitiveIterator.OfDouble distanceItr = weightedRadialIterator();
         PrimitiveIterator.OfDouble courseItr = randomIterator(0.0, 360.0);
         for (int i = 0; i < iconCount; i++) {
-            PliCursorOnTarget cot = new PliCursorOnTarget();
+            CursorOnTarget cot = new CursorOnTarget();
             cot.uid = String.format(Locale.ENGLISH, "%s_%04d", DeviceUid.get(), i);
             cot.callsign = randomCallsign(iconCount, i);
             cot.time = cot.start = now;

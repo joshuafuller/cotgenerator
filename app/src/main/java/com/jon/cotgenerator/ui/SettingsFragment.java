@@ -117,6 +117,7 @@ public class SettingsFragment
 
     private void updatePreferences() {
         toggleProtocolSettingVisibility();
+        toggleDataFormatSettingVisibility();
         setColourPickerActive();
         setPositionPrefsActive();
         updatePresetEntries(Protocol.UDP, Key.UDP_PRESETS);
@@ -140,6 +141,7 @@ public class SettingsFragment
         switch (key) {
             case Key.TRANSMISSION_PROTOCOL:
                 toggleProtocolSettingVisibility();
+                toggleDataFormatSettingVisibility();
                 Protocol newProtocol = Protocol.fromPrefs(prefs);
                 insertPresetAddressAndPort(newProtocol == Protocol.TCP ? Key.TCP_PRESETS : Key.UDP_PRESETS);
                 break;
@@ -187,6 +189,14 @@ public class SettingsFragment
         boolean showUdpSettings = Protocol.fromPrefs(prefs) == Protocol.UDP;
         findPreference(Key.UDP_PRESETS).setVisible(showUdpSettings);
         findPreference(Key.TCP_PRESETS).setVisible(!showUdpSettings);
+
+    private void toggleDataFormatSettingVisibility() {
+        /* Data format is only relevant for UDP, since TAK Server only takes XML data */
+        boolean showDataFormatSettings = Protocol.fromPrefs(prefs) == Protocol.UDP;
+        Preference dataFormat = findPreference(Key.DATA_FORMAT);
+        if (dataFormat != null) {
+            dataFormat.setVisible(showDataFormatSettings);
+        }
     }
 
     private void setColourPickerActive() {

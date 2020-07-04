@@ -23,11 +23,8 @@ class UdpCotThread extends CotThread {
     private List<DatagramSocket> sockets = new ArrayList<>();
     private List<String> interfaceNames = new ArrayList<>();
 
-    UdpCotThread(SharedPreferences sharedPreferences) {
-        super(sharedPreferences);
-    }
-    UdpCotThread(SharedPreferences prefs, CotGenerator generator) {
-        super(prefs, generator);
+    UdpCotThread(SharedPreferences prefs) {
+        super(prefs);
     }
 
     @Override
@@ -95,10 +92,10 @@ class UdpCotThread extends CotThread {
     @Override
     protected void sendToDestination(CursorOnTarget cot) {
         try {
-            final byte[] buf = cot.toBytes();
+            final byte[] buf = cot.toBytes(dataFormat);
             for (int i = 0; i < sockets.size(); i++) {
                 sockets.get(i).send(new DatagramPacket(buf, buf.length, destIp, destPort));
-                Timber.i("Sent cot over %s: %s", interfaceNames.get(i), cot.toString());
+                Timber.i("Sent %s over %s: %s", cot.callsign, interfaceNames.get(i), new String(buf));
             }
         } catch (IOException e) {
             Timber.w(e);

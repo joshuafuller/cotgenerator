@@ -110,6 +110,15 @@
             app:useSimpleSummaryProvider="true" />
 
         <ListPreference
+            android:key="dataFormat"
+            app:defaultValue="@string/defaultDataFormat"
+            app:entries="@array/dataFormats"
+            app:entryValues="@array/dataFormats"
+            app:iconSpaceReserved="false"
+            app:title="Data Format"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
             android:defaultValue="@string/tcpTakserverValue"
             android:key="tcpPresets"
             app:entries="@array/tcpPresetEntries"

@@ -3,6 +3,7 @@ package com.jon.cotgenerator.service;
 import android.content.SharedPreferences;
 
 import com.jon.cotgenerator.cot.CursorOnTarget;
+import com.jon.cotgenerator.enums.DataFormat;
 import com.jon.cotgenerator.utils.Key;
 import com.jon.cotgenerator.utils.PrefUtils;
 
@@ -20,9 +21,7 @@ class TcpCotThread extends CotThread {
 
     TcpCotThread(SharedPreferences prefs) {
         super(prefs);
-    }
-    TcpCotThread(SharedPreferences prefs, CotGenerator generator) {
-        super(prefs, generator);
+        dataFormat = DataFormat.XML; // regardless of what the preference is set as
     }
 
     @Override
@@ -61,7 +60,7 @@ class TcpCotThread extends CotThread {
     @Override
     protected void sendToDestination(CursorOnTarget cot) {
         try {
-            outputStream.write(cot.toBytes());
+            outputStream.write(cot.toBytes(dataFormat));
             Timber.i("Sent cot: %s", cot.toString());
         } catch (IOException e) {
             e.printStackTrace();

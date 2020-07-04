@@ -15,6 +15,7 @@ public final class Key {
     public static final String MOVEMENT_SPEED = "movementSpeed";
     public static final String TRANSMISSION_PERIOD = "transmissionPeriod";
     public static final String TRANSMISSION_PROTOCOL = "transmissionProtocol";
+    public static final String DATA_FORMAT = "dataFormat";
     public static final String TCP_PRESETS = "tcpPresets";
     public static final String UDP_PRESETS = "udpPresets";
     public static final String ADD_NEW_PRESET = "addNewPreset";

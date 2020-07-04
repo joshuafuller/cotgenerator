@@ -3,6 +3,7 @@ package com.jon.cotgenerator.service;
 import android.content.SharedPreferences;
 
 import com.jon.cotgenerator.cot.CursorOnTarget;
+import com.jon.cotgenerator.enums.DataFormat;
 import com.jon.cotgenerator.enums.Protocol;
 import com.jon.cotgenerator.utils.Key;
 import com.jon.cotgenerator.utils.PrefUtils;
@@ -14,6 +15,7 @@ abstract class CotThread extends Thread {
     protected final SharedPreferences prefs;
     protected volatile boolean isRunning = false;
     protected CotGenerator cotGenerator;
+    protected DataFormat dataFormat;
     protected InetAddress destIp;
     protected int destPort;
     protected List<CursorOnTarget> cotIcons;
@@ -29,15 +31,10 @@ abstract class CotThread extends Thread {
         }
     }
 
-    protected CotThread(SharedPreferences prefs) {
-        this.prefs = prefs;
+    protected CotThread(SharedPreferences sharedPrefs) {
+        prefs = sharedPrefs;
+        dataFormat = DataFormat.fromPrefs(prefs);
         cotGenerator = CotGenerator.getFromPrefs(prefs);
-        cotIcons = cotGenerator.generate();
-    }
-
-    protected CotThread(SharedPreferences prefs, CotGenerator generator) {
-        this(prefs);
-        cotGenerator = generator;
         cotIcons = cotGenerator.generate();
     }
 

@@ -5,7 +5,13 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.0.0'
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.12'
     }
+}
+
+plugins {
+    id "com.google.protobuf" version "0.8.10"
+    id "java"
 }
 
 allprojects {
@@ -14,8 +20,4 @@ allprojects {
         jcenter()
         maven { url "https://jitpack.io" }
     }
-}
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
 }
