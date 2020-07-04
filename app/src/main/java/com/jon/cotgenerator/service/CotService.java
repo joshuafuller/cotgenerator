@@ -82,7 +82,7 @@ public class CotService extends Service {
             fusedLocationClient.getLastLocation().addOnSuccessListener(LastGpsLocation::update);
             initialiseLocationRequest();
         } catch (SecurityException e) {
-            e.printStackTrace();
+            Timber.e(e);
             Timber.e("Failed to initialise Fused Location Client");
             error(e);
         }
@@ -119,7 +119,7 @@ public class CotService extends Service {
         state = State.STOPPED;
         stateListener.onStateChanged(State.ERROR, throwable);
         cotManager.shutdown();
-        Notify.toast(this, "Error in service: " + throwable.getMessage());
+        Notify.toast(this, "Uncaught error in service: " + throwable.getMessage());
         stopForegroundService();
     }
 
@@ -192,7 +192,7 @@ public class CotService extends Service {
         try {
             fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
         } catch (SecurityException e) {
-            e.printStackTrace();
+            Timber.e(e);
             Timber.e("Failed to request location update from Fused Location Client");
             error(e);
         }

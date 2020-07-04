@@ -9,6 +9,7 @@ import com.jon.cotgenerator.utils.PrefUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -32,7 +33,6 @@ class TcpCotThread extends CotThread {
                 outputStream.close();
                 socket.close();
             } catch (IOException e) {
-                e.printStackTrace();
                 Timber.e(e);
             }
             outputStream = null;
@@ -63,10 +63,10 @@ class TcpCotThread extends CotThread {
             outputStream.write(cot.toBytes(dataFormat));
             Timber.i("Sent cot: %s", cot.toString());
         } catch (IOException e) {
-            e.printStackTrace();
             Timber.e(e);
             shutdown();
         } catch (NullPointerException e) {
+            /* Thrown when the thread is cancelled from another thread and we try to access the sockets */
             shutdown();
         }
     }
@@ -85,8 +85,11 @@ class TcpCotThread extends CotThread {
         try {
             socket = new Socket(destIp, destPort);
             outputStream = socket.getOutputStream();
+        } catch (ConnectException e) {
+            Timber.e(e);
+            Timber.e("Invalid TCP server at %s : %d", destIp.getHostAddress(), destPort);
         } catch (IOException e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
     }
 }

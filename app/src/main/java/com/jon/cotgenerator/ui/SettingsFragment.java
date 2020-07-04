@@ -23,14 +23,14 @@ import com.jon.cotgenerator.utils.OutputPreset;
 import com.jon.cotgenerator.utils.PrefUtils;
 import com.jon.cotgenerator.utils.PresetSqlHelper;
 
-import org.apache.commons.collections4.ListUtils;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import timber.log.Timber;
 
 public class SettingsFragment
         extends PreferenceFragmentCompat
@@ -214,6 +214,7 @@ public class SettingsFragment
     }
 
     private void setColourPickerActive() {
+        /* The Colour Picker option should only be visible if Random Colours is disabled  */
         boolean useRandomColours = PrefUtils.getBoolean(prefs, Key.RANDOM_COLOUR);
         Preference colourPicker = findPreference(Key.TEAM_COLOUR);
         if (colourPicker != null) {

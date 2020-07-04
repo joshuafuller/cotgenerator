@@ -27,7 +27,7 @@ public class CotApplication extends Application {
         /* Initialise logging */
         Timber.plant(new Timber.DebugTree() {
             @Override protected String createStackElementTag(@NotNull StackTraceElement element) {
-                return "(" + element.getFileName() + ":" + element.getLineNumber() + ")#" + element.getMethodName();
+                return "(" + element.getFileName() + ":" + element.getLineNumber() + ")";
             }
         });
     }

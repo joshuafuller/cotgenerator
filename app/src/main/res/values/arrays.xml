@@ -16,8 +16,8 @@
     </array>
 
     <string-array name="transmissionProtocols">
-        <item>TCP</item>
-        <item>UDP</item>
+        <item>@string/transmissionProtocolTcp</item>
+        <item>@string/transmissionProtocolUdp</item>
     </string-array>
 
     <string-array name="dataFormats">

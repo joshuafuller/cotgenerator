@@ -36,8 +36,8 @@ public class DeviceUid {
                 Timber.i("Successfully written UID %s", uid);
             }
         } catch (IOException e) {
-            e.printStackTrace();
             uid = UUID.randomUUID().toString();
+            Timber.e(e);
             Timber.e("Failed to read/write UID from/to file. Using a temporary one instead: %s", uid);
         }
     }

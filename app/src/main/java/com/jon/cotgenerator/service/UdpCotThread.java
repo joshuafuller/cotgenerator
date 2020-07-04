@@ -15,6 +15,7 @@ import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import timber.log.Timber;
@@ -60,6 +61,8 @@ class UdpCotThread extends CotThread {
         } catch (UnknownHostException e) {
             Timber.e("Error parsing destination address: %s", PrefUtils.getString(prefs, Key.DEST_ADDRESS));
             shutdown();
+        } catch (Exception e) {
+            Timber.e(e);
         }
         destPort = PrefUtils.parseInt(prefs, Key.DEST_PORT);
     }
@@ -85,6 +88,7 @@ class UdpCotThread extends CotThread {
             }
         } catch (IOException e) {
             Timber.e("Error when building transmit UDP socket");
+            Timber.e(e);
             shutdown();
         }
     }
@@ -101,6 +105,7 @@ class UdpCotThread extends CotThread {
             Timber.w(e);
             shutdown();
         } catch (NullPointerException e) {
+            /* Thrown when the thread is cancelled from another thread and we try to access the sockets */
             shutdown();
         }
     }
