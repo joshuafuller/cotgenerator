@@ -6,7 +6,7 @@
     <string name="defaultIconRole">@string/roleTeamMember</string>
     <string name="defaultIconCount">10</string>
     <string name="defaultStaleTimer">5</string>
-    <bool name="defaultRandomColour">false</bool>
+    <bool name="defaultRandomColour">true</bool>
     <integer name="defaultTeamColour">0xFF00FFFF</integer>
     <bool name="defaultFollowMyGpsLocation">true</bool>
     <string name="defaultLatitude">53.725103</string>
