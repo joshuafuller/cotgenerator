@@ -225,31 +225,29 @@ public class SettingsFragment
 
     @Override
     public boolean onPreferenceChange(Preference pref, Object newValue) {
-        final String str = (String) newValue;
-        boolean result = true;
-        switch (pref.getKey()) {
+        final String input = (String) newValue;
+        final String key = pref.getKey();
+        switch (key) {
             case Key.CALLSIGN:
-                result = InputValidator.validateCallsign(str);
-                break;
+                return errorIfInvalid(input, key, InputValidator.validateCallsign(input));
             case Key.CENTRE_LATITUDE:
-                result = InputValidator.validateDouble(str, -90.0, 90.0);
-                break;
+                return errorIfInvalid(input, key, InputValidator.validateDouble(input, -90.0, 90.0));
             case Key.CENTRE_LONGITUDE:
-                result = InputValidator.validateDouble(str, -180.0, 180.0);
-                break;
+                return errorIfInvalid(input, key, InputValidator.validateDouble(input, -180.0, 180.0));
             case Key.ICON_COUNT:
-                result = InputValidator.validateInt(str, 1, 9999);
-                break;
+                return errorIfInvalid(input, key, InputValidator.validateInt(input, 1, 9999));
             case Key.RADIAL_DISTRIBUTION:
             case Key.TRANSMISSION_PERIOD:
-                result = InputValidator.validateInt(str, 1, null);
-                break;
+                return errorIfInvalid(input, key, InputValidator.validateInt(input, 1, null));
             case Key.MOVEMENT_SPEED:
-                result = InputValidator.validateDouble(str, 0.0, null);
-                break;
+                return errorIfInvalid(input, key, InputValidator.validateDouble(input, 0.0, null));
+            default: return true;
         }
+    }
+
+    private boolean errorIfInvalid(String input, String key, boolean result) {
         if (!result) {
-            Notify.red(requireView(), "Invalid input: " + str + ". " + PREFS_REQUIRING_VALIDATION.get(pref.getKey()));
+            Notify.red(requireView(), "Invalid input: " + input + ". " + PREFS_REQUIRING_VALIDATION.get(key));
         }
         return result;
     }
