@@ -70,9 +70,6 @@ public class CotActivity
                     .commitNow();
         }
 
-        /* Generate a device-specific UUID and save to file, if it doesn't already exist */
-        DeviceUid.generate(this);
-
         /* Start the service and bind to it */
         Intent intent = new Intent(this, CotService.class);
         startService(intent);
