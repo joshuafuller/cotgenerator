@@ -60,4 +60,14 @@ public final class PrefUtils {
         OutputPreset preset = OutputPreset.fromString(selectedPreset);
         return protocol.get() + (preset == null ? ": Unknown" : ": " + preset.alias);
     }
+
+    public static String getPresetPrefKeyFromSharedPrefs(SharedPreferences prefs) {
+        Protocol protocol = Protocol.fromPrefs(prefs);
+        switch (protocol) {
+            case SSL: return Key.SSL_PRESETS;
+            case TCP: return Key.TCP_PRESETS;
+            case UDP: return Key.UDP_PRESETS;
+            default: throw new IllegalArgumentException("Unknown protocol: " + protocol.get());
+        }
+    }
 }

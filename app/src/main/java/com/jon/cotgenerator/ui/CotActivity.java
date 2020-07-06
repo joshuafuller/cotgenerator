@@ -20,6 +20,7 @@ import androidx.preference.PreferenceManager;
 
 import com.jon.cotgenerator.BuildConfig;
 import com.jon.cotgenerator.R;
+import com.jon.cotgenerator.presets.OutputPreset;
 import com.jon.cotgenerator.service.CotService;
 import com.jon.cotgenerator.utils.DeviceUid;
 import com.jon.cotgenerator.utils.GenerateInt;
@@ -153,8 +154,10 @@ public class CotActivity
     }
 
     private boolean presetIsSelected() {
+        String presetKey = PrefUtils.getPresetPrefKeyFromSharedPrefs(prefs);
         return PrefUtils.getString(prefs, Key.DEST_ADDRESS).length() > 0
-                && PrefUtils.getString(prefs, Key.DEST_PORT).length() > 0;
+                && PrefUtils.getString(prefs, Key.DEST_PORT).length() > 0
+                && PrefUtils.getString(prefs, presetKey).split(OutputPreset.SEPARATOR).length > 1;
     }
 
     private View getRootView() {
