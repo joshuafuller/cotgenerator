@@ -49,6 +49,7 @@ class TcpCotThread extends CotThread {
 
         while (isRunning) {
             for (CursorOnTarget cot : cotIcons) {
+                if (!isRunning) break;
                 sendToDestination(cot);
                 bufferSleep(bufferTimeMs);
             }
@@ -61,7 +62,7 @@ class TcpCotThread extends CotThread {
     protected void sendToDestination(CursorOnTarget cot) {
         try {
             outputStream.write(cot.toBytes(dataFormat));
-            Timber.i("Sent cot: %s", cot.toString());
+            Timber.i("Sent cot: %s", cot.callsign);
         } catch (IOException e) {
             Timber.e(e);
             shutdown();

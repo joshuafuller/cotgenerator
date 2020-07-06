@@ -47,6 +47,7 @@ class UdpCotThread extends CotThread {
 
         while (isRunning) {
             for (CursorOnTarget cot : cotIcons) {
+                if (!isRunning) break;
                 sendToDestination(cot);
                 bufferSleep(bufferTimeMs);
             }
