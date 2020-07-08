@@ -3,6 +3,7 @@
 
     <string name="toolbarHeaderMain">@string/app_name</string>
     <string name="toolbarHeaderEditPreset">Edit Preset</string>
+    <string name="toolbarHeaderListPresets">Custom Presets</string>
 
     <string name="permissionRationale">Two permissions are required:
         1) GPS - for the "Follow My GPS Position" setting;
@@ -16,6 +17,7 @@
     <string name="start">Start</string>
     <string name="about">About</string>
     <string name="save">Save</string>
+    <string name="delete_all">Delete All</string>
 
     <string name="transmissionProtocolSsl">SSL</string>
     <string name="transmissionProtocolTcp">TCP</string>
@@ -57,4 +59,8 @@
 
     <string name="goBack">Go back?</string>
     <string name="goBackMessage">This will discard all current changes.</string>
+
+    <string name="noPresetsFound">No custom presets found!</string>
+    <string name="createNewPreset">CREATE NEW</string>
+
 </resources>

@@ -26,8 +26,7 @@
     <string name="sslOutputDestination">SSL Output Destination</string>
     <string name="tcpOutputDestination">TCP Output Destination</string>
     <string name="udpOutputDestination">UDP Output Destination</string>
-    <string name="addNewPreset">Add New Preset…</string>
-    <string name="deletePresets">Delete Presets…</string>
+    <string name="editPresets">Custom Presets…</string>
     <string name="destAddress">Destination Address</string>
     <string name="destPort">Destination Port</string>
 

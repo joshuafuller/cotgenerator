@@ -26,6 +26,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.EditPresetActivity" />
+        <activity android:name=".ui.ListPresetsActivity" />
 
         <service
             android:name=".service.CotService"

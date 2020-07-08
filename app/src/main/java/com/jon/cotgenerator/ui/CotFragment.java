@@ -14,7 +14,6 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.preference.SeekBarPreference;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.jon.cotgenerator.R;
 import com.jon.cotgenerator.presets.OutputPreset;
 import com.jon.cotgenerator.presets.PresetRepository;
@@ -42,6 +41,7 @@ public class CotFragment
                    Preference.OnPreferenceChangeListener {
     private SharedPreferences prefs;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private PresetRepository repository = PresetRepository.getInstance();
 
     static CotFragment newInstance() {
         return new CotFragment();
@@ -173,9 +173,6 @@ public class CotFragment
             case Key.RANDOM_COLOUR:
                 toggleColourPickerVisibility();
                 break;
-            case Key.NEW_PRESET_ADDED:
-                updatePresetPreferences();
-                break;
         }
     }
 
@@ -264,19 +261,10 @@ public class CotFragment
     }
 
     private void setPresetPreferenceListeners() {
-        Preference addPreference = findPreference(Key.ADD_NEW_PRESET);
-        if (addPreference != null) {
-            addPreference.setOnPreferenceClickListener(clickedPref -> {
-                Intent intent = new Intent(getActivity(), EditPresetActivity.class);
-                intent.putExtra(IntentIds.EXTRA_EDIT_PRESET_PROTOCOL, PrefUtils.getString(prefs, Key.TRANSMISSION_PROTOCOL));
-                startActivity(intent);
-                return true;
-            });
-        }
-        Preference deletePreference = findPreference(Key.DELETE_PRESETS);
-        if (deletePreference != null) {
-            deletePreference.setOnPreferenceClickListener(clickedPref -> {
-                deletePresetDialog();
+        Preference editPresetsPreference = findPreference(Key.EDIT_PRESETS);
+        if (editPresetsPreference != null) {
+            editPresetsPreference.setOnPreferenceClickListener(clickedPref -> {
+                startActivity(new Intent(getActivity(), ListPresetsActivity.class));
                 return true;
             });
         }
@@ -307,7 +295,6 @@ public class CotFragment
     }
 
     private void updatePresetPreferences() {
-        PresetRepository repository = PresetRepository.getInstance();
         compositeDisposable.add(repository.getByProtocol(Protocol.SSL)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -333,41 +320,16 @@ public class CotFragment
             String previousValue = preference.getValue();
             preference.setEntries(Arrays.copyOf(entries.toArray(), entries.toArray().length, String[].class));
             preference.setEntryValues(Arrays.copyOf(entryValues.toArray(), entryValues.toArray().length, String[].class));
-            preference.setValue(previousValue);
+            if (entryValues.contains(previousValue)) {
+                preference.setValue(previousValue);
+            } else {
+                preference.setValueIndex(0);
+            }
         }
     }
 
     private void notifyError(Throwable throwable) {
         Notify.red(requireView(), "Error: " + throwable.getMessage());
         Timber.e(throwable);
-    }
-
-    private void deletePresetDialog() {
-        new MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Delete Presets")
-                .setMessage("Clear all custom output presets? The built-in defaults will still remain.")
-                .setPositiveButton(android.R.string.ok, (dialog, buttonId) -> {
-                    PresetRepository repository = PresetRepository.getInstance();
-                    repository.deleteDatabase();
-                    resetPresetPreferences(repository, Protocol.SSL);
-                    resetPresetPreferences(repository, Protocol.TCP);
-                    resetPresetPreferences(repository, Protocol.UDP);
-                }).setNegativeButton(android.R.string.cancel, (dialog, buttonId) -> dialog.dismiss())
-                .show();
-    }
-
-    private void resetPresetPreferences(PresetRepository repository, Protocol protocol) {
-        List<OutputPreset> defaults = repository.defaultsByProtocol(protocol);
-        List<String> entries = OutputPreset.getAliases(defaults);
-        List<String> values = new ArrayList<>();
-        for (OutputPreset preset : defaults) {
-            values.add(preset.toString());
-        }
-        ListPreference preference = findPreference(protocol == Protocol.TCP ? Key.TCP_PRESETS : Key.UDP_PRESETS);
-        if (preference != null) {
-            preference.setEntries(Arrays.copyOf(entries.toArray(), entries.size(), String[].class));
-            preference.setEntryValues(Arrays.copyOf(values.toArray(), values.size(), String[].class));
-            preference.setValueIndex(0);
-        }
     }
 }

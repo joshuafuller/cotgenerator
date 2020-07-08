@@ -6,9 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -18,7 +16,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.jon.cotgenerator.R;
 import com.jon.cotgenerator.presets.OutputPreset;
 import com.jon.cotgenerator.presets.PresetRepository;
-import com.jon.cotgenerator.service.CotService;
 import com.jon.cotgenerator.utils.InputValidator;
 import com.jon.cotgenerator.utils.Key;
 import com.jon.cotgenerator.utils.Notify;
@@ -67,7 +64,13 @@ public class EditPresetActivity
                 break;
             case R.id.save:
                 if (settingsAreValid()) {
-                    storePresetInDatabase();
+                    if (EditPresetFragment.initialPresetValues == null) {
+                        /* It's a new preset, so insert it into the database */
+                        storePresetInDatabase();
+                    } else {
+                        /* It's an update of an existing preset, so overwrite its DB record properly */
+                        overwritePresetInDatabase();
+                    }
                     passPresetBackToMainActivity();
                 }
                 break;
@@ -134,7 +137,7 @@ public class EditPresetActivity
         return true;
     }
 
-    private void storePresetInDatabase() {
+    private OutputPreset getEnteredPresetValues() {
         Protocol protocol = getInputProtocol();
         OutputPreset preset = new OutputPreset(
                 protocol,
@@ -148,8 +151,17 @@ public class EditPresetActivity
             preset.clientCertPassword = PrefUtils.getString(prefs, Key.PRESET_SSL_CLIENTCERT_PASSWORD);
             preset.trustStorePassword = PrefUtils.getString(prefs, Key.PRESET_SSL_TRUSTSTORE_PASSWORD);
         }
-        PresetRepository repository = PresetRepository.getInstance();
-        repository.insertPreset(preset);
+        return preset;
+    }
+
+    private void storePresetInDatabase() {
+        PresetRepository.getInstance().insertPreset(getEnteredPresetValues());
+    }
+
+    private void overwritePresetInDatabase() {
+        OutputPreset original = EditPresetFragment.initialPresetValues;
+        OutputPreset updated = getEnteredPresetValues();
+        PresetRepository.getInstance().updatePreset(original, updated);
     }
 
     private void passPresetBackToMainActivity() {
@@ -165,18 +177,7 @@ public class EditPresetActivity
         finish();
     }
 
-    private View getRootView() {
-        return findViewById(android.R.id.content);
-    }
-
     private Protocol getInputProtocol() {
         return Protocol.fromString(PrefUtils.getString(prefs, Key.PRESET_PROTOCOL));
-    }
-
-    @Override
-    public void onStateChanged(CotService.State state, @Nullable Throwable throwable) {
-        if (state == CotService.State.ERROR && throwable != null) {
-            Notify.red(getRootView(), "Error: " + throwable.getMessage());
-        }
     }
 }

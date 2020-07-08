@@ -67,18 +67,35 @@ public class PresetRepository {
         executor.execute(() -> database.presetDao().insert(preset));
     }
 
+    public void deletePreset(OutputPreset preset) {
+        executor.execute(() -> database.presetDao().delete(preset));
+    }
+
+    public void updatePreset(OutputPreset original, OutputPreset updated) {
+        executor.execute(() -> database.presetDao().update(
+                original.protocol.get(), original.address, original.port,
+                updated.protocol.get(), updated.address, updated.port, updated.alias,
+                updated.clientCert, updated.clientCertPassword, updated.trustStore, updated.trustStorePassword
+        ));
+    }
+
     public OutputPreset getPreset(Protocol protocol, String address, int port) {
         return database.presetDao().getPreset(protocol.get(), address, port);
     }
 
+    /* Returns a list of all presets; meaning custom presets and defaults. */
     public Observable<List<OutputPreset>> getByProtocol(Protocol protocol) {
         /* First get a list of known default presets, which aren't stored in the database */
         final Observable<List<OutputPreset>> defaults = Observable.just(defaultsByProtocol(protocol));
         /* Then query the database to grab any user-entered presets */
-        return database.presetDao()
-                .getByProtocol(protocol.get())
+        return getCustomByProtocol(protocol)
                 /* Merge the two observables together to return a single observable containing a list of OutputPresets */
                 .zipWith(defaults, (fetchedPresets, defaultPresets) -> ListUtils.union(defaultPresets, fetchedPresets));
+    }
+
+    /* Returns a list of only those presets entered by the user */
+    public Observable<List<OutputPreset>> getCustomByProtocol(Protocol protocol) {
+        return database.presetDao().getByProtocol(protocol.get());
     }
 
     public void deleteDatabase() {
