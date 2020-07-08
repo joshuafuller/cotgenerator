@@ -31,6 +31,9 @@ import com.jon.cotgenerator.utils.GenerateInt;
 import com.jon.cotgenerator.utils.Notify;
 import com.jon.cotgenerator.utils.PrefUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import timber.log.Timber;
 
 public class CotService extends Service {
@@ -65,7 +68,7 @@ public class CotService extends Service {
     private SharedPreferences prefs;
     private IBinder binder = new ServiceBinder();
     private State state = State.STOPPED;
-    private StateListener stateListener;
+    private List<StateListener> stateListeners = new ArrayList<>();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -101,7 +104,9 @@ public class CotService extends Service {
     public void start() {
         Timber.i("Starting service");
         state = State.RUNNING;
-        stateListener.onStateChanged(state, null);
+        for (StateListener stateListener : stateListeners) {
+            stateListener.onStateChanged(state, null);
+        }
         cotManager.start();
         startForegroundService();
     }
@@ -109,7 +114,9 @@ public class CotService extends Service {
     public void stop() {
         Timber.i("Stopping service");
         state = State.STOPPED;
-        stateListener.onStateChanged(state, null);
+        for (StateListener stateListener : stateListeners) {
+            stateListener.onStateChanged(state, null);
+        }
         cotManager.shutdown();
         stopForegroundService();
     }
@@ -117,7 +124,9 @@ public class CotService extends Service {
     public void error(Throwable throwable) {
         Timber.e("Error in the service: %s", throwable.getMessage());
         state = State.STOPPED;
-        stateListener.onStateChanged(State.ERROR, throwable);
+        for (StateListener stateListener : stateListeners) {
+            stateListener.onStateChanged(State.ERROR, throwable);
+        }
         cotManager.shutdown();
         Notify.toast(this, "Uncaught error in service: " + throwable.getMessage());
         stopForegroundService();
@@ -204,11 +213,12 @@ public class CotService extends Service {
     public State getState() { return state; }
 
     public void registerStateListener(StateListener listener) {
-        this.stateListener = listener;
+        stateListeners.add(listener);
         listener.onStateChanged(state, null);
     }
 
-    public void unregisterStateListener() {
-        stateListener = null;
+    public void unregisterStateListener(StateListener listener) {
+        stateListeners.remove(listener);
+    }
     }
 }
