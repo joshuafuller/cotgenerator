@@ -3,9 +3,15 @@ package com.jon.cotgenerator.ui;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
@@ -15,13 +21,13 @@ import androidx.preference.SeekBarPreference;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.jon.cotgenerator.R;
-import com.jon.cotgenerator.utils.Protocol;
 import com.jon.cotgenerator.presets.OutputPreset;
 import com.jon.cotgenerator.presets.PresetRepository;
 import com.jon.cotgenerator.utils.InputValidator;
 import com.jon.cotgenerator.utils.Key;
 import com.jon.cotgenerator.utils.Notify;
 import com.jon.cotgenerator.utils.PrefUtils;
+import com.jon.cotgenerator.utils.Protocol;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -117,6 +123,7 @@ public class SettingsFragment
             setPreferenceSuffix(prefs, entry.getKey(), entry.getValue());
         }
         updatePreferences();
+        updateToolbar();
     }
 
     private void updatePreferences() {
@@ -131,7 +138,18 @@ public class SettingsFragment
 
         /* Fetch presets from the database */
         updatePresetPreferences();
-        insertPresetAddressAndPort(Protocol.fromPrefs(prefs) == Protocol.TCP ? Key.TCP_PRESETS : Key.UDP_PRESETS);
+        insertPresetAddressAndPort();
+    }
+
+    private void updateToolbar() {
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null && activity.getSupportActionBar() != null) {
+            activity.invalidateOptionsMenu();
+            ActionBar actionBar = activity.getSupportActionBar();
+            actionBar.setTitle(R.string.fragmentHeaderMain);
+            actionBar.setDisplayHomeAsUpEnabled(false);
+            actionBar.setDisplayShowHomeEnabled(false);
+        }
     }
 
     @Override
@@ -156,7 +174,7 @@ public class SettingsFragment
             case Key.TRANSMISSION_PROTOCOL:
                 toggleProtocolSettingVisibility();
                 toggleDataFormatSettingVisibility();
-                insertPresetAddressAndPort(Protocol.fromPrefs(prefs) == Protocol.TCP ? Key.TCP_PRESETS : Key.UDP_PRESETS);
+                insertPresetAddressAndPort();
                 break;
             case Key.FOLLOW_GPS_LOCATION:
                 toggleLatLonSettingsVisibility();
@@ -166,7 +184,7 @@ public class SettingsFragment
                 break;
             case Key.TCP_PRESETS:
             case Key.UDP_PRESETS:
-                insertPresetAddressAndPort(key);
+                insertPresetAddressAndPort();
                 break;
             case Key.RANDOM_COLOUR:
                 toggleColourPickerVisibility();
@@ -201,9 +219,10 @@ public class SettingsFragment
     }
 
     private void toggleProtocolSettingVisibility() {
-        boolean showUdpSettings = Protocol.fromPrefs(prefs) == Protocol.UDP;
-        setPrefVisibleIfCondition(Key.UDP_PRESETS, showUdpSettings);
-        setPrefVisibleIfCondition(Key.TCP_PRESETS, !showUdpSettings);
+        final Protocol protocol = Protocol.fromPrefs(prefs);
+        setPrefVisibleIfCondition(Key.SSL_PRESETS, protocol == Protocol.SSL);
+        setPrefVisibleIfCondition(Key.TCP_PRESETS, protocol == Protocol.TCP);
+        setPrefVisibleIfCondition(Key.UDP_PRESETS, protocol == Protocol.UDP);
     }
 
     private void toggleDataFormatSettingVisibility() {
@@ -264,8 +283,9 @@ public class SettingsFragment
         Preference addPreference = findPreference(Key.ADD_NEW_PRESET);
         if (addPreference != null) {
             addPreference.setOnPreferenceClickListener(clickedPref -> {
-                PresetRepository repository = PresetRepository.getInstance();
-                NewPresetDialogCreator.show(requireContext(), requireView(), prefs, repository);
+                NavHostFragment.findNavController(this).navigate(R.id.action_settingsFragment_to_editPresetFragment);
+//                PresetRepository repository = PresetRepository.getInstance();
+//                NewPresetDialogCreator.show(requireContext(), requireView(), prefs, repository);
                 return true;
             });
         }
@@ -278,7 +298,14 @@ public class SettingsFragment
         }
     }
 
-    private void insertPresetAddressAndPort(String key) {
+    private void insertPresetAddressAndPort() {
+        String key;
+        switch (Protocol.fromPrefs(prefs)) {
+            case SSL: key = Key.SSL_PRESETS; break;
+            case TCP: key = Key.TCP_PRESETS; break;
+            case UDP: key = Key.UDP_PRESETS; break;
+            default: throw new IllegalArgumentException("Unknown protocol: " + Protocol.fromPrefs(prefs));
+        }
         EditTextPreference addressPref = findPreference(Key.DEST_ADDRESS);
         EditTextPreference portPref = findPreference(Key.DEST_PORT);
         ListPreference presetPref = findPreference(key);
@@ -297,6 +324,10 @@ public class SettingsFragment
 
     private void updatePresetPreferences() {
         PresetRepository repository = PresetRepository.getInstance();
+        compositeDisposable.add(repository.getByProtocol(Protocol.SSL)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(presets -> updatePresetEntries(presets, Key.SSL_PRESETS), this::notifyError));
         compositeDisposable.add(repository.getByProtocol(Protocol.TCP)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -334,8 +365,9 @@ public class SettingsFragment
                 .setPositiveButton(android.R.string.ok, (dialog, buttonId) -> {
                     PresetRepository repository = PresetRepository.getInstance();
                     repository.deleteDatabase();
-                    resetPresetPreferences(repository, Protocol.UDP);
+                    resetPresetPreferences(repository, Protocol.SSL);
                     resetPresetPreferences(repository, Protocol.TCP);
+                    resetPresetPreferences(repository, Protocol.UDP);
                 }).setNegativeButton(android.R.string.cancel, (dialog, buttonId) -> dialog.dismiss())
                 .show();
     }
