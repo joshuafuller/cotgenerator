@@ -1,6 +1,7 @@
 package com.jon.cotgenerator.presets;
 
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -19,6 +20,9 @@ public interface PresetDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(OutputPreset preset);
+
+    @Delete
+    void delete(OutputPreset preset);
 
     @Query("DELETE FROM Presets")
     void deleteAll();

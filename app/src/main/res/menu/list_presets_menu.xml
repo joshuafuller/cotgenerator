@@ -1,13 +1,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.EditPresetActivity">
+    tools:context=".ui.ListPresetsActivity">
 
     <item
-        android:id="@+id/save"
-        android:icon="@drawable/save"
+        android:id="@+id/delete_all"
         android:orderInCategory="1"
-        android:title="@string/save"
-        app:showAsAction="ifRoom" />
+        android:title="@string/delete_all"
+        app:showAsAction="always" />
 
 </menu>
