@@ -157,7 +157,6 @@ public class ListPresetsActivity
     private static class PresetRecyclerInfo {
         int recyclerViewId, emptyMessageId;
         ListPresetsAdapter adapter;
-
         PresetRecyclerInfo(@IdRes int recyclerViewId, @IdRes int emptyMessageId) {
             this.recyclerViewId = recyclerViewId;
             this.emptyMessageId = emptyMessageId;
