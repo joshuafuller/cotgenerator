@@ -177,7 +177,6 @@ public class EditPresetFragment
         }
 
         if (resultCode != Activity.RESULT_OK) {
-            Notify.red(requireView(), "Failed file browser activity: " + resultCode);
             return;
         } else {
             try {
