@@ -64,7 +64,13 @@ public class EditPresetActivity
                 break;
             case R.id.save:
                 if (settingsAreValid()) {
-                    storePresetInDatabase();
+                    if (EditPresetFragment.initialPresetValues == null) {
+                        /* It's a new preset, so insert it into the database */
+                        storePresetInDatabase();
+                    } else {
+                        /* It's an update of an existing preset, so overwrite its DB record properly */
+                        overwritePresetInDatabase();
+                    }
                     passPresetBackToMainActivity();
                 }
                 break;
@@ -131,7 +137,7 @@ public class EditPresetActivity
         return true;
     }
 
-    private void storePresetInDatabase() {
+    private OutputPreset getEnteredPresetValues() {
         Protocol protocol = getInputProtocol();
         OutputPreset preset = new OutputPreset(
                 protocol,
@@ -145,8 +151,17 @@ public class EditPresetActivity
             preset.clientCertPassword = PrefUtils.getString(prefs, Key.PRESET_SSL_CLIENTCERT_PASSWORD);
             preset.trustStorePassword = PrefUtils.getString(prefs, Key.PRESET_SSL_TRUSTSTORE_PASSWORD);
         }
-        PresetRepository repository = PresetRepository.getInstance();
-        repository.insertPreset(preset);
+        return preset;
+    }
+
+    private void storePresetInDatabase() {
+        PresetRepository.getInstance().insertPreset(getEnteredPresetValues());
+    }
+
+    private void overwritePresetInDatabase() {
+        OutputPreset original = EditPresetFragment.initialPresetValues;
+        OutputPreset updated = getEnteredPresetValues();
+        PresetRepository.getInstance().updatePreset(original, updated);
     }
 
     private void passPresetBackToMainActivity() {

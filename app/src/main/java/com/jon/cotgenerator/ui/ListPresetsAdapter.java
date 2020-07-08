@@ -12,19 +12,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.jon.cotgenerator.R;
 import com.jon.cotgenerator.presets.OutputPreset;
-import com.jon.cotgenerator.utils.Protocol;
 
 import java.util.List;
 
 public class ListPresetsAdapter extends RecyclerView.Adapter<ListPresetsAdapter.ViewHolder> {
     private LayoutInflater inflater;
-    private Protocol protocol;
     private List<OutputPreset> presets;
     private ItemClickListener clickListener;
 
-    ListPresetsAdapter(Context context, Protocol protocol, List<OutputPreset> presets) {
+    ListPresetsAdapter(Context context, List<OutputPreset> presets) {
         this.inflater = LayoutInflater.from(context);
-        this.protocol = protocol;
         this.presets = presets;
     }
 
@@ -48,10 +45,6 @@ public class ListPresetsAdapter extends RecyclerView.Adapter<ListPresetsAdapter.
         return presets.size();
     }
 
-    OutputPreset getPreset(int position) {
-        return presets.get(position);
-    }
-
     void updatePresets(List<OutputPreset> presets) {
         this.presets = presets;
         this.notifyDataSetChanged();
@@ -62,8 +55,8 @@ public class ListPresetsAdapter extends RecyclerView.Adapter<ListPresetsAdapter.
     }
 
     public interface ItemClickListener {
-        void onClickEditItem(View view, Protocol protocol, int position);
-        void onClickDeleteItem(View view, Protocol protocol, int position);
+        void onClickEditItem(OutputPreset preset);
+        void onClickDeleteItem(OutputPreset preset);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -87,10 +80,10 @@ public class ListPresetsAdapter extends RecyclerView.Adapter<ListPresetsAdapter.
             if (clickListener != null) {
                 switch (view.getId()) {
                     case R.id.presetListItemEdit:
-                        clickListener.onClickEditItem(view, protocol, getAdapterPosition());
+                        clickListener.onClickEditItem(presets.get(getAdapterPosition()));
                         break;
                     case R.id.presetListItemDelete:
-                        clickListener.onClickDeleteItem(view, protocol, getAdapterPosition());
+                        clickListener.onClickDeleteItem(presets.get(getAdapterPosition()));
                         break;
                 }
             }

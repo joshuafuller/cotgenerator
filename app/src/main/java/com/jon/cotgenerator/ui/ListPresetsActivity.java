@@ -1,9 +1,9 @@
 package com.jon.cotgenerator.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 
 import androidx.annotation.IdRes;
@@ -25,7 +25,6 @@ import java.util.Map;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
 public class ListPresetsActivity
         extends ServiceBoundActivity
@@ -62,12 +61,16 @@ public class ListPresetsActivity
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(presets -> {
-                        info.adapter = new ListPresetsAdapter(this, protocol, presets);
+                        info.adapter = new ListPresetsAdapter(this, presets);
                         info.adapter.setClickListener(this);
                         recyclerView.setAdapter(info.adapter);
                     }));
             Button createPresetButton = findViewById(info.buttonId);
-            createPresetButton.setOnClickListener(view -> Notify.green(getRootView(), "Create preset for " + protocol));
+            createPresetButton.setOnClickListener(view -> {
+                Intent intent = new Intent(this, EditPresetActivity.class);
+                intent.putExtra(IntentIds.EXTRA_EDIT_PRESET_PROTOCOL, protocol.get());
+                startActivity(intent);
+            });
         }
     }
 
@@ -105,27 +108,33 @@ public class ListPresetsActivity
     }
 
     @Override
-    public void onClickEditItem(View view, Protocol protocol, int position) {
-        /* TODO: do this */
-        Notify.green(getRootView(), "Edit " + protocol + " " + position);
+    public void onClickEditItem(OutputPreset preset) {
+        /* Build an intent containing all the values we'll need to populate the EditPreset screen */
+        Intent intent = new Intent(this, EditPresetActivity.class);
+        intent.putExtra(IntentIds.EXTRA_EDIT_PRESET_PROTOCOL, preset.protocol.get());
+        intent.putExtra(IntentIds.EXTRA_EDIT_PRESET_ALIAS, preset.alias);
+        intent.putExtra(IntentIds.EXTRA_EDIT_PRESET_ADDRESS, preset.address);
+        intent.putExtra(IntentIds.EXTRA_EDIT_PRESET_PORT, preset.port);
+        if (preset.protocol == Protocol.SSL) {
+            intent.putExtra(IntentIds.EXTRA_EDIT_PRESET_CLIENT_BYTES, new String(preset.clientCert));
+            intent.putExtra(IntentIds.EXTRA_EDIT_PRESET_CLIENT_PASSWORD, preset.clientCertPassword);
+            intent.putExtra(IntentIds.EXTRA_EDIT_PRESET_TRUST_BYTES, new String(preset.trustStore));
+            intent.putExtra(IntentIds.EXTRA_EDIT_PRESET_TRUST_PASSWORD, preset.trustStorePassword);
+        }
+        startActivity(intent);
     }
 
     @Override
-    public void onClickDeleteItem(View view, Protocol protocol, int position) {
-        Notify.green(getRootView(), "Delete " + protocol + " " + position);
-        PresetRecyclerInfo info = recyclerViewMap.get(protocol);
-        if (info != null) {
-            OutputPreset preset = info.adapter.getPreset(position);
-            new MaterialAlertDialogBuilder(this)
-                    .setTitle("Delete Preset")
-                    .setMessage("Are you sure you want to delete " + preset.alias + "?")
-                    .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
-                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                        repository.deletePreset(preset);
-                        refresh();
-                    })
-                    .show();
-        }
+    public void onClickDeleteItem(OutputPreset preset) {
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("Delete Preset")
+                .setMessage("Are you sure you want to delete " + preset.alias + "?")
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    repository.deletePreset(preset);
+                    refresh();
+                })
+                .show();
     }
 
     private void refresh() {

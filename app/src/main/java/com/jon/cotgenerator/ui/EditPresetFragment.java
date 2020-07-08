@@ -15,6 +15,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
 import com.jon.cotgenerator.R;
+import com.jon.cotgenerator.presets.OutputPreset;
 import com.jon.cotgenerator.utils.FileUtils;
 import com.jon.cotgenerator.utils.GenerateInt;
 import com.jon.cotgenerator.utils.InputValidator;
@@ -62,6 +63,8 @@ public class EditPresetFragment
 
     private SharedPreferences prefs;
 
+    static OutputPreset initialPresetValues = null;
+
     static EditPresetFragment newInstance() {
         return new EditPresetFragment();
     }
@@ -107,30 +110,74 @@ public class EditPresetFragment
         prepopulateSpecifiedFields();
     }
 
+    @SuppressLint("DefaultLocale")
+    @SuppressWarnings("ConstantConditions")
     private void prepopulateSpecifiedFields() {
         Bundle bundle = getArguments();
         if (bundle == null) return;
 
+        initialPresetValues = OutputPreset.blank();
+
+        /* Protocol */
         if (bundle.containsKey(IntentIds.EXTRA_EDIT_PRESET_PROTOCOL)) {
+            String protocolString = bundle.getString(IntentIds.EXTRA_EDIT_PRESET_PROTOCOL);
             ListPreference preference = findPreference(Key.PRESET_PROTOCOL);
-            preference.setValue(bundle.getString(IntentIds.EXTRA_EDIT_PRESET_PROTOCOL));
+            preference.setValue(protocolString);
+            initialPresetValues.protocol = Protocol.fromString(protocolString);
         }
+        /* Alias */
         if (bundle.containsKey(IntentIds.EXTRA_EDIT_PRESET_ALIAS)) {
-            EditTextPreference preference = findPreference(Key.PRESET_PROTOCOL);
-            preference.setText(bundle.getString(IntentIds.EXTRA_EDIT_PRESET_ALIAS));
+            String alias = bundle.getString(IntentIds.EXTRA_EDIT_PRESET_ALIAS);
+            EditTextPreference preference = findPreference(Key.PRESET_ALIAS);
+            preference.setText(alias);
+            initialPresetValues.alias = alias;
         }
+        /* Address */
         if (bundle.containsKey(IntentIds.EXTRA_EDIT_PRESET_ADDRESS)) {
+            String address = bundle.getString(IntentIds.EXTRA_EDIT_PRESET_ADDRESS);
             EditTextPreference preference = findPreference(Key.PRESET_DESTINATION_ADDRESS);
-            preference.setText(bundle.getString(IntentIds.EXTRA_EDIT_PRESET_ADDRESS));
+            preference.setText(address);
+            initialPresetValues.address = address;
         }
+        /* Port */
         if (bundle.containsKey(IntentIds.EXTRA_EDIT_PRESET_PORT)) {
+            int port = bundle.getInt(IntentIds.EXTRA_EDIT_PRESET_PORT);
             EditTextPreference preference = findPreference(Key.PRESET_DESTINATION_PORT);
-            preference.setText(Integer.toString(bundle.getInt(IntentIds.EXTRA_EDIT_PRESET_PORT)));
+            preference.setText(Integer.toString(port));
+            initialPresetValues.port = port;
         }
-//        public static final String EXTRA_EDIT_PRESET_CLIENT_BYTES = randomString();
-//        public static final String EXTRA_EDIT_PRESET_CLIENT_PASSWORD = randomString();
-//        public static final String EXTRA_EDIT_PRESET_TRUST_BYTES = randomString();
-//        public static final String EXTRA_EDIT_PRESET_TRUST_PASSWORD = randomString();
+        /* Client cert bytes */
+        if (bundle.containsKey(IntentIds.EXTRA_EDIT_PRESET_CLIENT_BYTES)) {
+            final String byteString = bundle.getString(IntentIds.EXTRA_EDIT_PRESET_CLIENT_BYTES);
+            int length = InputValidator.validateString(byteString) ? byteString.length() : 0;
+            Preference preference = findPreference(Key.PRESET_SSL_CLIENTCERT_BYTES);
+            preference.setSummary(String.format("Loaded: %d bytes", length));
+            prefs.edit().putString(Key.PRESET_SSL_CLIENTCERT_BYTES, byteString).apply();
+            initialPresetValues.clientCert = byteString.getBytes();
+        }
+        /* Client cert password */
+        if (bundle.containsKey(IntentIds.EXTRA_EDIT_PRESET_CLIENT_PASSWORD)) {
+            String password = bundle.getString(IntentIds.EXTRA_EDIT_PRESET_CLIENT_PASSWORD);
+            EditTextPreference preference = findPreference(Key.PRESET_SSL_CLIENTCERT_PASSWORD);
+            preference.setText(password);
+            initialPresetValues.clientCertPassword = password;
+        }
+        /* Trust store bytes */
+        if (bundle.containsKey(IntentIds.EXTRA_EDIT_PRESET_TRUST_BYTES)) {
+            final String byteString = bundle.getString(IntentIds.EXTRA_EDIT_PRESET_TRUST_BYTES);
+            int length = InputValidator.validateString(byteString) ? byteString.length() : 0;
+            Preference preference = findPreference(Key.PRESET_SSL_TRUSTSTORE_BYTES);
+            preference.setSummary(String.format("Loaded: %d bytes", length));
+            prefs.edit().putString(Key.PRESET_SSL_TRUSTSTORE_BYTES, byteString).apply();
+            initialPresetValues.trustStore = byteString.getBytes();
+        }
+        /* Trust store password */
+        if (bundle.containsKey(IntentIds.EXTRA_EDIT_PRESET_TRUST_PASSWORD)) {
+            String password = bundle.getString(IntentIds.EXTRA_EDIT_PRESET_TRUST_PASSWORD);
+            EditTextPreference preference = findPreference(Key.PRESET_SSL_TRUSTSTORE_PASSWORD);
+            preference.setText(password);
+            initialPresetValues.trustStorePassword = password;
+        }
     }
 
     private Preference.OnPreferenceClickListener fileBrowserOnClickListener(int requestCode) {

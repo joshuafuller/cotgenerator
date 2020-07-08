@@ -21,13 +21,13 @@ public class OutputPreset {
     @PrimaryKey(autoGenerate = true)
     int id;
     @ColumnInfo(name = "Protocol")
-    public final Protocol protocol;
+    public Protocol protocol;
     @ColumnInfo(name = "Alias")
-    public final String alias;
+    public String alias;
     @ColumnInfo(name = "Address")
-    public final String address;
+    public String address;
     @ColumnInfo(name = "Port")
-    public final int port;
+    public int port;
 
     /* SSL cert data */
     @ColumnInfo(typeAffinity = ColumnInfo.BLOB, name = "ClientCert")
@@ -67,10 +67,16 @@ public class OutputPreset {
         this.trustStorePassword = trustStorePassword;
     }
 
+    private OutputPreset() { /* blank */ }
+
     @NonNull
     @Override
     public String toString() {
         return protocol.get() + SEPARATOR + alias + SEPARATOR + address + SEPARATOR + port;
+    }
+
+    public static OutputPreset blank() {
+        return new OutputPreset();
     }
 
     public static List<String> getAliases(List<OutputPreset> presets) {
