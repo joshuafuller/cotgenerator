@@ -1,0 +1,67 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="Preset Options">
+
+        <ListPreference
+            android:key="presetProtocol"
+            app:entries="@array/transmissionProtocols"
+            app:entryValues="@array/transmissionProtocols"
+            app:iconSpaceReserved="false"
+            app:title="Protocol"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            android:key="presetAlias"
+            app:iconSpaceReserved="false"
+            app:title="Alias"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            android:inputType="textWebEmailAddress"
+            android:key="presetDestinationAddress"
+            app:iconSpaceReserved="false"
+            app:title="Destination Address"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            android:key="presetDestinationPort"
+            app:iconSpaceReserved="false"
+            app:title="Destination Port"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="sslOptionsCategory"
+        app:iconSpaceReserved="false"
+        app:isPreferenceVisible="false"
+        app:title="SSL Options">
+
+        <Preference
+            android:key="presetSslClientCertBytes"
+            app:iconSpaceReserved="false"
+            app:title="Find Client Certificate..."
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            android:key="presetSslClientCertPassword"
+            app:iconSpaceReserved="false"
+            app:title="Client Certificate Password" />
+
+        <Preference
+            android:key="presetSslTrustStoreBytes"
+            app:iconSpaceReserved="false"
+            app:title="Find Trust Store..."
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            android:key="presetSslTrustStorePassword"
+            app:iconSpaceReserved="false"
+            app:title="Trust Store Password" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

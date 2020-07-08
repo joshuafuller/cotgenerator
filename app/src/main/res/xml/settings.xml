@@ -193,13 +193,6 @@
             app:title="@string/deletePresets"
             app:useSimpleSummaryProvider="true" />
 
-<!--        <MultiSelectListPreference-->
-<!--            android:key="deletePresets"-->
-<!--            app:entries="@array/blankArray"-->
-<!--            app:entryValues="@array/blankArray"-->
-<!--            app:iconSpaceReserved="false"-->
-<!--            app:title="@string/deletePresets" />-->
-
         <EditTextPreference
             android:key="destAddress"
             app:enabled="false"
