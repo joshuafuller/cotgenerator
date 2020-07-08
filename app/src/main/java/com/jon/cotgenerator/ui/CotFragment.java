@@ -333,7 +333,11 @@ public class CotFragment
             String previousValue = preference.getValue();
             preference.setEntries(Arrays.copyOf(entries.toArray(), entries.toArray().length, String[].class));
             preference.setEntryValues(Arrays.copyOf(entryValues.toArray(), entryValues.toArray().length, String[].class));
-            preference.setValue(previousValue);
+            if (entryValues.contains(previousValue)) {
+                preference.setValue(previousValue);
+            } else {
+                preference.setValueIndex(0);
+            }
         }
     }
 
