@@ -27,6 +27,7 @@ abstract class CotThread extends Thread {
         switch (protocol) {
             case UDP: return new UdpCotThread(prefs);
             case TCP: return new TcpCotThread(prefs);
+            case SSL: return new SslCotThread(prefs);
             default: throw new IllegalArgumentException("Unexpected protocol: " + protocol);
         }
     }

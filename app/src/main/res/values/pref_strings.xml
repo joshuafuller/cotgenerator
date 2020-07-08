@@ -23,6 +23,7 @@
     <string name="transmissionPeriod">Transmission Period (seconds)</string>
     <string name="transmissionProtocol">Transmission Protocol</string>
     <string name="dataFormat">Data Format</string>
+    <string name="sslOutputDestination">SSL Output Destination</string>
     <string name="tcpOutputDestination">TCP Output Destination</string>
     <string name="udpOutputDestination">UDP Output Destination</string>
     <string name="addNewPreset">Add New Preset…</string>

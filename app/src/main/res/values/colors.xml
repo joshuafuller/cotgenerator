@@ -7,7 +7,7 @@
     <color name="disabled">#505050</color>
 
     <color name="colorPrimary">#323131</color>
-    <color name="colorPrimaryDark">@color/black</color>
+    <color name="colorPrimaryDark">#121212</color>
     <color name="colorAccent">#FF0000</color>
     <color name="colorAccentDark">#970000</color>
 

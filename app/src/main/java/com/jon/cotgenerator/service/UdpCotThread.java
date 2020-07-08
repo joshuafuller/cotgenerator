@@ -15,7 +15,6 @@ import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import timber.log.Timber;
@@ -47,6 +46,7 @@ class UdpCotThread extends CotThread {
 
         while (isRunning) {
             for (CursorOnTarget cot : cotIcons) {
+                if (!isRunning) break;
                 sendToDestination(cot);
                 bufferSleep(bufferTimeMs);
             }
