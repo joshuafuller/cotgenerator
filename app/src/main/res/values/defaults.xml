@@ -18,6 +18,7 @@
     <string name="defaultDataFormat">@string/dataFormatProtobuf</string>
     <string name="defaultTransmissionProtocol">@string/transmissionProtocolTcp</string>
     <string name="defaultTransmissionPeriod">3</string>
+    <string name="defaultSslPreset">@string/sslTakserverValue</string>
     <string name="defaultTcpPreset">@string/tcpFreetakserverValue</string>
     <string name="defaultUdpPreset">@string/udpDefaultSaValue</string>
 </resources>

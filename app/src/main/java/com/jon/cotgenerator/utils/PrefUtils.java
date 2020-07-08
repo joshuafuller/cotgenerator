@@ -53,6 +53,7 @@ public final class PrefUtils {
         Protocol protocol = Protocol.fromPrefs(prefs);
         String selectedPreset;
         switch (protocol) {
+            case SSL: selectedPreset = getString(prefs, Key.SSL_PRESETS); break;
             case TCP: selectedPreset = getString(prefs, Key.TCP_PRESETS); break;
             case UDP: selectedPreset = getString(prefs, Key.UDP_PRESETS); break;
             default: throw new IllegalArgumentException("Unknown protocol: " + protocol.get());

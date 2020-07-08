@@ -155,6 +155,15 @@
             app:useSimpleSummaryProvider="true" />
 
         <ListPreference
+            android:defaultValue="@string/defaultSslPreset"
+            android:key="sslPresets"
+            app:entries="@array/sslPresetEntries"
+            app:entryValues="@array/sslPresetValues"
+            app:iconSpaceReserved="false"
+            app:title="@string/sslOutputDestination"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
             android:defaultValue="@string/defaultTcpPreset"
             android:key="tcpPresets"
             app:entries="@array/tcpPresetEntries"
@@ -183,6 +192,13 @@
             app:iconSpaceReserved="false"
             app:title="@string/deletePresets"
             app:useSimpleSummaryProvider="true" />
+
+<!--        <MultiSelectListPreference-->
+<!--            android:key="deletePresets"-->
+<!--            app:entries="@array/blankArray"-->
+<!--            app:entryValues="@array/blankArray"-->
+<!--            app:iconSpaceReserved="false"-->
+<!--            app:title="@string/deletePresets" />-->
 
         <EditTextPreference
             android:key="destAddress"

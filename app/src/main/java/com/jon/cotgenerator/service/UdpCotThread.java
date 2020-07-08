@@ -15,7 +15,6 @@ import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import timber.log.Timber;

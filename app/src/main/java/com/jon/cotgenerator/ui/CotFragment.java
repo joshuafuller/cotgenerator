@@ -1,17 +1,12 @@
 package com.jon.cotgenerator.ui;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.widget.EditText;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
@@ -41,15 +36,15 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class SettingsFragment
+public class CotFragment
         extends PreferenceFragmentCompat
         implements SharedPreferences.OnSharedPreferenceChangeListener,
                    Preference.OnPreferenceChangeListener {
     private SharedPreferences prefs;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-    static SettingsFragment newInstance() {
-        return new SettingsFragment();
+    static CotFragment newInstance() {
+        return new CotFragment();
     }
 
     private static final String[] PHONE_INPUT = new String[]{
@@ -123,7 +118,6 @@ public class SettingsFragment
             setPreferenceSuffix(prefs, entry.getKey(), entry.getValue());
         }
         updatePreferences();
-        updateToolbar();
     }
 
     private void updatePreferences() {
@@ -139,17 +133,6 @@ public class SettingsFragment
         /* Fetch presets from the database */
         updatePresetPreferences();
         insertPresetAddressAndPort();
-    }
-
-    private void updateToolbar() {
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
-        if (activity != null && activity.getSupportActionBar() != null) {
-            activity.invalidateOptionsMenu();
-            ActionBar actionBar = activity.getSupportActionBar();
-            actionBar.setTitle(R.string.fragmentHeaderMain);
-            actionBar.setDisplayHomeAsUpEnabled(false);
-            actionBar.setDisplayShowHomeEnabled(false);
-        }
     }
 
     @Override
@@ -182,6 +165,7 @@ public class SettingsFragment
             case Key.STAY_AT_GROUND_LEVEL:
                 toggleAltitudeSettingVisibility();
                 break;
+            case Key.SSL_PRESETS:
             case Key.TCP_PRESETS:
             case Key.UDP_PRESETS:
                 insertPresetAddressAndPort();
@@ -283,9 +267,9 @@ public class SettingsFragment
         Preference addPreference = findPreference(Key.ADD_NEW_PRESET);
         if (addPreference != null) {
             addPreference.setOnPreferenceClickListener(clickedPref -> {
-                NavHostFragment.findNavController(this).navigate(R.id.action_settingsFragment_to_editPresetFragment);
-//                PresetRepository repository = PresetRepository.getInstance();
-//                NewPresetDialogCreator.show(requireContext(), requireView(), prefs, repository);
+                Intent intent = new Intent(getActivity(), EditPresetActivity.class);
+                intent.putExtra(IntentIds.EXTRA_EDIT_PRESET_PROTOCOL, PrefUtils.getString(prefs, Key.TRANSMISSION_PROTOCOL));
+                startActivity(intent);
                 return true;
             });
         }
@@ -373,7 +357,7 @@ public class SettingsFragment
     }
 
     private void resetPresetPreferences(PresetRepository repository, Protocol protocol) {
-        List<OutputPreset> defaults = repository.getDefaults(protocol);
+        List<OutputPreset> defaults = repository.defaultsByProtocol(protocol);
         List<String> entries = OutputPreset.getAliases(defaults);
         List<String> values = new ArrayList<>();
         for (OutputPreset preset : defaults) {

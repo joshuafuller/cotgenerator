@@ -14,6 +14,9 @@ public interface PresetDao {
     @Query("SELECT * FROM Presets WHERE Protocol LIKE :protocol")
     Observable<List<OutputPreset>> getByProtocol(String protocol);
 
+    @Query("SELECT * FROM Presets WHERE Protocol LIKE :protocol AND Address LIKE :address AND Port LIKE :port LIMIT 1")
+    OutputPreset getPreset(String protocol, String address, int port);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(OutputPreset preset);
 

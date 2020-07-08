@@ -14,7 +14,9 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.preference.PreferenceManager;
 
@@ -22,7 +24,6 @@ import com.jon.cotgenerator.BuildConfig;
 import com.jon.cotgenerator.R;
 import com.jon.cotgenerator.presets.OutputPreset;
 import com.jon.cotgenerator.service.CotService;
-import com.jon.cotgenerator.utils.DeviceUid;
 import com.jon.cotgenerator.utils.GenerateInt;
 import com.jon.cotgenerator.utils.Key;
 import com.jon.cotgenerator.utils.Notify;
@@ -39,7 +40,10 @@ public class CotActivity
                    EasyPermissions.PermissionCallbacks,
                    SharedPreferences.OnSharedPreferenceChangeListener {
     private static final int PERMISSIONS_CODE = GenerateInt.next();
-    public static final String[] PERMISSIONS = new String[]{ Manifest.permission.ACCESS_FINE_LOCATION };
+    public static final String[] PERMISSIONS = new String[]{
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+    };
 
     private SharedPreferences prefs;
 
@@ -63,10 +67,19 @@ public class CotActivity
     protected void onCreate(Bundle savedInstanceState) {
         /* Regular setup */
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.cot_activity);
+        setContentView(R.layout.activity);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(R.string.toolbarHeaderMain);
+            actionBar.setDisplayHomeAsUpEnabled(false);
+            actionBar.setDisplayHomeAsUpEnabled(false);
+        }
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, SettingsFragment.newInstance())
+                    .replace(R.id.fragment, CotFragment.newInstance())
                     .commitNow();
         }
 
@@ -127,7 +140,7 @@ public class CotActivity
                         Uri uri = Uri.parse("package:" + BuildConfig.APPLICATION_ID);
                         startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri));
                     };
-                    Notify.red(getRootView(), getString(R.string.permissionBegging), listener, "OPEN");
+                    Notify.red(getRootView(), getString(R.string.gpsPermissionBegging), listener, "OPEN");
                     return true;
                 }
                 if (presetIsSelected()) {
@@ -175,7 +188,7 @@ public class CotActivity
     @Override
     public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
         if (requestCode == PERMISSIONS_CODE) {
-            Notify.green(getRootView(), "GPS Permission successfully granted");
+            Notify.green(getRootView(), "Permissions successfully granted");
         }
     }
 
@@ -183,13 +196,23 @@ public class CotActivity
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
         if (requestCode == PERMISSIONS_CODE) {
             if (!ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSIONS[0])) {
-                /* Permission has been permanently denied, so show a toast and open Android settings */
-                Notify.toast(this, getString(R.string.permissionBegging));
+                /* GPS permission has been permanently denied, so show a toast and open Android settings */
+                Notify.toast(this, getString(R.string.gpsPermissionBegging));
                 Uri uri = Uri.parse("package:" + BuildConfig.APPLICATION_ID);
                 startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri));
             } else {
                 /* Permission has been temporarily denied, so we can re-ask within the app */
-                Notify.orange(getRootView(), getString(R.string.permissionRationale));
+                Notify.orange(getRootView(), getString(R.string.gpsPermissionRationale));
+            }
+
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSIONS[1])) {
+                /* Storage permission has been permanently denied, so show a toast and open Android settings */
+                Notify.toast(this, getString(R.string.storagePermissionBegging));
+                Uri uri = Uri.parse("package:" + BuildConfig.APPLICATION_ID);
+                startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri));
+            } else {
+                /* Storage permission has been temporarily denied, so we can re-ask within the app */
+                Notify.orange(getRootView(), getString(R.string.storagePermissionRationale));
             }
         }
     }
