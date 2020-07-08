@@ -18,7 +18,7 @@ public class OutputPreset {
     public static final String SEPARATOR = "¶"; // pilcrow
 
     /* Basic output fields */
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     int id;
     @ColumnInfo(name = "Protocol")
     public final Protocol protocol;
