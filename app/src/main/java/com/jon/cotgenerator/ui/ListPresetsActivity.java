@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
+import android.view.View;
 
 import androidx.annotation.IdRes;
 import androidx.appcompat.app.ActionBar;
@@ -13,10 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.jon.cotgenerator.R;
 import com.jon.cotgenerator.presets.OutputPreset;
 import com.jon.cotgenerator.presets.PresetRepository;
-import com.jon.cotgenerator.utils.Notify;
 import com.jon.cotgenerator.utils.Protocol;
 
 import java.util.HashMap;
@@ -31,9 +31,9 @@ public class ListPresetsActivity
         implements ListPresetsAdapter.ItemClickListener {
 
     private final Map<Protocol, PresetRecyclerInfo> recyclerViewMap = new HashMap<Protocol, PresetRecyclerInfo>() {{
-        put(Protocol.SSL, new PresetRecyclerInfo(R.id.listPresetsSslRecyclerView, R.id.listPresetsSslCreateButton));
-        put(Protocol.TCP, new PresetRecyclerInfo(R.id.listPresetsTcpRecyclerView, R.id.listPresetsTcpCreateButton));
-        put(Protocol.UDP, new PresetRecyclerInfo(R.id.listPresetsUdpRecyclerView, R.id.listPresetsUdpCreateButton));
+        put(Protocol.SSL, new PresetRecyclerInfo(R.id.listPresetsSslRecyclerView, R.id.sslNoneFound));
+        put(Protocol.TCP, new PresetRecyclerInfo(R.id.listPresetsTcpRecyclerView, R.id.tcpNoneFound));
+        put(Protocol.UDP, new PresetRecyclerInfo(R.id.listPresetsUdpRecyclerView, R.id.udpNoneFound));
     }};
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
@@ -55,7 +55,7 @@ public class ListPresetsActivity
         for (Map.Entry<Protocol, PresetRecyclerInfo> entry : recyclerViewMap.entrySet()) {
             final Protocol protocol = entry.getKey();
             final PresetRecyclerInfo info = entry.getValue();
-            final RecyclerView recyclerView = findViewById(info.viewId);
+            final RecyclerView recyclerView = findViewById(info.recyclerViewId);
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
             compositeDisposable.add(repository.getCustomByProtocol(protocol)
                     .subscribeOn(Schedulers.io())
@@ -64,14 +64,16 @@ public class ListPresetsActivity
                         info.adapter = new ListPresetsAdapter(this, presets);
                         info.adapter.setClickListener(this);
                         recyclerView.setAdapter(info.adapter);
+                        final int visibility = presets.isEmpty() ? View.VISIBLE : View.GONE;
+                        findViewById(info.emptyMessageId).setVisibility(visibility);
                     }));
-            Button createPresetButton = findViewById(info.buttonId);
-            createPresetButton.setOnClickListener(view -> {
-                Intent intent = new Intent(this, EditPresetActivity.class);
-                intent.putExtra(IntentIds.EXTRA_EDIT_PRESET_PROTOCOL, protocol.get());
-                startActivity(intent);
-            });
         }
+
+        ExtendedFloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(view -> {
+            Intent intent = new Intent(this, EditPresetActivity.class);
+            startActivity(intent);
+        });
     }
 
     @Override
@@ -144,16 +146,21 @@ public class ListPresetsActivity
             compositeDisposable.add(repository.getCustomByProtocol(protocol)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(presets -> info.adapter.updatePresets(presets)));
+                    .subscribe(presets -> {
+                        info.adapter.updatePresets(presets);
+                        final int visibility = presets.isEmpty() ? View.VISIBLE : View.GONE;
+                        findViewById(info.emptyMessageId).setVisibility(visibility);
+                    }));
         }
     }
 
     private static class PresetRecyclerInfo {
-        int viewId, buttonId;
+        int recyclerViewId, emptyMessageId;
         ListPresetsAdapter adapter;
-        PresetRecyclerInfo(@IdRes int viewId, @IdRes int buttonId) {
-            this.viewId = viewId;
-            this.buttonId = buttonId;
+
+        PresetRecyclerInfo(@IdRes int recyclerViewId, @IdRes int emptyMessageId) {
+            this.recyclerViewId = recyclerViewId;
+            this.emptyMessageId = emptyMessageId;
         }
     }
 }

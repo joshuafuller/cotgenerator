@@ -182,15 +182,9 @@
             app:useSimpleSummaryProvider="true" />
 
         <Preference
-            android:key="addNewPreset"
+            android:key="editPresets"
             app:iconSpaceReserved="false"
-            app:title="@string/addNewPreset"
-            app:useSimpleSummaryProvider="true" />
-
-        <Preference
-            android:key="viewPresets"
-            app:iconSpaceReserved="false"
-            app:title="@string/viewPresets"
+            app:title="@string/editPresets"
             app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference

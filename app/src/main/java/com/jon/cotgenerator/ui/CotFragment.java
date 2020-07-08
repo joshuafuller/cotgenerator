@@ -261,18 +261,9 @@ public class CotFragment
     }
 
     private void setPresetPreferenceListeners() {
-        Preference addPreference = findPreference(Key.ADD_NEW_PRESET);
-        if (addPreference != null) {
-            addPreference.setOnPreferenceClickListener(clickedPref -> {
-                Intent intent = new Intent(getActivity(), EditPresetActivity.class);
-                intent.putExtra(IntentIds.EXTRA_EDIT_PRESET_PROTOCOL, PrefUtils.getString(prefs, Key.TRANSMISSION_PROTOCOL));
-                startActivity(intent);
-                return true;
-            });
-        }
-        Preference viewPresetsPreference = findPreference(Key.VIEW_PRESETS);
-        if (viewPresetsPreference != null) {
-            viewPresetsPreference.setOnPreferenceClickListener(clickedPref -> {
+        Preference editPresetsPreference = findPreference(Key.EDIT_PRESETS);
+        if (editPresetsPreference != null) {
+            editPresetsPreference.setOnPreferenceClickListener(clickedPref -> {
                 startActivity(new Intent(getActivity(), ListPresetsActivity.class));
                 return true;
             });

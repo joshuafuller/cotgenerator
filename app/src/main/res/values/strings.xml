@@ -60,5 +60,7 @@
     <string name="goBack">Go back?</string>
     <string name="goBackMessage">This will discard all current changes.</string>
 
-    <string name="listPresetsCreateNew">CREATE NEW</string>
+    <string name="noPresetsFound">No presets found!</string>
+    <string name="createNewPreset">CREATE NEW</string>
+
 </resources>

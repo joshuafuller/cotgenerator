@@ -27,8 +27,7 @@ public final class Key {
     public static final String UDP_PRESETS = "udpPresets";
     public static final String DEST_ADDRESS = "destAddress";
     public static final String DEST_PORT = "destPort";
-    public static final String ADD_NEW_PRESET = "addNewPreset";
-    public static final String VIEW_PRESETS = "viewPresets";
+    public static final String EDIT_PRESETS = "editPresets";
 
     /* Edit preset screen */
     public static final String PRESET_PROTOCOL = "presetProtocol";
