@@ -1,13 +1,10 @@
 package com.jon.cotgenerator.ui;
 
 import android.Manifest;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,7 +12,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.preference.PreferenceManager;
@@ -32,12 +28,10 @@ import com.jon.cotgenerator.utils.PrefUtils;
 import java.util.List;
 
 import pub.devrel.easypermissions.EasyPermissions;
-import timber.log.Timber;
 
 public class CotActivity
-        extends AppCompatActivity
-        implements CotService.StateListener,
-                   EasyPermissions.PermissionCallbacks,
+        extends ServiceBoundActivity
+        implements EasyPermissions.PermissionCallbacks,
                    SharedPreferences.OnSharedPreferenceChangeListener {
     private static final int PERMISSIONS_CODE = GenerateInt.next();
     public static final String[] PERMISSIONS = new String[]{
@@ -46,22 +40,6 @@ public class CotActivity
     };
 
     private SharedPreferences prefs;
-
-    private CotService service;
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override public void onServiceConnected(ComponentName name, IBinder binder) {
-            Timber.i("onServiceConnected");
-            service = ((CotService.ServiceBinder) binder).getService();
-            service.registerStateListener(CotActivity.this);
-            onStateChanged(service.getState(), null);
-
-        }
-        @Override public void onServiceDisconnected(ComponentName name) {
-            Timber.i("onServiceDisconnected");
-            service.unregisterStateListener();
-            service = null;
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,11 +60,6 @@ public class CotActivity
                     .replace(R.id.fragment, CotFragment.newInstance())
                     .commitNow();
         }
-
-        /* Start the service and bind to it */
-        Intent intent = new Intent(this, CotService.class);
-        startService(intent);
-        bindService(intent, serviceConnection, BIND_AUTO_CREATE);
     }
 
     @Override
@@ -106,14 +79,6 @@ public class CotActivity
     public void onDestroy() {
         super.onDestroy();
         prefs.unregisterOnSharedPreferenceChangeListener(this);
-        if (service != null) {
-            service.unregisterStateListener();
-            service = null;
-            if (serviceConnection != null) {
-                unbindService(serviceConnection);
-                serviceConnection = null;
-            }
-        }
     }
 
     @Override

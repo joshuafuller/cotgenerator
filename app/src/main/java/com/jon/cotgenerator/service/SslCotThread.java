@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import com.jon.cotgenerator.cot.CursorOnTarget;
 import com.jon.cotgenerator.presets.OutputPreset;
 import com.jon.cotgenerator.presets.PresetRepository;
+import com.jon.cotgenerator.utils.Constants;
 import com.jon.cotgenerator.utils.Key;
 import com.jon.cotgenerator.utils.PrefUtils;
 
@@ -50,42 +51,36 @@ public class SslCotThread extends TcpCotThread {
     }
 
     @Override
-    protected void sendToDestination(CursorOnTarget cot) {
+    protected void sendToDestination(CursorOnTarget cot) throws IOException {
         try {
             outputStream.write(cot.toBytes(dataFormat));
             Timber.i("Sent cot: %s", cot.callsign);
         } catch (NullPointerException | SocketException e) {
             /* Thrown when the thread is cancelled from another thread and we try to access the sockets */
             shutdown();
-        } catch (IOException e) {
-            Timber.e(e);
-            shutdown();
         }
     }
 
     @Override
-    protected void openSocket() {
+    protected void openSocket() throws Exception {
         OutputPreset preset = buildPreset();
-        try {
-            KeyStore certStore = loadKeyStore(
-                    preset.clientCert,
-                    preset.clientCertPassword.toCharArray()
-            );
-            KeyStore trustStore = loadKeyStore(
-                    preset.trustStore,
-                    preset.trustStorePassword.toCharArray()
-            );
-            SSLContext sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(
-                    getKeyManagers(certStore, preset.clientCertPassword.toCharArray()),
-                    getTrustManagers(trustStore),
-                    new SecureRandom()
-            );
-            socket = (SSLSocket) sslContext.getSocketFactory().createSocket(destIp, destPort);
-            outputStream = socket.getOutputStream();
-        } catch (Exception e) {
-            logExceptionAndShutdown(e);
-        }
+        KeyStore certStore = loadKeyStore(
+                preset.clientCert,
+                preset.clientCertPassword.toCharArray()
+        );
+        KeyStore trustStore = loadKeyStore(
+                preset.trustStore,
+                preset.trustStorePassword.toCharArray()
+        );
+        SSLContext sslContext = SSLContext.getInstance("SSL");
+        sslContext.init(
+                getKeyManagers(certStore, preset.clientCertPassword.toCharArray()),
+                getTrustManagers(trustStore),
+                new SecureRandom()
+        );
+        socket = (SSLSocket) sslContext.getSocketFactory().createSocket(destIp, destPort);
+        socket.setSoTimeout(Constants.TCP_SOCKET_TIMEOUT_MILLISECONDS);
+        outputStream = socket.getOutputStream();
     }
 
     private OutputPreset buildPreset() {
@@ -128,11 +123,6 @@ public class SslCotThread extends TcpCotThread {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
         keyManagerFactory.init(certStore, password);
         return keyManagerFactory.getKeyManagers();
-    }
-
-    private void logExceptionAndShutdown(Exception e) {
-        Timber.e(e);
-        shutdown();
     }
 
     /* This workaround is only necessary because I was getting NetworkOnMainThreadExceptions when

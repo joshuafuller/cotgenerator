@@ -28,7 +28,6 @@ import com.jon.cotgenerator.BuildConfig;
 import com.jon.cotgenerator.R;
 import com.jon.cotgenerator.ui.CotActivity;
 import com.jon.cotgenerator.utils.GenerateInt;
-import com.jon.cotgenerator.utils.Notify;
 import com.jon.cotgenerator.utils.PrefUtils;
 
 import java.util.ArrayList;
@@ -36,7 +35,7 @@ import java.util.List;
 
 import timber.log.Timber;
 
-public class CotService extends Service {
+public class CotService extends Service implements ThreadErrorListener {
     public class ServiceBinder extends Binder {
         public CotService getService() { return CotService.this; }
     }
@@ -78,8 +77,9 @@ public class CotService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        Timber.i("onCreate");
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        cotManager = new CotManager(prefs);
+        cotManager = new CotManager(prefs, this);
         try {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
             fusedLocationClient.getLastLocation().addOnSuccessListener(LastGpsLocation::update);
@@ -89,16 +89,6 @@ public class CotService extends Service {
             Timber.e("Failed to initialise Fused Location Client");
             error(e);
         }
-    }
-
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent != null && intent.getAction() != null) {
-            switch (intent.getAction()) {
-                case START_SERVICE: start(); break;
-                case STOP_SERVICE:  stop();  break;
-            }
-        }
-        return Service.START_STICKY;
     }
 
     public void start() {
@@ -128,7 +118,6 @@ public class CotService extends Service {
             stateListener.onStateChanged(State.ERROR, throwable);
         }
         cotManager.shutdown();
-        Notify.toast(this, "Uncaught error in service: " + throwable.getMessage());
         stopForegroundService();
     }
 
@@ -220,5 +209,10 @@ public class CotService extends Service {
     public void unregisterStateListener(StateListener listener) {
         stateListeners.remove(listener);
     }
+
+    @Override
+    public void reportError(Throwable throwable) {
+        /* Get an error from a thread, so pass the message down to our activity and show the user */
+        error(throwable);
     }
 }

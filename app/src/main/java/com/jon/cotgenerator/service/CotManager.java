@@ -5,18 +5,22 @@ import android.content.SharedPreferences;
 class CotManager implements SharedPreferences.OnSharedPreferenceChangeListener {
     private final SharedPreferences prefs;
     private CotThread thread;
+    private ThreadErrorListener errorListener;
+    private Thread.UncaughtExceptionHandler exceptionHandler = (thread, throwable) -> errorListener.reportError(throwable);
 
-    CotManager(SharedPreferences prefs) {
+    CotManager(SharedPreferences prefs, ThreadErrorListener errorListener) {
         this.prefs = prefs;
+        this.errorListener = errorListener;
     }
 
-    private boolean isRunning() {
+    boolean isRunning() {
         return thread != null && thread.isRunning();
     }
 
     void start() {
         prefs.registerOnSharedPreferenceChangeListener(this);
         thread = CotThread.fromPrefs(prefs);
+        thread.setUncaughtExceptionHandler(exceptionHandler);
         thread.start();
     }
 
