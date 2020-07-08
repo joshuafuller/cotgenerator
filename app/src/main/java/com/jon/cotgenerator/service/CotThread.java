@@ -20,7 +20,7 @@ abstract class CotThread extends Thread {
     protected int destPort;
     protected List<CursorOnTarget> cotIcons;
 
-    abstract void sendToDestination(CursorOnTarget cot);
+    abstract void sendToDestination(CursorOnTarget cot) throws Exception;
 
     static CotThread fromPrefs(SharedPreferences prefs) {
         Protocol protocol = Protocol.fromPrefs(prefs);

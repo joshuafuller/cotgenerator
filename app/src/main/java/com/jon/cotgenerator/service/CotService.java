@@ -28,12 +28,14 @@ import com.jon.cotgenerator.BuildConfig;
 import com.jon.cotgenerator.R;
 import com.jon.cotgenerator.ui.CotActivity;
 import com.jon.cotgenerator.utils.GenerateInt;
-import com.jon.cotgenerator.utils.Notify;
 import com.jon.cotgenerator.utils.PrefUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import timber.log.Timber;
 
-public class CotService extends Service {
+public class CotService extends Service implements ThreadErrorListener {
     public class ServiceBinder extends Binder {
         public CotService getService() { return CotService.this; }
     }
@@ -65,7 +67,7 @@ public class CotService extends Service {
     private SharedPreferences prefs;
     private IBinder binder = new ServiceBinder();
     private State state = State.STOPPED;
-    private StateListener stateListener;
+    private List<StateListener> stateListeners = new ArrayList<>();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -75,8 +77,9 @@ public class CotService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        Timber.i("onCreate");
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        cotManager = new CotManager(prefs);
+        cotManager = new CotManager(prefs, this);
         try {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
             fusedLocationClient.getLastLocation().addOnSuccessListener(LastGpsLocation::update);
@@ -88,20 +91,12 @@ public class CotService extends Service {
         }
     }
 
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent != null && intent.getAction() != null) {
-            switch (intent.getAction()) {
-                case START_SERVICE: start(); break;
-                case STOP_SERVICE:  stop();  break;
-            }
-        }
-        return Service.START_STICKY;
-    }
-
     public void start() {
         Timber.i("Starting service");
         state = State.RUNNING;
-        stateListener.onStateChanged(state, null);
+        for (StateListener stateListener : stateListeners) {
+            stateListener.onStateChanged(state, null);
+        }
         cotManager.start();
         startForegroundService();
     }
@@ -109,7 +104,9 @@ public class CotService extends Service {
     public void stop() {
         Timber.i("Stopping service");
         state = State.STOPPED;
-        stateListener.onStateChanged(state, null);
+        for (StateListener stateListener : stateListeners) {
+            stateListener.onStateChanged(state, null);
+        }
         cotManager.shutdown();
         stopForegroundService();
     }
@@ -117,9 +114,10 @@ public class CotService extends Service {
     public void error(Throwable throwable) {
         Timber.e("Error in the service: %s", throwable.getMessage());
         state = State.STOPPED;
-        stateListener.onStateChanged(State.ERROR, throwable);
+        for (StateListener stateListener : stateListeners) {
+            stateListener.onStateChanged(State.ERROR, throwable);
+        }
         cotManager.shutdown();
-        Notify.toast(this, "Uncaught error in service: " + throwable.getMessage());
         stopForegroundService();
     }
 
@@ -204,11 +202,17 @@ public class CotService extends Service {
     public State getState() { return state; }
 
     public void registerStateListener(StateListener listener) {
-        this.stateListener = listener;
+        stateListeners.add(listener);
         listener.onStateChanged(state, null);
     }
 
-    public void unregisterStateListener() {
-        stateListener = null;
+    public void unregisterStateListener(StateListener listener) {
+        stateListeners.remove(listener);
+    }
+
+    @Override
+    public void reportError(Throwable throwable) {
+        /* Get an error from a thread, so pass the message down to our activity and show the user */
+        error(throwable);
     }
 }
