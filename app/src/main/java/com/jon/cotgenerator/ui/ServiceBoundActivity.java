@@ -5,11 +5,13 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.jon.cotgenerator.service.CotService;
+import com.jon.cotgenerator.utils.Notify;
 
 import timber.log.Timber;
 
@@ -54,6 +56,17 @@ abstract class ServiceBoundActivity
                 unbindService(serviceConnection);
                 serviceConnection = null;
             }
+        }
+    }
+
+    protected View getRootView() {
+        return findViewById(android.R.id.content);
+    }
+
+    @Override
+    public void onStateChanged(CotService.State state, @Nullable Throwable throwable) {
+        if (state == CotService.State.ERROR && throwable != null) {
+            Notify.red(getRootView(), "Error: " + throwable.getMessage());
         }
     }
 }

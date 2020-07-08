@@ -6,9 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -18,7 +16,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.jon.cotgenerator.R;
 import com.jon.cotgenerator.presets.OutputPreset;
 import com.jon.cotgenerator.presets.PresetRepository;
-import com.jon.cotgenerator.service.CotService;
 import com.jon.cotgenerator.utils.InputValidator;
 import com.jon.cotgenerator.utils.Key;
 import com.jon.cotgenerator.utils.Notify;
@@ -165,18 +162,7 @@ public class EditPresetActivity
         finish();
     }
 
-    private View getRootView() {
-        return findViewById(android.R.id.content);
-    }
-
     private Protocol getInputProtocol() {
         return Protocol.fromString(PrefUtils.getString(prefs, Key.PRESET_PROTOCOL));
-    }
-
-    @Override
-    public void onStateChanged(CotService.State state, @Nullable Throwable throwable) {
-        if (state == CotService.State.ERROR && throwable != null) {
-            Notify.red(getRootView(), "Error: " + throwable.getMessage());
-        }
     }
 }

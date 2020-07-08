@@ -135,10 +135,6 @@ public class CotActivity
                 && PrefUtils.getString(prefs, presetKey).split(OutputPreset.SEPARATOR).length > 1;
     }
 
-    private View getRootView() {
-        return findViewById(android.R.id.content);
-    }
-
     private void requestGpsPermission() {
         if (!EasyPermissions.hasPermissions(this, PERMISSIONS)) {
             EasyPermissions.requestPermissions(this, getString(R.string.permissionRationale), PERMISSIONS_CODE, PERMISSIONS);
@@ -185,9 +181,7 @@ public class CotActivity
     @Override
     public void onStateChanged(CotService.State state, @Nullable Throwable throwable) {
         invalidateOptionsMenu();
-        if (state == CotService.State.ERROR && throwable != null) {
-            Notify.red(getRootView(), "Error: " + throwable.getMessage());
-        }
+        super.onStateChanged(state, throwable);
     }
 
     @Override
