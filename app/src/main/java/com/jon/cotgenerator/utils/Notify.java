@@ -18,6 +18,7 @@ public final class Notify {
         view.setBackgroundColor(backgroundColour);
         TextView text = view.findViewById(com.google.android.material.R.id.snackbar_text);
         text.setTextColor(textColour);
+        text.setMaxLines(20); // don't crop off longer exception messages
         if (action != null && actionMsg != null) {
             snackbar.setAction(actionMsg, action);
             snackbar.setActionTextColor(textColour);
