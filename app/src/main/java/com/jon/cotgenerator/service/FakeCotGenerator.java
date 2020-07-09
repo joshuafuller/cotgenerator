@@ -9,6 +9,7 @@ import com.jon.cotgenerator.cot.CotRole;
 import com.jon.cotgenerator.cot.CotTeam;
 import com.jon.cotgenerator.cot.CursorOnTarget;
 import com.jon.cotgenerator.cot.UtcTimestamp;
+import com.jon.cotgenerator.utils.Battery;
 import com.jon.cotgenerator.utils.Constants;
 import com.jon.cotgenerator.utils.DeviceUid;
 import com.jon.cotgenerator.utils.Key;
@@ -41,6 +42,8 @@ class FakeCotGenerator extends CotGenerator {
     private long staleTimer;
     private Point distributionCentre;
 
+    private Battery battery;
+
     private static class IconData {
         CursorOnTarget cot;
         Point.Offset offset;
@@ -66,6 +69,8 @@ class FakeCotGenerator extends CotGenerator {
         /* Stop any fuckery with distribution radii */
         movementSpeed = Math.min(movementSpeed, distributionRadius/2.0);
         travelDistance = movementSpeed * PrefUtils.getInt(prefs, Key.TRANSMISSION_PERIOD);
+
+        battery = Battery.getInstance();
     }
 
     @Override
@@ -105,6 +110,7 @@ class FakeCotGenerator extends CotGenerator {
             cot.lat = distributionCentre.lat * Constants.RAD_TO_DEG;
             cot.lon = distributionCentre.lon * Constants.RAD_TO_DEG;
             cot.hae = initialiseAltitude(altitudeItr);
+            cot.battery = battery.getPercentage();
             Point.Offset initialOffset = generateInitialOffset(distanceItr, courseItr);
             setPositionFromOffset(cot, initialOffset);
             cot.course = initialOffset.theta;
@@ -125,6 +131,7 @@ class FakeCotGenerator extends CotGenerator {
             setPositionFromOffset(icon.cot, icon.offset);
             icon.cot.course = bearing(oldPoint, Point.fromCot(icon.cot));
             icon.cot.hae = updateAltitude(icon.cot.hae);
+            icon.cot.battery = battery.getPercentage();
         }
         return getCot();
     }

@@ -5,6 +5,7 @@ import android.content.Context;
 
 import androidx.appcompat.app.AppCompatDelegate;
 
+import com.jon.cotgenerator.utils.Battery;
 import com.jon.cotgenerator.utils.DeviceUid;
 
 import org.jetbrains.annotations.NotNull;
@@ -35,5 +36,8 @@ public class CotApplication extends Application {
 
         /* Generate a device-specific UUID and save to file, if it doesn't already exist */
         DeviceUid.generate(this);
+
+        /* Register a sticky intent to allow fetching battery status during runtime */
+        Battery.getInstance().initialise(getContext());
     }
 }
