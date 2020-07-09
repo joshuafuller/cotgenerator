@@ -30,8 +30,8 @@ import com.jon.cotgenerator.ui.CotActivity;
 import com.jon.cotgenerator.utils.GenerateInt;
 import com.jon.cotgenerator.utils.PrefUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import timber.log.Timber;
 
@@ -67,7 +67,7 @@ public class CotService extends Service implements ThreadErrorListener {
     private SharedPreferences prefs;
     private IBinder binder = new ServiceBinder();
     private State state = State.STOPPED;
-    private List<StateListener> stateListeners = new ArrayList<>();
+    private Set<StateListener> stateListeners = new HashSet<>();
 
     @Override
     public IBinder onBind(Intent intent) {

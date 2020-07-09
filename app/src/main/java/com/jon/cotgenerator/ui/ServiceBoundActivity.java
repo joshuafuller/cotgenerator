@@ -47,10 +47,25 @@ abstract class ServiceBoundActivity
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (service != null) {
+            service.registerStateListener(this);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (service != null) {
+            service.unregisterStateListener(this);
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         if (service != null) {
-            service.unregisterStateListener(this);
             service = null;
             if (serviceConnection != null) {
                 unbindService(serviceConnection);
