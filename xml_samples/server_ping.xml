@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-<event version="2.0" uid="ANDROID-971c65be8c19f5a1-ping" type="t-x-c-t" time="2020-04-17T09:26:03.000Z" start="2020-04-17T09:26:03.000Z" stale="2020-04-17T09:26:13.000Z" how="m-g">
-    <point lat="0.00000000" lon="0.00000000" hae="0.00000000" ce="9999999" le="9999999"/>
-    <detail/>
-</event>
