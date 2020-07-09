@@ -16,6 +16,7 @@
     </array>
 
     <string-array name="transmissionProtocols">
+        <item>@string/transmissionProtocolSsl</item>
         <item>@string/transmissionProtocolTcp</item>
         <item>@string/transmissionProtocolUdp</item>
     </string-array>
@@ -34,6 +35,14 @@
         <item>@string/roleForwardObserver</item>
         <item>@string/roleRto</item>
         <item>@string/roleK9</item>
+    </string-array>
+
+    <string-array name="sslPresetEntries">
+        <item>@string/sslTakserver</item>
+    </string-array>
+
+    <string-array name="sslPresetValues">
+        <item>@string/sslTakserverValue</item>
     </string-array>
 
     <string-array name="tcpPresetEntries">

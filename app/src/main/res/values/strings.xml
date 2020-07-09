@@ -1,13 +1,25 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="ButtonCase">
     <string name="app_name">CoT Generator</string>
 
-    <string name="permissionRationale">GPS access is required for this app. If you don\'t accept, it won\'t work!</string>
-    <string name="permissionBegging">GPS permission has been denied! You\'ll have to manually change this in the Android settings.</string>
+    <string name="toolbarHeaderMain">@string/app_name</string>
+    <string name="toolbarHeaderEditPreset">Edit Preset</string>
+    <string name="toolbarHeaderListPresets">Custom Presets</string>
+
+    <string name="permissionRationale">Two permissions are required:
+        1) GPS - for the "Follow My GPS Position" setting;
+        2) Storage - for reading P12 certificate files for SSL authentication</string>
+    <string name="gpsPermissionRationale">GPS access is required for this app. If you don\'t accept, it won\'t work!</string>
+    <string name="gpsPermissionBegging">GPS permission has been denied! You\'ll have to manually change this in the Android settings.</string>
+    <string name="storagePermissionRationale">Storage access is required to access certificates when building SSL presets.</string>
+    <string name="storagePermissionBegging">Storage permission has been denied! You\'ll have to manually change this in the Android settings.</string>
 
     <string name="stop">Stop</string>
     <string name="start">Start</string>
     <string name="about">About</string>
+    <string name="save">Save</string>
+    <string name="delete_all">Delete All</string>
 
+    <string name="transmissionProtocolSsl">SSL</string>
     <string name="transmissionProtocolTcp">TCP</string>
     <string name="transmissionProtocolUdp">UDP</string>
 
@@ -23,6 +35,11 @@
     <string name="roleRto">RTO</string>
     <string name="roleK9">K9</string>
 
+    <string name="sslTakserverValue">SSL¶Discord TAK Server¶discordtakserver.mooo.com¶58088</string>
+    <string name="sslTakserver">Discord TAK Server</string>
+    <string name="sslTakserverIp">discordtakserver.mooo.com</string>
+    <string name="sslTakserverPort">58088</string>
+
     <string name="tcpFreetakserverValue">TCP¶Public FreeTakServer¶204.48.30.216¶8087</string>
     <string name="tcpFreetakserver">Public FreeTakServer</string>
     <string name="tcpFreetakserverIp">204.48.30.216</string>
@@ -37,4 +54,13 @@
     <string name="addNewPresetAlias">Alias:</string>
     <string name="addNewPresetAddress">Address:</string>
     <string name="addNewPresetPort">Port:</string>
+    <string name="addNewPresetTrustStore">Trust Store:</string>
+    <string name="addNewPresetClientCert">Client Cert:</string>
+
+    <string name="goBack">Go back?</string>
+    <string name="goBackMessage">This will discard all current changes.</string>
+
+    <string name="noPresetsFound">No custom presets found!</string>
+    <string name="createNewPreset">CREATE NEW</string>
+
 </resources>

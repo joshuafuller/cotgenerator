@@ -52,7 +52,7 @@ public class CursorOnTarget {
     public String geosrc = "GENERATED";
 
     // System info
-    public final Integer battery = 100; // internal device battery remaining, scale of 1-100
+    public Integer battery = 100; // internal battery charge percentage, scale of 1-100
     public final String device = String.format("%s %s", Build.MANUFACTURER.toUpperCase(), Build.MODEL.toUpperCase());
     public final String platform = "COT-GENERATOR";
     public final String os = String.valueOf(Build.VERSION.SDK_INT);

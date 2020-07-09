@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 
@@ -28,12 +29,16 @@ import com.jon.cotgenerator.BuildConfig;
 import com.jon.cotgenerator.R;
 import com.jon.cotgenerator.ui.CotActivity;
 import com.jon.cotgenerator.utils.GenerateInt;
+import com.jon.cotgenerator.utils.Key;
 import com.jon.cotgenerator.utils.Notify;
 import com.jon.cotgenerator.utils.PrefUtils;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import timber.log.Timber;
 
-public class CotService extends Service {
+public class CotService extends Service implements ThreadErrorListener {
     public class ServiceBinder extends Binder {
         public CotService getService() { return CotService.this; }
     }
@@ -45,7 +50,6 @@ public class CotService extends Service {
     private static final String BASE_INTENT_ID = BuildConfig.APPLICATION_ID + ".CotService.";
     private static final int LAUNCH_ACTIVITY_PENDING_INTENT = GenerateInt.next();
     private static final int STOP_SERVICE_PENDING_INTENT = GenerateInt.next();
-    public static final String START_SERVICE = BASE_INTENT_ID + "START";
     public static final String STOP_SERVICE = BASE_INTENT_ID + "STOP";
 
     private int updateRateSeconds;
@@ -65,7 +69,7 @@ public class CotService extends Service {
     private SharedPreferences prefs;
     private IBinder binder = new ServiceBinder();
     private State state = State.STOPPED;
-    private StateListener stateListener;
+    private Set<StateListener> stateListeners = new HashSet<>();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -75,33 +79,30 @@ public class CotService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        Timber.i("onCreate");
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        cotManager = new CotManager(prefs);
-        try {
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-            fusedLocationClient.getLastLocation().addOnSuccessListener(LastGpsLocation::update);
-            initialiseLocationRequest();
-        } catch (SecurityException e) {
-            Timber.e(e);
-            Timber.e("Failed to initialise Fused Location Client");
-            error(e);
-        }
-    }
+        cotManager = new CotManager(prefs, this);
 
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent != null && intent.getAction() != null) {
-            switch (intent.getAction()) {
-                case START_SERVICE: start(); break;
-                case STOP_SERVICE:  stop();  break;
+        /* Only initialise the GPS requests if the option is enabled in settings */
+        if (PrefUtils.getBoolean(prefs, Key.FOLLOW_GPS_LOCATION)) {
+            try {
+                fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+                fusedLocationClient.getLastLocation().addOnSuccessListener(LastGpsLocation::update);
+                initialiseLocationRequest();
+            } catch (SecurityException e) {
+                Timber.e(e);
+                Timber.e("Failed to initialise Fused Location Client");
+                error(e);
             }
         }
-        return Service.START_STICKY;
     }
 
     public void start() {
         Timber.i("Starting service");
         state = State.RUNNING;
-        stateListener.onStateChanged(state, null);
+        for (StateListener stateListener : stateListeners) {
+            stateListener.onStateChanged(state, null);
+        }
         cotManager.start();
         startForegroundService();
     }
@@ -109,7 +110,9 @@ public class CotService extends Service {
     public void stop() {
         Timber.i("Stopping service");
         state = State.STOPPED;
-        stateListener.onStateChanged(state, null);
+        for (StateListener stateListener : stateListeners) {
+            stateListener.onStateChanged(state, null);
+        }
         cotManager.shutdown();
         stopForegroundService();
     }
@@ -117,9 +120,17 @@ public class CotService extends Service {
     public void error(Throwable throwable) {
         Timber.e("Error in the service: %s", throwable.getMessage());
         state = State.STOPPED;
-        stateListener.onStateChanged(State.ERROR, throwable);
+        Timber.i("%d listeners", stateListeners.size());
+        if (stateListeners.isEmpty()) {
+            /* No UI activities open, so post a toast which should(!) appear over any other apps in the foreground */
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(() -> Notify.toast(getApplicationContext(), throwable.getMessage()));
+        } else {
+            for (StateListener stateListener : stateListeners) {
+                stateListener.onStateChanged(State.ERROR, throwable);
+            }
+        }
         cotManager.shutdown();
-        Notify.toast(this, "Uncaught error in service: " + throwable.getMessage());
         stopForegroundService();
     }
 
@@ -204,11 +215,17 @@ public class CotService extends Service {
     public State getState() { return state; }
 
     public void registerStateListener(StateListener listener) {
-        this.stateListener = listener;
+        stateListeners.add(listener);
         listener.onStateChanged(state, null);
     }
 
-    public void unregisterStateListener() {
-        stateListener = null;
+    public void unregisterStateListener(StateListener listener) {
+        stateListeners.remove(listener);
+    }
+
+    @Override
+    public void reportError(Throwable throwable) {
+        /* Get an error from a thread, so pass the message down to our activity and show the user */
+        error(throwable);
     }
 }

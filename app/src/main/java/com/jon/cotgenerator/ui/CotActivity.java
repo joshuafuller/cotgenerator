@@ -1,27 +1,25 @@
 package com.jon.cotgenerator.ui;
 
 import android.Manifest;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.preference.PreferenceManager;
 
 import com.jon.cotgenerator.BuildConfig;
 import com.jon.cotgenerator.R;
+import com.jon.cotgenerator.presets.OutputPreset;
 import com.jon.cotgenerator.service.CotService;
-import com.jon.cotgenerator.utils.DeviceUid;
 import com.jon.cotgenerator.utils.GenerateInt;
 import com.jon.cotgenerator.utils.Key;
 import com.jon.cotgenerator.utils.Notify;
@@ -30,52 +28,38 @@ import com.jon.cotgenerator.utils.PrefUtils;
 import java.util.List;
 
 import pub.devrel.easypermissions.EasyPermissions;
-import timber.log.Timber;
 
 public class CotActivity
-        extends AppCompatActivity
-        implements CotService.StateListener,
-                   EasyPermissions.PermissionCallbacks,
+        extends ServiceBoundActivity
+        implements EasyPermissions.PermissionCallbacks,
                    SharedPreferences.OnSharedPreferenceChangeListener {
     private static final int PERMISSIONS_CODE = GenerateInt.next();
-    public static final String[] PERMISSIONS = new String[]{ Manifest.permission.ACCESS_FINE_LOCATION };
+    public static final String[] PERMISSIONS = new String[]{
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+    };
 
     private SharedPreferences prefs;
-
-    private CotService service;
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override public void onServiceConnected(ComponentName name, IBinder binder) {
-            Timber.i("onServiceConnected");
-            service = ((CotService.ServiceBinder) binder).getService();
-            service.registerStateListener(CotActivity.this);
-            onStateChanged(service.getState(), null);
-
-        }
-        @Override public void onServiceDisconnected(ComponentName name) {
-            Timber.i("onServiceDisconnected");
-            service.unregisterStateListener();
-            service = null;
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         /* Regular setup */
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.cot_activity);
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, SettingsFragment.newInstance())
-                    .commitNow();
+        setContentView(R.layout.activity);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(R.string.toolbarHeaderMain);
+            actionBar.setDisplayHomeAsUpEnabled(false);
+            actionBar.setDisplayHomeAsUpEnabled(false);
         }
 
-        /* Generate a device-specific UUID and save to file, if it doesn't already exist */
-        DeviceUid.generate(this);
-
-        /* Start the service and bind to it */
-        Intent intent = new Intent(this, CotService.class);
-        startService(intent);
-        bindService(intent, serviceConnection, BIND_AUTO_CREATE);
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment, CotFragment.newInstance())
+                    .commitNow();
+        }
     }
 
     @Override
@@ -95,14 +79,6 @@ public class CotActivity
     public void onDestroy() {
         super.onDestroy();
         prefs.unregisterOnSharedPreferenceChangeListener(this);
-        if (service != null) {
-            service.unregisterStateListener();
-            service = null;
-            if (serviceConnection != null) {
-                unbindService(serviceConnection);
-                serviceConnection = null;
-            }
-        }
     }
 
     @Override
@@ -129,7 +105,7 @@ public class CotActivity
                         Uri uri = Uri.parse("package:" + BuildConfig.APPLICATION_ID);
                         startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri));
                     };
-                    Notify.red(getRootView(), getString(R.string.permissionBegging), listener, "OPEN");
+                    Notify.red(getRootView(), getString(R.string.gpsPermissionBegging), listener, "OPEN");
                     return true;
                 }
                 if (presetIsSelected()) {
@@ -153,12 +129,10 @@ public class CotActivity
     }
 
     private boolean presetIsSelected() {
+        String presetKey = PrefUtils.getPresetPrefKeyFromSharedPrefs(prefs);
         return PrefUtils.getString(prefs, Key.DEST_ADDRESS).length() > 0
-                && PrefUtils.getString(prefs, Key.DEST_PORT).length() > 0;
-    }
-
-    private View getRootView() {
-        return findViewById(android.R.id.content);
+                && PrefUtils.getString(prefs, Key.DEST_PORT).length() > 0
+                && PrefUtils.getString(prefs, presetKey).split(OutputPreset.SEPARATOR).length > 1;
     }
 
     private void requestGpsPermission() {
@@ -175,7 +149,7 @@ public class CotActivity
     @Override
     public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
         if (requestCode == PERMISSIONS_CODE) {
-            Notify.green(getRootView(), "GPS Permission successfully granted");
+            Notify.green(getRootView(), "Permissions successfully granted");
         }
     }
 
@@ -183,13 +157,23 @@ public class CotActivity
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
         if (requestCode == PERMISSIONS_CODE) {
             if (!ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSIONS[0])) {
-                /* Permission has been permanently denied, so show a toast and open Android settings */
-                Notify.toast(this, getString(R.string.permissionBegging));
+                /* GPS permission has been permanently denied, so show a toast and open Android settings */
+                Notify.toast(this, getString(R.string.gpsPermissionBegging));
                 Uri uri = Uri.parse("package:" + BuildConfig.APPLICATION_ID);
                 startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri));
             } else {
                 /* Permission has been temporarily denied, so we can re-ask within the app */
-                Notify.orange(getRootView(), getString(R.string.permissionRationale));
+                Notify.orange(getRootView(), getString(R.string.gpsPermissionRationale));
+            }
+
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSIONS[1])) {
+                /* Storage permission has been permanently denied, so show a toast and open Android settings */
+                Notify.toast(this, getString(R.string.storagePermissionBegging));
+                Uri uri = Uri.parse("package:" + BuildConfig.APPLICATION_ID);
+                startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri));
+            } else {
+                /* Storage permission has been temporarily denied, so we can re-ask within the app */
+                Notify.orange(getRootView(), getString(R.string.storagePermissionRationale));
             }
         }
     }
@@ -197,9 +181,7 @@ public class CotActivity
     @Override
     public void onStateChanged(CotService.State state, @Nullable Throwable throwable) {
         invalidateOptionsMenu();
-        if (state == CotService.State.ERROR && throwable != null) {
-            Notify.red(getRootView(), "Error: " + throwable.getMessage());
-        }
+        super.onStateChanged(state, throwable);
     }
 
     @Override

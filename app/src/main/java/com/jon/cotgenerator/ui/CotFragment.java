@@ -1,5 +1,6 @@
 package com.jon.cotgenerator.ui;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
@@ -13,15 +14,14 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.preference.SeekBarPreference;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.jon.cotgenerator.R;
-import com.jon.cotgenerator.utils.Protocol;
 import com.jon.cotgenerator.presets.OutputPreset;
 import com.jon.cotgenerator.presets.PresetRepository;
 import com.jon.cotgenerator.utils.InputValidator;
 import com.jon.cotgenerator.utils.Key;
 import com.jon.cotgenerator.utils.Notify;
 import com.jon.cotgenerator.utils.PrefUtils;
+import com.jon.cotgenerator.utils.Protocol;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,15 +35,16 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class SettingsFragment
+public class CotFragment
         extends PreferenceFragmentCompat
         implements SharedPreferences.OnSharedPreferenceChangeListener,
                    Preference.OnPreferenceChangeListener {
     private SharedPreferences prefs;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private PresetRepository repository = PresetRepository.getInstance();
 
-    static SettingsFragment newInstance() {
-        return new SettingsFragment();
+    static CotFragment newInstance() {
+        return new CotFragment();
     }
 
     private static final String[] PHONE_INPUT = new String[]{
@@ -131,7 +132,7 @@ public class SettingsFragment
 
         /* Fetch presets from the database */
         updatePresetPreferences();
-        insertPresetAddressAndPort(Protocol.fromPrefs(prefs) == Protocol.TCP ? Key.TCP_PRESETS : Key.UDP_PRESETS);
+        insertPresetAddressAndPort();
     }
 
     @Override
@@ -156,7 +157,7 @@ public class SettingsFragment
             case Key.TRANSMISSION_PROTOCOL:
                 toggleProtocolSettingVisibility();
                 toggleDataFormatSettingVisibility();
-                insertPresetAddressAndPort(Protocol.fromPrefs(prefs) == Protocol.TCP ? Key.TCP_PRESETS : Key.UDP_PRESETS);
+                insertPresetAddressAndPort();
                 break;
             case Key.FOLLOW_GPS_LOCATION:
                 toggleLatLonSettingsVisibility();
@@ -164,15 +165,13 @@ public class SettingsFragment
             case Key.STAY_AT_GROUND_LEVEL:
                 toggleAltitudeSettingVisibility();
                 break;
+            case Key.SSL_PRESETS:
             case Key.TCP_PRESETS:
             case Key.UDP_PRESETS:
-                insertPresetAddressAndPort(key);
+                insertPresetAddressAndPort();
                 break;
             case Key.RANDOM_COLOUR:
                 toggleColourPickerVisibility();
-                break;
-            case Key.NEW_PRESET_ADDED:
-                updatePresetPreferences();
                 break;
         }
     }
@@ -201,9 +200,10 @@ public class SettingsFragment
     }
 
     private void toggleProtocolSettingVisibility() {
-        boolean showUdpSettings = Protocol.fromPrefs(prefs) == Protocol.UDP;
-        setPrefVisibleIfCondition(Key.UDP_PRESETS, showUdpSettings);
-        setPrefVisibleIfCondition(Key.TCP_PRESETS, !showUdpSettings);
+        final Protocol protocol = Protocol.fromPrefs(prefs);
+        setPrefVisibleIfCondition(Key.SSL_PRESETS, protocol == Protocol.SSL);
+        setPrefVisibleIfCondition(Key.TCP_PRESETS, protocol == Protocol.TCP);
+        setPrefVisibleIfCondition(Key.UDP_PRESETS, protocol == Protocol.UDP);
     }
 
     private void toggleDataFormatSettingVisibility() {
@@ -225,31 +225,29 @@ public class SettingsFragment
 
     @Override
     public boolean onPreferenceChange(Preference pref, Object newValue) {
-        final String str = (String) newValue;
-        boolean result = true;
-        switch (pref.getKey()) {
+        final String input = (String) newValue;
+        final String key = pref.getKey();
+        switch (key) {
             case Key.CALLSIGN:
-                result = InputValidator.validateCallsign(str);
-                break;
+                return errorIfInvalid(input, key, InputValidator.validateCallsign(input));
             case Key.CENTRE_LATITUDE:
-                result = InputValidator.validateDouble(str, -90.0, 90.0);
-                break;
+                return errorIfInvalid(input, key, InputValidator.validateDouble(input, -90.0, 90.0));
             case Key.CENTRE_LONGITUDE:
-                result = InputValidator.validateDouble(str, -180.0, 180.0);
-                break;
+                return errorIfInvalid(input, key, InputValidator.validateDouble(input, -180.0, 180.0));
             case Key.ICON_COUNT:
-                result = InputValidator.validateInt(str, 1, 9999);
-                break;
+                return errorIfInvalid(input, key, InputValidator.validateInt(input, 1, 9999));
             case Key.RADIAL_DISTRIBUTION:
             case Key.TRANSMISSION_PERIOD:
-                result = InputValidator.validateInt(str, 1, null);
-                break;
+                return errorIfInvalid(input, key, InputValidator.validateInt(input, 1, null));
             case Key.MOVEMENT_SPEED:
-                result = InputValidator.validateDouble(str, 0.0, null);
-                break;
+                return errorIfInvalid(input, key, InputValidator.validateDouble(input, 0.0, null));
+            default: return true;
         }
+    }
+
+    private boolean errorIfInvalid(String input, String key, boolean result) {
         if (!result) {
-            Notify.red(requireView(), "Invalid input: " + str + ". " + PREFS_REQUIRING_VALIDATION.get(pref.getKey()));
+            Notify.red(requireView(), "Invalid input: " + input + ". " + PREFS_REQUIRING_VALIDATION.get(key));
         }
         return result;
     }
@@ -263,24 +261,23 @@ public class SettingsFragment
     }
 
     private void setPresetPreferenceListeners() {
-        Preference addPreference = findPreference(Key.ADD_NEW_PRESET);
-        if (addPreference != null) {
-            addPreference.setOnPreferenceClickListener(clickedPref -> {
-                PresetRepository repository = PresetRepository.getInstance();
-                NewPresetDialogCreator.show(requireContext(), requireView(), prefs, repository);
-                return true;
-            });
-        }
-        Preference deletePreference = findPreference(Key.DELETE_PRESETS);
-        if (deletePreference != null) {
-            deletePreference.setOnPreferenceClickListener(clickedPref -> {
-                deletePresetDialog();
+        Preference editPresetsPreference = findPreference(Key.EDIT_PRESETS);
+        if (editPresetsPreference != null) {
+            editPresetsPreference.setOnPreferenceClickListener(clickedPref -> {
+                startActivity(new Intent(getActivity(), ListPresetsActivity.class));
                 return true;
             });
         }
     }
 
-    private void insertPresetAddressAndPort(String key) {
+    private void insertPresetAddressAndPort() {
+        String key;
+        switch (Protocol.fromPrefs(prefs)) {
+            case SSL: key = Key.SSL_PRESETS; break;
+            case TCP: key = Key.TCP_PRESETS; break;
+            case UDP: key = Key.UDP_PRESETS; break;
+            default: throw new IllegalArgumentException("Unknown protocol: " + Protocol.fromPrefs(prefs));
+        }
         EditTextPreference addressPref = findPreference(Key.DEST_ADDRESS);
         EditTextPreference portPref = findPreference(Key.DEST_PORT);
         ListPreference presetPref = findPreference(key);
@@ -298,7 +295,10 @@ public class SettingsFragment
     }
 
     private void updatePresetPreferences() {
-        PresetRepository repository = PresetRepository.getInstance();
+        compositeDisposable.add(repository.getByProtocol(Protocol.SSL)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(presets -> updatePresetEntries(presets, Key.SSL_PRESETS), this::notifyError));
         compositeDisposable.add(repository.getByProtocol(Protocol.TCP)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -320,40 +320,16 @@ public class SettingsFragment
             String previousValue = preference.getValue();
             preference.setEntries(Arrays.copyOf(entries.toArray(), entries.toArray().length, String[].class));
             preference.setEntryValues(Arrays.copyOf(entryValues.toArray(), entryValues.toArray().length, String[].class));
-            preference.setValue(previousValue);
+            if (entryValues.contains(previousValue)) {
+                preference.setValue(previousValue);
+            } else {
+                preference.setValueIndex(0);
+            }
         }
     }
 
     private void notifyError(Throwable throwable) {
         Notify.red(requireView(), "Error: " + throwable.getMessage());
         Timber.e(throwable);
-    }
-
-    private void deletePresetDialog() {
-        new MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Delete Presets")
-                .setMessage("Clear all custom output presets? The built-in defaults will still remain.")
-                .setPositiveButton(android.R.string.ok, (dialog, buttonId) -> {
-                    PresetRepository repository = PresetRepository.getInstance();
-                    repository.deleteDatabase();
-                    resetPresetPreferences(repository, Protocol.UDP);
-                    resetPresetPreferences(repository, Protocol.TCP);
-                }).setNegativeButton(android.R.string.cancel, (dialog, buttonId) -> dialog.dismiss())
-                .show();
-    }
-
-    private void resetPresetPreferences(PresetRepository repository, Protocol protocol) {
-        List<OutputPreset> defaults = repository.getDefaults(protocol);
-        List<String> entries = OutputPreset.getAliases(defaults);
-        List<String> values = new ArrayList<>();
-        for (OutputPreset preset : defaults) {
-            values.add(preset.toString());
-        }
-        ListPreference preference = findPreference(protocol == Protocol.TCP ? Key.TCP_PRESETS : Key.UDP_PRESETS);
-        if (preference != null) {
-            preference.setEntries(Arrays.copyOf(entries.toArray(), entries.size(), String[].class));
-            preference.setEntryValues(Arrays.copyOf(values.toArray(), values.size(), String[].class));
-            preference.setValueIndex(0);
-        }
     }
 }

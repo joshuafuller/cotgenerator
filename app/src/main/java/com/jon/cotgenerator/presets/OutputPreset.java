@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
@@ -12,33 +13,70 @@ import com.jon.cotgenerator.utils.Protocol;
 import java.util.ArrayList;
 import java.util.List;
 
-import timber.log.Timber;
-
 @Entity(tableName = "Presets", indices = { @Index(value = {"Address", "Port", "Protocol"}, unique = true) } )
 public class OutputPreset {
-    private static final String SEPARATOR = "¶"; // pilcrow
+    public static final String SEPARATOR = "¶"; // pilcrow
 
-    @PrimaryKey int id;
-    @ColumnInfo(name = "Protocol") public final Protocol protocol;
-    @ColumnInfo(name = "Alias")    public final String alias;
-    @ColumnInfo(name = "Address")  public final String address;
-    @ColumnInfo(name = "Port")     public final int port;
+    /* Basic output fields */
+    @PrimaryKey(autoGenerate = true)
+    int id;
+    @ColumnInfo(name = "Protocol")
+    public Protocol protocol;
+    @ColumnInfo(name = "Alias")
+    public String alias;
+    @ColumnInfo(name = "Address")
+    public String address;
+    @ColumnInfo(name = "Port")
+    public int port;
 
-    public OutputPreset(String protocolString, String alias, String address, int port) {
-        this(Protocol.fromString(protocolString), alias, address, port);
+    /* SSL cert data */
+    @ColumnInfo(typeAffinity = ColumnInfo.BLOB, name = "ClientCert")
+    public byte[] clientCert;
+    @ColumnInfo(name = "ClientCertPassword")
+    public String clientCertPassword;
+    @ColumnInfo(typeAffinity = ColumnInfo.BLOB, name = "TrustStore")
+    public byte[] trustStore;
+    @ColumnInfo(name = "TrustStorePassword")
+    public String trustStorePassword;
+
+    @Ignore // Don't use this constructor for database initialisation
+    public OutputPreset(
+            Protocol protocol,
+            String alias,
+            String address,
+            int port) {
+        this(protocol, alias, address, port, null, null, null, null);
     }
 
-    OutputPreset(Protocol protocol, String alias, String address, int port) {
+    public OutputPreset(
+            Protocol protocol,
+            String alias,
+            String address,
+            int port,
+            byte[] clientCert,
+            String clientCertPassword,
+            byte[] trustStore,
+            String trustStorePassword) {
         this.protocol = protocol;
         this.alias = alias;
         this.address = address;
         this.port = port;
+        this.clientCert = clientCert;
+        this.clientCertPassword = clientCertPassword;
+        this.trustStore = trustStore;
+        this.trustStorePassword = trustStorePassword;
     }
+
+    private OutputPreset() { /* blank */ }
 
     @NonNull
     @Override
     public String toString() {
         return protocol.get() + SEPARATOR + alias + SEPARATOR + address + SEPARATOR + port;
+    }
+
+    public static OutputPreset blank() {
+        return new OutputPreset();
     }
 
     public static List<String> getAliases(List<OutputPreset> presets) {
@@ -53,8 +91,7 @@ public class OutputPreset {
     public static OutputPreset fromString(String str) throws IllegalArgumentException {
         String[] split = str.split(SEPARATOR);
         if (split.length != 4) {
-            Timber.e("There should only be 4 elements in this string: %s. Found %d", str, split.length);
-            return null;
+            throw new RuntimeException("There should only be 4 elements in this string: " + str + ". Found " + split.length);
         }
         return new OutputPreset(
                 Protocol.fromString(split[0]),
