@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 
@@ -28,6 +29,8 @@ import com.jon.cotgenerator.BuildConfig;
 import com.jon.cotgenerator.R;
 import com.jon.cotgenerator.ui.CotActivity;
 import com.jon.cotgenerator.utils.GenerateInt;
+import com.jon.cotgenerator.utils.Key;
+import com.jon.cotgenerator.utils.Notify;
 import com.jon.cotgenerator.utils.PrefUtils;
 
 import java.util.HashSet;
@@ -47,7 +50,6 @@ public class CotService extends Service implements ThreadErrorListener {
     private static final String BASE_INTENT_ID = BuildConfig.APPLICATION_ID + ".CotService.";
     private static final int LAUNCH_ACTIVITY_PENDING_INTENT = GenerateInt.next();
     private static final int STOP_SERVICE_PENDING_INTENT = GenerateInt.next();
-    public static final String START_SERVICE = BASE_INTENT_ID + "START";
     public static final String STOP_SERVICE = BASE_INTENT_ID + "STOP";
 
     private int updateRateSeconds;
@@ -80,14 +82,18 @@ public class CotService extends Service implements ThreadErrorListener {
         Timber.i("onCreate");
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         cotManager = new CotManager(prefs, this);
-        try {
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-            fusedLocationClient.getLastLocation().addOnSuccessListener(LastGpsLocation::update);
-            initialiseLocationRequest();
-        } catch (SecurityException e) {
-            Timber.e(e);
-            Timber.e("Failed to initialise Fused Location Client");
-            error(e);
+
+        /* Only initialise the GPS requests if the option is enabled in settings */
+        if (PrefUtils.getBoolean(prefs, Key.FOLLOW_GPS_LOCATION)) {
+            try {
+                fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+                fusedLocationClient.getLastLocation().addOnSuccessListener(LastGpsLocation::update);
+                initialiseLocationRequest();
+            } catch (SecurityException e) {
+                Timber.e(e);
+                Timber.e("Failed to initialise Fused Location Client");
+                error(e);
+            }
         }
     }
 
