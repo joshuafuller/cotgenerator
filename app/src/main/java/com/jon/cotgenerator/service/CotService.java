@@ -114,8 +114,15 @@ public class CotService extends Service implements ThreadErrorListener {
     public void error(Throwable throwable) {
         Timber.e("Error in the service: %s", throwable.getMessage());
         state = State.STOPPED;
-        for (StateListener stateListener : stateListeners) {
-            stateListener.onStateChanged(State.ERROR, throwable);
+        Timber.i("%d listeners", stateListeners.size());
+        if (stateListeners.isEmpty()) {
+            /* No UI activities open, so post a toast which should(!) appear over any other apps in the foreground */
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(() -> Notify.toast(getApplicationContext(), throwable.getMessage()));
+        } else {
+            for (StateListener stateListener : stateListeners) {
+                stateListener.onStateChanged(State.ERROR, throwable);
+            }
         }
         cotManager.shutdown();
         stopForegroundService();
