@@ -1,4 +1,4 @@
-package com.jon.cotgenerator;
+package com.jon.cot.generator;
 
 import android.content.Context;
 
@@ -22,6 +22,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        assertEquals("com.jon.cotgenerator", appContext.getPackageName());
+        assertEquals("com.jon.cot.generator", appContext.getPackageName());
     }
 }

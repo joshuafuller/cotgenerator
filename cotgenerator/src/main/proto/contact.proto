@@ -1,7 +1,7 @@
 syntax = "proto3";
 option optimize_for = LITE_RUNTIME;
 
-package com.jon.cotgenerator.cot.proto;
+package com.jon.cot.generator.cot.proto;
 
 // All items are required unless otherwise noted!
 // "required" means if they are missing on send, the conversion
