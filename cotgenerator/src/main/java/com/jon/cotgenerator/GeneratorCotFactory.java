@@ -8,7 +8,6 @@ import com.jon.common.cot.CotTeam;
 import com.jon.common.cot.CursorOnTarget;
 import com.jon.common.cot.UtcTimestamp;
 import com.jon.common.service.CotFactory;
-import com.jon.common.service.GpsCoords;
 import com.jon.common.service.Point;
 import com.jon.common.utils.Battery;
 import com.jon.common.utils.Constants;
@@ -16,7 +15,6 @@ import com.jon.common.utils.DeviceUid;
 import com.jon.common.utils.Key;
 import com.jon.common.utils.PrefUtils;
 import com.jon.common.CotApplication;
-import com.jon.cotgenerator.R;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,7 +29,6 @@ import java.util.stream.DoubleStream;
 
 public class GeneratorCotFactory extends CotFactory {
     private Random random = new Random();
-    private GpsCoords gpsCoords = GpsCoords.getInstance();
 
     private List<IconData> icons;
     private List<String> callsigns;

@@ -1,15 +1,20 @@
 package com.jon.common.ui;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.jon.common.AppSpecific;
+import com.jon.common.CotApplication;
 import com.jon.common.R;
 import com.jon.common.presets.OutputPreset;
 
@@ -70,9 +75,11 @@ public class ListPresetsAdapter extends RecyclerView.Adapter<ListPresetsAdapter.
             port = itemView.findViewById(R.id.presetListItemPort);
 
             edit = itemView.findViewById(R.id.presetListItemEdit);
-            edit.setOnClickListener(this);
             delete = itemView.findViewById(R.id.presetListItemDelete);
+            edit.setOnClickListener(this);
             delete.setOnClickListener(this);
+            setImageButtonTint(edit);
+            setImageButtonTint(delete);
         }
 
         @Override
@@ -83,6 +90,15 @@ public class ListPresetsAdapter extends RecyclerView.Adapter<ListPresetsAdapter.
                 } else if (view.getId() == R.id.presetListItemDelete) {
                     clickListener.onClickDeleteItem(presets.get(getAdapterPosition()));
                 }
+            }
+        }
+
+        private void setImageButtonTint(ImageButton button) {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+                Drawable icon = button.getDrawable();
+                @ColorInt int colour = CotApplication.getContext().getColor(AppSpecific.getIconColourId());
+                icon.setTint(colour);
+                button.setImageDrawable(icon);
             }
         }
     }

@@ -1,3 +1,4 @@
 rootProject.name='CoT Generator'
 include ':cotgenerator'
+include ':cotbeacon'
 include ':common'

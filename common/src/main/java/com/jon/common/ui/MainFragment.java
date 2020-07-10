@@ -90,7 +90,7 @@ abstract public class MainFragment
         Preference editPresetsPreference = findPreference(Key.EDIT_PRESETS);
         if (editPresetsPreference != null) {
             editPresetsPreference.setOnPreferenceClickListener(clickedPref -> {
-                startActivity(new Intent(getActivity(), ListPresetsActivity.class));
+                startActivity(new Intent(getActivity(), AppSpecific.getListActivityClass()));
                 return true;
             });
         }

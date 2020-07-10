@@ -8,6 +8,7 @@ import java.util.List;
 
 public abstract class CotFactory {
     protected final SharedPreferences prefs;
+    protected final GpsCoords gpsCoords = GpsCoords.getInstance();
 
     protected CotFactory(SharedPreferences prefs) {
         this.prefs = prefs;

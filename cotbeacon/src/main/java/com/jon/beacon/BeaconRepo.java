@@ -1,4 +1,4 @@
-package com.jon.cotgenerator;
+package com.jon.beacon;
 
 import com.jon.common.AppSpecific;
 import com.jon.common.service.CotFactory;
@@ -8,11 +8,11 @@ import com.jon.common.ui.MainFragment;
 
 import java.util.Date;
 
-public class GeneratorRepo extends AppSpecific.Repo {
+public class BeaconRepo extends AppSpecific.Repo {
 
     @Override
     protected MainFragment getMainFragment() {
-        return GeneratorFragment.getInstance();
+        return BeaconFragment.getInstance();
     }
 
     @Override
@@ -57,17 +57,17 @@ public class GeneratorRepo extends AppSpecific.Repo {
 
     @Override
     protected Class<? extends CotService> getCotServiceClass() {
-        return GeneratorService.class;
+        return BeaconService.class;
     }
 
     @Override
     protected Class<? extends CotFactory> getCotFactoryClass() {
-        return GeneratorCotFactory.class;
+        return BeaconCotFactory.class;
     }
 
     @Override
     protected Class<? extends ListPresetsActivity> getListActivityClass() {
-        return ListPresetsActivity.class;
+        return BeaconListPresetsActivity.class;
     }
 
     @Override
@@ -77,6 +77,6 @@ public class GeneratorRepo extends AppSpecific.Repo {
 
     @Override
     protected int getIconColourId() {
-        return R.color.white;
+        return R.color.black;
     }
 }
