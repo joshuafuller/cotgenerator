@@ -1,0 +1,20 @@
+<resources>
+
+    <string name="cotSettings">CoT Settings</string>
+    <string name="baseCallsign">Base Callsign</string>
+    <string name="teamColour">Team Colour</string>
+    <string name="teamRole">Team Role</string>
+    <string name="staleTimer">Stale Timer (minutes)</string>
+
+    <string name="transmissionSettings">Transmission Settings</string>
+    <string name="transmissionPeriod">Transmission Period (seconds)</string>
+    <string name="transmissionProtocol">Transmission Protocol</string>
+    <string name="dataFormat">Data Format</string>
+    <string name="sslOutputDestination">SSL Output Destination</string>
+    <string name="tcpOutputDestination">TCP Output Destination</string>
+    <string name="udpOutputDestination">UDP Output Destination</string>
+    <string name="editPresets">Custom Presets…</string>
+    <string name="destAddress">Destination Address</string>
+    <string name="destPort">Destination Port</string>
+
+</resources>
