@@ -1,4 +1,4 @@
-package com.jon.cotgenerator.service;
+package com.jon.cotgenerator;
 
 import com.jon.common.service.CotService;
 import com.jon.common.utils.Key;

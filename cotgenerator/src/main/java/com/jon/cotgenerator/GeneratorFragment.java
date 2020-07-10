@@ -1,4 +1,4 @@
-package com.jon.cotgenerator.ui;
+package com.jon.cotgenerator;
 
 import android.content.SharedPreferences;
 

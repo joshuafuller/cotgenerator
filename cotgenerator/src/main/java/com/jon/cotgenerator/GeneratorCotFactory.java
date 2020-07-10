@@ -1,4 +1,4 @@
-package com.jon.cotgenerator.service;
+package com.jon.cotgenerator;
 
 import android.content.Context;
 import android.content.SharedPreferences;

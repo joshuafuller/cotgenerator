@@ -203,8 +203,4 @@
 
     </PreferenceCategory>
 
-    <EditTextPreference
-        android:key="newPresetAdded"
-        app:defaultValue="0" />
-
 </PreferenceScreen>

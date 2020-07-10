@@ -4,9 +4,6 @@ import com.jon.common.AppSpecific;
 import com.jon.common.service.CotFactory;
 import com.jon.common.service.CotService;
 import com.jon.common.ui.MainFragment;
-import com.jon.cotgenerator.service.GeneratorCotFactory;
-import com.jon.cotgenerator.service.GeneratorService;
-import com.jon.cotgenerator.ui.GeneratorFragment;
 
 import java.util.Date;
 
