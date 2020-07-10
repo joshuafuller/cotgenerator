@@ -9,7 +9,7 @@ android {
         minSdkVersion 24
         targetSdkVersion 29
         versionCode 150
-        versionName "1.5.0"
+        versionName "1.5.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "java.util.Date", "BUILD_TIME", "new java.util.Date(" + System.currentTimeMillis() + "L)"
         javaCompileOptions {
