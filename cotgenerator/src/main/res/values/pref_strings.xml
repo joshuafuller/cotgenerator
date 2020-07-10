@@ -1,14 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="cotSettings">CoT Settings</string>
+
     <string name="randomCallsigns">Use Random Icon Callsigns?</string>
-    <string name="baseCallsign">Base Callsign</string>
     <string name="randomColour">Use Random Team Colours?</string>
-    <string name="teamColour">Team Colour</string>
     <string name="randomRole">Use Random Team Roles?</string>
-    <string name="teamRole">Team Role</string>
-    <string name="iconCount">Icon Count</string>
-    <string name="staleTimer">Stale Timer (minutes)</string>
 
     <string name="locationSettings">Location Settings</string>
     <string name="followMyGpsLocation">Follow My GPS Location?</string>
@@ -18,16 +12,5 @@
     <string name="movementSpeed">Icon Movement Speed</string>
     <string name="stayAtGroundLevel">Stay At Ground Level?</string>
     <string name="centreAltitude">Centre Altitude (metres)</string>
-
-    <string name="transmissionSettings">Transmission Settings</string>
-    <string name="transmissionPeriod">Transmission Period (seconds)</string>
-    <string name="transmissionProtocol">Transmission Protocol</string>
-    <string name="dataFormat">Data Format</string>
-    <string name="sslOutputDestination">SSL Output Destination</string>
-    <string name="tcpOutputDestination">TCP Output Destination</string>
-    <string name="udpOutputDestination">UDP Output Destination</string>
-    <string name="editPresets">Custom Presets…</string>
-    <string name="destAddress">Destination Address</string>
-    <string name="destPort">Destination Port</string>
 
 </resources>

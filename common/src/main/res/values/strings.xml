@@ -1,0 +1,61 @@
+<resources>
+
+    <string name="toolbarHeaderEditPreset">Edit Preset</string>
+    <string name="toolbarHeaderListPresets">Custom Presets</string>
+
+    <string name="gpsPermissionRationale">GPS access is required for this app. If you don\'t accept, it won\'t work!</string>
+    <string name="gpsPermissionBegging">GPS permission has been denied! You\'ll have to manually change this in the Android settings.</string>
+    <string name="storagePermissionRationale">Storage access is required to access certificates when building SSL presets.</string>
+    <string name="storagePermissionBegging">Storage permission has been denied! You\'ll have to manually change this in the Android settings.</string>
+
+    <string name="stop">Stop</string>
+    <string name="start">Start</string>
+    <string name="about">About</string>
+    <string name="save">Save</string>
+    <string name="delete_all">Delete All</string>
+
+    <string name="transmissionProtocolSsl">SSL</string>
+    <string name="transmissionProtocolTcp">TCP</string>
+    <string name="transmissionProtocolUdp">UDP</string>
+
+    <string name="dataFormatXml">XML</string>
+    <string name="dataFormatProtobuf">Protobuf</string>
+
+    <string name="roleTeamMember">Team Member</string>
+    <string name="roleTeamLeader">Team Leader</string>
+    <string name="roleHq">HQ</string>
+    <string name="roleSniper">Sniper</string>
+    <string name="roleMedic">Medic</string>
+    <string name="roleForwardObserver">Forward Observer</string>
+    <string name="roleRto">RTO</string>
+    <string name="roleK9">K9</string>
+
+    <string name="sslTakserverValue">SSL¶Discord TAK Server¶discordtakserver.mooo.com¶58088</string>
+    <string name="sslTakserver">Discord TAK Server</string>
+    <string name="sslTakserverIp">discordtakserver.mooo.com</string>
+    <string name="sslTakserverPort">58088</string>
+
+    <string name="tcpFreetakserverValue">TCP¶Public FreeTakServer¶204.48.30.216¶8087</string>
+    <string name="tcpFreetakserver">Public FreeTakServer</string>
+    <string name="tcpFreetakserverIp">204.48.30.216</string>
+    <string name="tcpFreetakserverPort">8087</string>
+
+    <string name="udpDefaultSaValue">UDP¶Default Multicast SA¶239.2.3.1¶6969</string>
+    <string name="udpDefaultSa">Default Multicast SA</string>
+    <string name="udpDefaultSaIp">239.2.3.1</string>
+    <string name="udpDefaultSaPort">6969</string>
+
+    <string name="addNewPresetProtocol">Protocol:</string>
+    <string name="addNewPresetAlias">Alias:</string>
+    <string name="addNewPresetAddress">Address:</string>
+    <string name="addNewPresetPort">Port:</string>
+    <string name="addNewPresetTrustStore">Trust Store:</string>
+    <string name="addNewPresetClientCert">Client Cert:</string>
+
+    <string name="goBack">Go back?</string>
+    <string name="goBackMessage">This will discard all current changes.</string>
+
+    <string name="noPresetsFound">No custom presets found!</string>
+    <string name="createNewPreset">CREATE NEW</string>
+
+</resources>

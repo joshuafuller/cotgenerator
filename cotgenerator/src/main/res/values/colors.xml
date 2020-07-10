@@ -1,16 +1,4 @@
 <resources>
-    <color name="transparent">#00FFFFFF</color>
-
-    <color name="white">#FFFFFF</color>
-    <color name="grey">#A3A3A3</color>
-    <color name="black">#000000</color>
-    <color name="disabled">#505050</color>
-
-    <color name="colorPrimaryLight">#4A4949</color>
-    <color name="colorPrimary">#323131</color>
-    <color name="colorPrimaryDark">#121212</color>
     <color name="colorAccent">#FF0000</color>
     <color name="colorAccentDark">#970000</color>
-
-    <color name="textColour">@color/white</color>
 </resources>
