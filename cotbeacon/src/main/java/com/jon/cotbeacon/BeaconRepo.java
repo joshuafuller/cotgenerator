@@ -1,4 +1,4 @@
-package com.jon.beacon;
+package com.jon.cotbeacon;
 
 import com.jon.common.AppSpecific;
 import com.jon.common.service.CotFactory;

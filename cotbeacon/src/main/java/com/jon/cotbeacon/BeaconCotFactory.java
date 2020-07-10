@@ -1,4 +1,4 @@
-package com.jon.beacon;
+package com.jon.cotbeacon;
 
 import android.content.SharedPreferences;
 

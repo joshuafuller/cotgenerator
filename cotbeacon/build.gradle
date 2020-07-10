@@ -17,7 +17,7 @@ android {
                 arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
             }
         }
-        setProperty("archivesBaseName", "cotgenerator-$versionName")
+        setProperty("archivesBaseName", "cotbeacon-$versionName")
     }
 
     buildTypes {
