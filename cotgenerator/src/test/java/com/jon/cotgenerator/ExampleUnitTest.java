@@ -1,4 +1,4 @@
-package com.jon.cot.generator;
+package com.jon.cotgenerator;
 
 import org.junit.Test;
 

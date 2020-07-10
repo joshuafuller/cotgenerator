@@ -1,4 +1,4 @@
-package com.jon.cot.common;
+package com.jon.common;
 
 import org.junit.Test;
 
