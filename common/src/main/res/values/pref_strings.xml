@@ -4,7 +4,6 @@
     <string name="baseCallsign">Base Callsign</string>
     <string name="teamColour">Team Colour</string>
     <string name="teamRole">Team Role</string>
-    <string name="iconCount">Icon Count</string>
     <string name="staleTimer">Stale Timer (minutes)</string>
 
     <string name="transmissionSettings">Transmission Settings</string>

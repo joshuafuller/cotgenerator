@@ -1,13 +1,13 @@
 <resources>
-    <bool name="defaultRandomCallsigns">true</bool>
-    <bool name="defaultRandomRole">true</bool>
-    <bool name="defaultRandomColour">true</bool>
+    <string name="defaultCallsign">GENERATED</string>
+    <string name="defaultIconRole">@string/roleTeamMember</string>
+    <string name="defaultStaleTimer">5</string>
+    <integer name="defaultTeamColour">0xFF00FFFF</integer>
 
-    <bool name="defaultFollowMyGpsLocation">true</bool>
-    <string name="defaultLatitude">53.725103</string>
-    <string name="defaultLongitude">-1.351375</string>
-    <string name="defaultRadialDistribution">100</string>
-    <string name="defaultMovementSpeed">5</string>
-    <bool name="defaultStayAtGroundLevel">true</bool>
-    <string name="defaultCentreAltitude">0</string>
+    <string name="defaultDataFormat">@string/dataFormatProtobuf</string>
+    <string name="defaultTransmissionProtocol">@string/transmissionProtocolTcp</string>
+    <string name="defaultTransmissionPeriod">3</string>
+    <string name="defaultSslPreset">@string/sslTakserverValue</string>
+    <string name="defaultTcpPreset">@string/tcpFreetakserverValue</string>
+    <string name="defaultUdpPreset">@string/udpDefaultSaValue</string>
 </resources>
