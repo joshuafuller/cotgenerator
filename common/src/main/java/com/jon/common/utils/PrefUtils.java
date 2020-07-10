@@ -43,7 +43,7 @@ public final class PrefUtils {
 
     public static boolean getBoolean(final SharedPreferences prefs, final String key) {
         try {
-            return prefs.getBoolean(key, true);
+            return prefs.getBoolean(key, false);
         } catch (Exception e) {
             return false;
         }
