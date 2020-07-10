@@ -18,7 +18,7 @@ public enum Protocol {
     }
 
     public static Protocol fromPrefs(SharedPreferences prefs) {
-        return fromString(prefs.getString(Key.TRANSMISSION_PROTOCOL, ""));
+        return fromString(PrefUtils.getString(prefs, Key.TRANSMISSION_PROTOCOL));
     }
 
     public static Protocol fromString(String str) {

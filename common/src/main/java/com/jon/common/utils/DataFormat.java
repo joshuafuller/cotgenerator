@@ -17,7 +17,7 @@ public enum DataFormat {
     }
 
     public static DataFormat fromPrefs(SharedPreferences prefs) {
-        return fromString(prefs.getString(Key.DATA_FORMAT, ""));
+        return fromString(PrefUtils.getString(prefs, Key.DATA_FORMAT));
     }
 
     public static DataFormat fromString(String str) {

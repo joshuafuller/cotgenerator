@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.location.Location;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
@@ -58,9 +57,8 @@ abstract public class CotService extends Service implements ThreadErrorListener 
     private final LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
-            if (locationResult == null) return;
-            for (Location location : locationResult.getLocations()) {
-                gpsCoords.update(location);
+            if (locationResult != null) {
+                gpsCoords.update(locationResult.getLastLocation());
             }
         }
     };
@@ -119,7 +117,7 @@ abstract public class CotService extends Service implements ThreadErrorListener 
     }
 
     public void error(Throwable throwable) {
-        Timber.e("Error in the service: %s", throwable.getMessage());
+        Timber.e(throwable);
         state = State.STOPPED;
         Timber.i("%d listeners", stateListeners.size());
         if (stateListeners.isEmpty()) {
