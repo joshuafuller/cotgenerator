@@ -1,4 +1,0 @@
-<resources>
-    <item name="startEmergency" type="id" />
-    <item name="cancelEmergency" type="id" />
-</resources>

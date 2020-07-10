@@ -1,0 +1,127 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/cotSettings">
+
+        <EditTextPreference
+            android:key="callsign"
+            app:defaultValue="@string/defaultCallsign"
+            app:iconSpaceReserved="false"
+            app:title="@string/baseCallsign"
+            app:useSimpleSummaryProvider="true" />
+
+        <com.jaredrummler.android.colorpicker.ColorPreferenceCompat
+            android:defaultValue="@integer/defaultTeamColour"
+            android:key="teamColour"
+            app:cpv_allowCustom="false"
+            app:cpv_colorPresets="@array/teamColours"
+            app:cpv_colorShape="circle"
+            app:cpv_showColorShades="false"
+            app:iconSpaceReserved="false"
+            app:title="@string/teamColour" />
+
+        <ListPreference
+            android:key="iconRole"
+            app:defaultValue="@string/defaultIconRole"
+            app:entries="@array/iconRoles"
+            app:entryValues="@array/iconRoles"
+            app:iconSpaceReserved="false"
+            app:title="@string/teamRole"
+            app:useSimpleSummaryProvider="true" />
+
+        <SeekBarPreference
+            android:key="staleTimer"
+            android:max="60"
+            app:defaultValue="@string/defaultStaleTimer"
+            app:iconSpaceReserved="false"
+            app:seekBarIncrement="1"
+            app:showSeekBarValue="true"
+            app:title="@string/staleTimer"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/transmissionSettings">
+
+        <SeekBarPreference
+            android:key="transmissionPeriod"
+            android:max="30"
+            app:defaultValue="@string/defaultTransmissionPeriod"
+            app:iconSpaceReserved="false"
+            app:seekBarIncrement="1"
+            app:showSeekBarValue="true"
+            app:title="@string/transmissionPeriod"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            android:key="transmissionProtocol"
+            app:defaultValue="@string/defaultTransmissionProtocol"
+            app:entries="@array/transmissionProtocols"
+            app:entryValues="@array/transmissionProtocols"
+            app:iconSpaceReserved="false"
+            app:title="@string/transmissionProtocol"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            android:key="dataFormat"
+            app:defaultValue="@string/defaultDataFormat"
+            app:entries="@array/dataFormats"
+            app:entryValues="@array/dataFormats"
+            app:iconSpaceReserved="false"
+            app:title="@string/dataFormat"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            android:defaultValue="@string/defaultSslPreset"
+            android:key="sslPresets"
+            app:entries="@array/sslPresetEntries"
+            app:entryValues="@array/sslPresetValues"
+            app:iconSpaceReserved="false"
+            app:title="@string/sslOutputDestination"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            android:defaultValue="@string/defaultTcpPreset"
+            android:key="tcpPresets"
+            app:entries="@array/tcpPresetEntries"
+            app:entryValues="@array/tcpPresetValues"
+            app:iconSpaceReserved="false"
+            app:title="@string/tcpOutputDestination"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            android:defaultValue="@string/defaultUdpPreset"
+            android:key="udpPresets"
+            app:entries="@array/udpPresetEntries"
+            app:entryValues="@array/udpPresetValues"
+            app:iconSpaceReserved="false"
+            app:title="@string/udpOutputDestination"
+            app:useSimpleSummaryProvider="true" />
+
+        <Preference
+            android:key="editPresets"
+            app:iconSpaceReserved="false"
+            app:title="@string/editPresets"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            android:key="destAddress"
+            app:enabled="false"
+            app:iconSpaceReserved="false"
+            app:title="@string/destAddress"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            android:key="destPort"
+            app:enabled="false"
+            app:iconSpaceReserved="false"
+            app:title="@string/destPort"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

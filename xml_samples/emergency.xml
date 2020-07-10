@@ -1,9 +1,0 @@
-<event how="m-g" stale="2020-05-08T13:01:55.992Z" start="2020-05-08T13:01:45.992Z" time="2020-05-08T13:01:45.992Z" type="b-a-o-tbl"
-    uid="ANDROID-971c65be8c19f5a1-9-1-1" version="2.0">
-    <point ce="4.2" hae="129.6887543617193" lat="51.902405" le="9999999.0" lon="-2.070912" />
-    <detail>
-        <link relation="p-p" type="a-f-G-U-C" uid="ANDROID-971c65be8c19f5a1" />
-        <contact callsign="FREDERICK-Alert" />
-        <emergency type="911 Alert">FREDERICK</emergency>
-    </detail>
-</event>
