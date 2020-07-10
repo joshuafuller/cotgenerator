@@ -1,7 +1,11 @@
 # Cursor On Target Generator
 
-## Note
-This is the sister app of [CoT Beacon](https://github.com/jonapoul/cotbeacon). CoT Generator generates fake data, CoT Beacon generates a single self icon only.
+## Summary
+This repo contains the code for two separate but very similar Android apps for generating Cursor On Target (CoT) data:
+* **CoT Generator** - Generates an arbitrary number of moving CoT tracks in a circular area around a given point. Intended as a network stress-tester or demonstration tool.
+* **CoT Beacon** - Generates a single CoT track to represent the phone's GPS position. Intended as a method of one-way situational awareness.
+
+CoT Beacon was originally spun off as [a separate repository](https://github.com/jonapoul/cotbeacon), but has since been merged back in to make parallel development easier.
 
 ## Quick Start
 1. Download the installer APK from [the GitHub releases page](https://github.com/jonapoul/cotgenerator/releases), then copy the file to your device and open it in a file browser to install.
@@ -12,10 +16,9 @@ This is the sister app of [CoT Beacon](https://github.com/jonapoul/cotbeacon). C
 
 ## Screenshots
 
-
-| Main Screen | Custom Output Presets |
-|:--:|:--:|
-![Main Screen](docs/screenshots/ui_main.jpg) | ![Main Screen](docs/screenshots/ui_presets.jpg) |
+| Generator Main Screen | Custom Output Presets | Beacon Main Screen
+|:--:|:--:|:--:|
+![Main Screen](docs/screenshots/ui_main.jpg) | ![Main Screen](docs/screenshots/ui_presets.jpg) | ![CoT Beacon](docs/screenshots/ui_beacon.jpg) |
 
 | 20 Icons |
 :--:|
@@ -37,6 +40,9 @@ It supports SSL, TCP and UDP traffic, and it will give you a red UI notification
 Similarly, if you're travelling between different networks whilst the server is running (e.g. losing Wi-Fi signal then regaining it), you should expect it to stop running when the connection is lost. Just restart the service and it should work again.
 
 ## Settings
+
+Note that some of the following settings are not available on CoT Beacon.
+
 | Option | Possible Values | Default Value | Description |
 |--------|-----------------|---------------|-------------|
 | Use Random Callsigns? | True/False | True | When enabled, icon callsigns will be pulled at random from ATAK's default callsign list. |
