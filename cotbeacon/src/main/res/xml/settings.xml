@@ -9,7 +9,7 @@
             android:key="callsign"
             app:defaultValue="@string/defaultCallsign"
             app:iconSpaceReserved="false"
-            app:title="@string/baseCallsign"
+            app:title="@string/callsign"
             app:useSimpleSummaryProvider="true" />
 
         <com.jaredrummler.android.colorpicker.ColorPreferenceCompat
