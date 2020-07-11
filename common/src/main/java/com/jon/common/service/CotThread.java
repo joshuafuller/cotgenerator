@@ -12,8 +12,6 @@ import com.jon.common.utils.Protocol;
 import java.net.InetAddress;
 import java.util.List;
 
-import timber.log.Timber;
-
 abstract class CotThread extends Thread {
     protected final SharedPreferences prefs;
     protected volatile boolean isRunning = false;
@@ -38,7 +36,7 @@ abstract class CotThread extends Thread {
     protected CotThread(SharedPreferences sharedPrefs) {
         prefs = sharedPrefs;
         dataFormat = DataFormat.fromPrefs(prefs);
-        cotFactory = buildCotFactory();
+        cotFactory = AppSpecific.getCotFactory(prefs);
         cotIcons = cotFactory.generate();
     }
 
@@ -69,17 +67,5 @@ abstract class CotThread extends Thread {
 
     protected int periodMilliseconds() {
         return PrefUtils.getInt(prefs, Key.TRANSMISSION_PERIOD) * 1000;
-    }
-
-    private CotFactory buildCotFactory() {
-        try {
-            return AppSpecific.getCotFactoryClass()
-                    .getDeclaredConstructor(SharedPreferences.class)
-                    .newInstance(prefs);
-        } catch (Exception e) {
-            /* This should never happen */
-            Timber.e(e);
-            throw new RuntimeException(e);
-        }
     }
 }

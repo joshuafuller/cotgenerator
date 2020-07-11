@@ -1,6 +1,6 @@
 package com.jon.common;
 
-import android.content.Context;
+import android.content.SharedPreferences;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.XmlRes;
@@ -22,6 +22,7 @@ public class AppSpecific {
     }
 
     public static MainFragment getMainFragment() { return repo.getMainFragment(); }
+    public static CotFactory getCotFactory(SharedPreferences prefs) { return repo.getCotFactory(prefs); }
     public static Date getBuildDate() { return repo.getBuildDate(); }
     public static int getBuildVersionCode() { return repo.getBuildVersionCode(); }
     public static String getAppId() { return repo.getAppId(); }
@@ -31,27 +32,24 @@ public class AppSpecific {
     public static String getPlatform() { return repo.getPlatform(); }
     public static boolean isDebug() { return repo.isDebug(); }
     public static Class<? extends CotService> getCotServiceClass() { return repo.getCotServiceClass(); }
-    public static Class<? extends CotFactory> getCotFactoryClass() { return repo.getCotFactoryClass(); }
     public static Class<? extends ListPresetsActivity> getListActivityClass() { return repo.getListActivityClass(); }
     public static @XmlRes int getSettingsXmlId() { return repo.getSettingsXmlId(); }
     public static @ColorRes int getIconColourId() { return repo.getIconColourId(); }
 
-    public abstract static class Repo {
-        protected Context context() { return CotApplication.getContext(); }
-
-        abstract protected MainFragment getMainFragment();
-        abstract protected Date getBuildDate();
-        abstract protected int getBuildVersionCode();
-        abstract protected String getAppId();
-        abstract protected String getAppName();
-        abstract protected String getPermissionRationale();
-        abstract protected String getVersionName();
-        abstract protected String getPlatform();
-        abstract protected boolean isDebug();
-        abstract protected Class<? extends CotService> getCotServiceClass();
-        abstract protected Class<? extends CotFactory> getCotFactoryClass();
-        abstract protected Class<? extends ListPresetsActivity> getListActivityClass();
-        abstract protected @XmlRes int getSettingsXmlId();
-        abstract protected @ColorRes int getIconColourId();
+    public interface Repo {
+        MainFragment getMainFragment();
+        CotFactory getCotFactory(SharedPreferences prefs);
+        Date getBuildDate();
+        int getBuildVersionCode();
+        String getAppId();
+        String getAppName();
+        String getPermissionRationale();
+        String getVersionName();
+        String getPlatform();
+        boolean isDebug();
+        Class<? extends CotService> getCotServiceClass();
+        Class<? extends ListPresetsActivity> getListActivityClass();
+        @XmlRes int getSettingsXmlId();
+        @ColorRes int getIconColourId();
     }
 }

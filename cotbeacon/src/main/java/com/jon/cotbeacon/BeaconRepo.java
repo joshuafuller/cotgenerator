@@ -1,6 +1,9 @@
 package com.jon.cotbeacon;
 
+import android.content.SharedPreferences;
+
 import com.jon.common.AppSpecific;
+import com.jon.common.CotApplication;
 import com.jon.common.service.CotFactory;
 import com.jon.common.service.CotService;
 import com.jon.common.ui.ListPresetsActivity;
@@ -8,65 +11,65 @@ import com.jon.common.ui.MainFragment;
 
 import java.util.Date;
 
-public class BeaconRepo extends AppSpecific.Repo {
+public class BeaconRepo implements AppSpecific.Repo {
 
     @Override
-    protected MainFragment getMainFragment() {
+    public MainFragment getMainFragment() {
         return BeaconFragment.getInstance();
     }
 
     @Override
-    protected Date getBuildDate() {
+    public CotFactory getCotFactory(SharedPreferences prefs) {
+        return new BeaconCotFactory(prefs);
+    }
+
+    @Override
+    public Date getBuildDate() {
         return BuildConfig.BUILD_TIME;
     }
 
     @Override
-    protected int getBuildVersionCode() {
+    public int getBuildVersionCode() {
         return BuildConfig.VERSION_CODE;
     }
 
     @Override
-    protected String getAppId() {
+    public String getAppId() {
         return BuildConfig.APPLICATION_ID;
     }
 
     @Override
-    protected String getAppName() {
-        return context().getString(R.string.app_name);
+    public String getAppName() {
+        return CotApplication.getContext().getString(R.string.app_name);
     }
 
     @Override
-    protected String getPermissionRationale() {
-        return context().getString(R.string.permissionRationale);
+    public String getPermissionRationale() {
+        return CotApplication.getContext().getString(R.string.permissionRationale);
     }
 
     @Override
-    protected String getVersionName() {
+    public String getVersionName() {
         return BuildConfig.VERSION_NAME;
     }
 
     @Override
-    protected String getPlatform() {
-        return context().getString(R.string.appNameAllCaps);
+    public String getPlatform() {
+        return CotApplication.getContext().getString(R.string.appNameAllCaps);
     }
 
     @Override
-    protected boolean isDebug() {
+    public boolean isDebug() {
         return BuildConfig.DEBUG;
     }
 
     @Override
-    protected Class<? extends CotService> getCotServiceClass() {
+    public Class<? extends CotService> getCotServiceClass() {
         return BeaconService.class;
     }
 
     @Override
-    protected Class<? extends CotFactory> getCotFactoryClass() {
-        return BeaconCotFactory.class;
-    }
-
-    @Override
-    protected Class<? extends ListPresetsActivity> getListActivityClass() {
+    public Class<? extends ListPresetsActivity> getListActivityClass() {
         return BeaconListPresetsActivity.class;
     }
 
@@ -76,7 +79,7 @@ public class BeaconRepo extends AppSpecific.Repo {
     }
 
     @Override
-    protected int getIconColourId() {
+    public int getIconColourId() {
         return R.color.black;
     }
 }
