@@ -53,8 +53,8 @@ public class GeneratorFragment extends MainFragment {
         return new HashMap<String, String>() {{
             putAll(GeneratorFragment.super.getPrefValidationRationales());
             put(Key.ICON_COUNT, "Should be an integer from 1 to 9999");
-            put(Key.CENTRE_LATITUDE, "Should be a number between -180 and +180");
-            put(Key.CENTRE_LONGITUDE, "Should be a number between -90 and +90");
+            put(Key.CENTRE_LATITUDE, "Should be a number between -90 and +90");
+            put(Key.CENTRE_LONGITUDE, "Should be a number between -180 and +180");
             put(Key.RADIAL_DISTRIBUTION, "Should be a positive integer");
             put(Key.MOVEMENT_SPEED, "Should be a positive number");
         }};
