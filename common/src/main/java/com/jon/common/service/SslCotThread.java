@@ -13,7 +13,6 @@ import com.jon.common.utils.PrefUtils;
 import java.io.ByteArrayInputStream;
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.SocketException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -27,16 +26,12 @@ import java.util.concurrent.ExecutionException;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
 import timber.log.Timber;
 
 public class SslCotThread extends TcpCotThread {
-    private SSLSocket socket;
-    private OutputStream outputStream;
-
     SslCotThread(SharedPreferences prefs) {
         super(prefs);
     }
@@ -78,7 +73,7 @@ public class SslCotThread extends TcpCotThread {
                 getTrustManagers(trustStore),
                 new SecureRandom()
         );
-        socket = (SSLSocket) sslContext.getSocketFactory().createSocket(destIp, destPort);
+        socket = sslContext.getSocketFactory().createSocket(destIp, destPort);
         socket.setSoTimeout(Constants.TCP_SOCKET_TIMEOUT_MILLISECONDS);
         outputStream = socket.getOutputStream();
     }

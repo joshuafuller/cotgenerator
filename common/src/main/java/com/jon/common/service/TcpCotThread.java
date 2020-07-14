@@ -18,8 +18,8 @@ import java.net.UnknownHostException;
 import timber.log.Timber;
 
 class TcpCotThread extends CotThread {
-    private Socket socket;
-    private OutputStream outputStream;
+    protected Socket socket;
+    protected OutputStream outputStream;
 
     TcpCotThread(SharedPreferences prefs) {
         super(prefs);
