@@ -14,4 +14,7 @@
     <string name="stayAtGroundLevel">Stay At Ground Level?</string>
     <string name="centreAltitude">Centre Altitude (metres)</string>
 
+    <string name="emulateMultipleUsers">Emulate Multiple Users?</string>
+    <string name="summaryEmulateMultipleUsers">If enabled, a separate TCP socket will be constructed for each generated icon. This may degrade performance when generating lots of icons, both on this device and the server. </string>
+
 </resources>

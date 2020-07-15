@@ -1,68 +1,66 @@
 package com.jon.common.service;
 
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 
-import com.jon.common.cot.CursorOnTarget;
 import com.jon.common.presets.OutputPreset;
 import com.jon.common.presets.PresetRepository;
 import com.jon.common.utils.Constants;
 import com.jon.common.utils.Key;
 import com.jon.common.utils.PrefUtils;
+import com.jon.common.utils.Protocol;
 
 import java.io.ByteArrayInputStream;
-import java.io.Closeable;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.SocketException;
+import java.net.Socket;
+import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import javax.net.SocketFactory;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
 import timber.log.Timber;
 
 public class SslCotThread extends TcpCotThread {
-    private SSLSocket socket;
-    private OutputStream outputStream;
-
     SslCotThread(SharedPreferences prefs) {
         super(prefs);
     }
 
     @Override
-    void shutdown() {
-        super.shutdown();
-        closeFromMainThread(outputStream);
-        closeFromMainThread(socket);
-        outputStream = null;
-        socket = null;
-    }
+    protected void openSockets() throws Exception {
+        sockets.clear();
+        final SocketFactory socketFactory = buildSocketFactory();
 
-    @Override
-    protected void sendToDestination(CursorOnTarget cot) throws IOException {
-        try {
-            outputStream.write(cot.toBytes(dataFormat));
-            Timber.i("Sent cot: %s", cot.callsign);
-        } catch (NullPointerException | SocketException e) {
-            /* Thrown when the thread is cancelled from another thread and we try to access the sockets */
-            shutdown();
+        Timber.d("Opening sockets");
+        final int numSockets = emulateMultipleUsers ? cotIcons.size() : 1;
+        final ExecutorService executorService = Executors.newCachedThreadPool();
+
+        /* Thread-safe list */
+        final List<Socket> synchronisedSockets = Collections.synchronizedList(new ArrayList<>());
+        for (int i = 0; i < numSockets; i++) {
+            /* Execute the socket-building code on a separate thread per socket, since it takes a while with lots of sockets */
+            executorService.execute(() -> buildSocket(socketFactory, synchronisedSockets));
         }
+        collectSynchronisedSockets(executorService, synchronisedSockets);
     }
 
-    @Override
-    protected void openSocket() throws Exception {
+    private SocketFactory buildSocketFactory()
+            throws KeyStoreException, CertificateException, NoSuchAlgorithmException,
+            IOException, UnrecoverableKeyException, KeyManagementException {
+        Timber.d("Building SSL context");
         OutputPreset preset = buildPreset();
         KeyStore certStore = loadKeyStore(
                 preset.clientCert,
@@ -78,21 +76,23 @@ public class SslCotThread extends TcpCotThread {
                 getTrustManagers(trustStore),
                 new SecureRandom()
         );
-        socket = (SSLSocket) sslContext.getSocketFactory().createSocket(destIp, destPort);
-        socket.setSoTimeout(Constants.TCP_SOCKET_TIMEOUT_MILLISECONDS);
-        outputStream = socket.getOutputStream();
+        return sslContext.getSocketFactory();
     }
 
     private OutputPreset buildPreset() {
         /* This contains only the basic values: protocol, alias, address and port. We now need to query the
          * database to grab SSL cert information, then return this upgraded OutputPreset object if successful. */
-        OutputPreset basicPreset = OutputPreset.fromString(PrefUtils.getString(prefs, Key.SSL_PRESETS));
+        final String prefString = PrefUtils.getString(prefs, Key.SSL_PRESETS);
+        OutputPreset basicPreset = OutputPreset.fromString(prefString);
+        if (basicPreset == null) {
+            throw new RuntimeException("Couldn't parse a preset from SSL preset string: '" + prefString + "'");
+        }
         PresetRepository repository = PresetRepository.getInstance();
-        OutputPreset sslPreset = repository.getPreset(basicPreset.protocol, basicPreset.address, basicPreset.port);
+        OutputPreset sslPreset = repository.getPreset(Protocol.SSL, basicPreset.address, basicPreset.port);
         if (sslPreset == null) {
             /* If there is no database entry corresponding to the above protocol/address/port combo,
              * we treat this as a default. So grab the values from default certs */
-            List<OutputPreset> sslDefaults = repository.defaultsByProtocol(basicPreset.protocol);
+            List<OutputPreset> sslDefaults = repository.defaultsByProtocol(Protocol.SSL);
             if (sslDefaults.size() >= 1) {
                 return sslDefaults.get(0); // Discord TAK Server
             } else {
@@ -125,24 +125,16 @@ public class SslCotThread extends TcpCotThread {
         return keyManagerFactory.getKeyManagers();
     }
 
-    /* This workaround is only necessary because I was getting NetworkOnMainThreadExceptions when
-     * closing the SSLSocket via shutdown() from the UI thread. This wasn't an issue with TCP/UDP
-     * so this is just a patch to deal with it for now. */
-    private void closeFromMainThread(Closeable closeable) {
+    private void buildSocket(final SocketFactory socketFactory, final List<Socket> synchronisedSockets) {
         try {
-            new CloseSocketTask().execute(closeable).get();
-        } catch (ExecutionException | InterruptedException e) {
-            /* Ignore */
-        }
-    }
-
-    private static class CloseSocketTask extends AsyncTask<Closeable, Void, Void> {
-        protected Void doInBackground(Closeable... closeables) {
-            for (Closeable closeable : closeables) {
-                try { if (closeable != null) closeable.close(); }
-                catch (IOException e) { Timber.e(e); }
-            }
-            return null;
+            Timber.d("Opening socket");
+            final Socket socket = socketFactory.createSocket(destIp, destPort);
+            socket.setSoTimeout(Constants.TCP_SOCKET_TIMEOUT_MILLISECONDS);
+            synchronisedSockets.add(socket);
+            Timber.d("Opened socket on port %d", socket.getLocalPort());
+        } catch (Exception e) {
+            Timber.e(e);
+            throw new RuntimeException(e);
         }
     }
 }

@@ -6,6 +6,8 @@ import com.jon.common.presets.OutputPreset;
 
 /* Some QoL utility methods for preferences that are known to be valid beforehand */
 public final class PrefUtils {
+    public static final int INVALID_INT_KEY = -1;
+
     private PrefUtils() {
     }
 
@@ -13,7 +15,7 @@ public final class PrefUtils {
         try {
             return Double.parseDouble(prefs.getString(key, ""));
         } catch (NumberFormatException e) {
-            return 0;
+            return 0.0;
         }
     }
 
@@ -21,7 +23,7 @@ public final class PrefUtils {
         try {
             return Integer.parseInt(prefs.getString(key, ""));
         } catch (NumberFormatException e) {
-            return 0;
+            return INVALID_INT_KEY;
         }
     }
 
@@ -29,7 +31,7 @@ public final class PrefUtils {
         try {
             return prefs.getInt(key, 0);
         } catch (Exception e) {
-            return 0;
+            return INVALID_INT_KEY;
         }
     }
 

@@ -145,6 +145,13 @@
             app:title="@string/transmissionProtocol"
             app:useSimpleSummaryProvider="true" />
 
+        <SwitchPreference
+            android:defaultValue="@bool/defaultEmulateMultipleUsers"
+            android:key="emulateMultipleUsers"
+            android:summary="@string/summaryEmulateMultipleUsers"
+            app:iconSpaceReserved="false"
+            app:title="@string/emulateMultipleUsers" />
+
         <ListPreference
             android:key="dataFormat"
             app:defaultValue="@string/defaultDataFormat"

@@ -12,6 +12,7 @@ public final class Key {
     public static final String TRANSMISSION_PERIOD = "transmissionPeriod";
     public static final String TRANSMISSION_PROTOCOL = "transmissionProtocol";
     public static final String DATA_FORMAT = "dataFormat";
+    public static final String EMULATE_MULTIPLE_USERS = "emulateMultipleUsers";
     public static final String SSL_PRESETS = "sslPresets";
     public static final String TCP_PRESETS = "tcpPresets";
     public static final String UDP_PRESETS = "udpPresets";

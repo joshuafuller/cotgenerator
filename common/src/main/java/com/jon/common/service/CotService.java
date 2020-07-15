@@ -64,7 +64,7 @@ abstract public class CotService extends Service implements ThreadErrorListener 
     };
 
     private GpsCoords gpsCoords = GpsCoords.getInstance();
-    private CotManager cotManager;
+    private ThreadManager threadManager;
     private IBinder binder = new ServiceBinder();
     private State state = State.STOPPED;
     private Set<StateListener> stateListeners = new HashSet<>();
@@ -81,7 +81,7 @@ abstract public class CotService extends Service implements ThreadErrorListener 
         super.onCreate();
         Timber.i("onCreate");
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        cotManager = new CotManager(prefs, this);
+        threadManager = new ThreadManager(prefs, this);
     }
 
     protected void initialiseFusedLocationClient() {
@@ -102,7 +102,7 @@ abstract public class CotService extends Service implements ThreadErrorListener 
         for (StateListener stateListener : stateListeners) {
             stateListener.onStateChanged(state, null);
         }
-        cotManager.start();
+        threadManager.start();
         startForegroundService();
     }
 
@@ -112,7 +112,7 @@ abstract public class CotService extends Service implements ThreadErrorListener 
         for (StateListener stateListener : stateListeners) {
             stateListener.onStateChanged(state, null);
         }
-        cotManager.shutdown();
+        threadManager.shutdown();
         stopForegroundService();
     }
 
@@ -129,7 +129,7 @@ abstract public class CotService extends Service implements ThreadErrorListener 
                 stateListener.onStateChanged(State.ERROR, throwable);
             }
         }
-        cotManager.shutdown();
+        threadManager.shutdown();
         stopForegroundService();
     }
 
