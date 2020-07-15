@@ -6,25 +6,27 @@ public enum DataFormat {
     XML("XML"),
     PROTOBUF("Protobuf");
 
-    private final String protocol;
+    private final String format;
 
-    DataFormat(String protocol) {
-        this.protocol = protocol;
+    DataFormat(String format) {
+        this.format = format;
     }
 
     public String get() {
-        return protocol;
+        return format;
     }
 
     public static DataFormat fromPrefs(SharedPreferences prefs) {
-        return fromString(PrefUtils.getString(prefs, Key.DATA_FORMAT));
+        final String formatString = PrefUtils.getString(prefs, Key.DATA_FORMAT);
+        return fromString(formatString);
     }
 
-    public static DataFormat fromString(String str) {
-        switch (str) {
-            case "XML": return XML;
-            case "Protobuf": return PROTOBUF;
-            default: throw new IllegalArgumentException("Unknown data format: " + str);
+    public static DataFormat fromString(String formatString) {
+        for (DataFormat format : values()) {
+            if (format.get().equals(formatString)) {
+                return format;
+            }
         }
+        throw new IllegalArgumentException("Unknown data format: " + formatString);
     }
 }

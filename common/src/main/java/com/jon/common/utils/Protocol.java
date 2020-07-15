@@ -18,15 +18,16 @@ public enum Protocol {
     }
 
     public static Protocol fromPrefs(SharedPreferences prefs) {
-        return fromString(PrefUtils.getString(prefs, Key.TRANSMISSION_PROTOCOL));
+        final String protocolString = PrefUtils.getString(prefs, Key.TRANSMISSION_PROTOCOL);
+        return fromString(protocolString);
     }
 
-    public static Protocol fromString(String str) {
-        switch (str) {
-            case "SSL": return SSL;
-            case "TCP": return TCP;
-            case "UDP": return UDP;
-            default: throw new IllegalArgumentException("Unknown transmission protocol: " + str);
+    public static Protocol fromString(String protocolString) {
+        for (Protocol protocol : values()) {
+            if (protocol.get().equals(protocolString)) {
+                return protocol;
+            }
         }
+        throw new IllegalArgumentException("Unknown protocol: " + protocolString);
     }
 }

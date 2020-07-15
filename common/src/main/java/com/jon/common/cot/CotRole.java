@@ -17,34 +17,29 @@ public enum CotRole {
     RTO("RTO"),
     K9("K9");
 
-    private final String value;
+    private static final Random random = new Random();
+    private final String role;
 
-    CotRole(String how) {
-        this.value = how;
+    CotRole(String role) {
+        this.role = role;
     }
 
     public String get() {
-        return value;
+        return role;
     }
 
-    public static CotRole fromString(String role) {
-        switch (role) {
-            case "Team Member":      return TEAM_MEMBER;
-            case "Team Leader":      return TEAM_LEADER;
-            case "HQ":               return HQ;
-            case "Sniper":           return SNIPER;
-            case "Medic":            return MEDIC;
-            case "Forward Observer": return FORWARD_OBSERVER;
-            case "RTO":              return RTO;
-            case "K9":               return K9;
-            default:                 throw new IllegalArgumentException("Unknown CoT role: " + role);
+    public static CotRole fromString(String roleString) {
+        for (CotRole role : values()) {
+            if (role.get().equals(roleString)) {
+                return role;
+            }
         }
+        throw new IllegalArgumentException("Unknown CoT role: " + roleString);
     }
 
     public static CotRole fromPrefs(SharedPreferences prefs) {
-        boolean useRandom = PrefUtils.getBoolean(prefs, Key.RANDOM_ROLE);
+        final boolean useRandom = PrefUtils.getBoolean(prefs, Key.RANDOM_ROLE);
         if (useRandom) {
-            Random random = new Random();
             return values()[random.nextInt(values().length)];
         } else {
             String role = PrefUtils.getString(prefs, Key.ICON_ROLE);

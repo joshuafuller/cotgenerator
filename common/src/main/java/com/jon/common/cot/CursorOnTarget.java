@@ -70,18 +70,7 @@ public class CursorOnTarget {
     }
 
     public void setStaleDiff(final long dt, final TimeUnit timeUnit) {
-        int multiplier = getTimeUnitMultiplier(timeUnit);
-        stale = new UtcTimestamp(start.toLong() + (multiplier * dt));
-    }
-
-    private int getTimeUnitMultiplier(TimeUnit timeUnit) {
-        switch (timeUnit) {
-            case MILLISECONDS: return 1;
-            case SECONDS:      return 1000;
-            case MINUTES:      return 60 * 1000;
-            case HOURS:        return 60 * 60 * 1000;
-            default:           throw new IllegalArgumentException("Give me a proper TimeUnit, not " + timeUnit.name());
-        }
+        stale = start.add(dt, timeUnit);
     }
 
     public byte[] toXml() {

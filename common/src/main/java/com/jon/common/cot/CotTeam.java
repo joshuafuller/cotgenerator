@@ -8,52 +8,67 @@ import com.jon.common.utils.PrefUtils;
 import java.util.Random;
 
 public enum CotTeam {
-    PURPLE("Purple"),
-    MAGENTA("Magenta"),
-    MAROON("Maroon"),
-    RED("Red"),
-    ORANGE("Orange"),
-    YELLOW("Yellow"),
-    WHITE("White"),
-    GREEN("Green"),
-    DARK_GREEN("Dark Green"),
-    CYAN("Cyan"),
-    TEAL("Teal"),
-    BLUE("Blue"),
-    DARK_BLUE("Dark Blue");
+    PURPLE(    "Purple",     "FF800080"),
+    MAGENTA(   "Magenta",    "FFFF00FF"),
+    MAROON(    "Maroon",     "FF800000"),
+    RED(       "Red",        "FFFF0000"),
+    ORANGE(    "Orange",     "FFFF8000"),
+    YELLOW(    "Yellow",     "FFFFFF00"),
+    WHITE(     "White",      "FFFFFFFF"),
+    GREEN(     "Green",      "FF008009"),
+    DARK_GREEN("Dark Green", "FF00620B"),
+    CYAN(      "Cyan",       "FF00FFFF"),
+    TEAL(      "Teal",       "FF008784"),
+    BLUE(      "Blue",       "FF0003FB"),
+    DARK_BLUE( "Dark Blue",  "FF0000A0");
 
-    final private String colour;
+    private static final Random random = new Random();
+    final private String colourName;
+    final private String colourHex;
 
-    CotTeam(String colour) { this.colour = colour; }
+    CotTeam(String name, String hex) {
+        colourName = name;
+        colourHex = hex;
+    }
 
-    public String get() { return colour; }
+    public String get() { return colourName; }
+    String hex() { return colourHex; }
+
+    private static CotTeam fromString(String teamString) {
+        for (CotTeam team : values()) {
+            if (team.colourHex.equals(teamString)) {
+                return team;
+            }
+        }
+        throw new IllegalArgumentException("Unknown CoT team: " + teamString);
+    }
 
     public static CotTeam fromPrefs(final SharedPreferences prefs) {
-        boolean useRandom = PrefUtils.getBoolean(prefs, Key.RANDOM_COLOUR);
+        final boolean useRandom = PrefUtils.getBoolean(prefs, Key.RANDOM_COLOUR);
         if (useRandom) {
-            return random();
-        }
-        String choice = Integer.toHexString(PrefUtils.getInt(prefs, Key.TEAM_COLOUR)).toUpperCase();
-        switch (choice) {
-            case "FF800080": return PURPLE;
-            case "FFFF00FF": return MAGENTA;
-            case "FF800000": return MAROON;
-            case "FFFF0000": return RED;
-            case "FFFF8000": return ORANGE;
-            case "FFFFFF00": return YELLOW;
-            case "FFFFFFFF": return WHITE;
-            case "FF00FF00": return GREEN;
-            case "FF006400": return DARK_GREEN;
-            case "FF00FFFF": return CYAN;
-            case "FF008080": return TEAL;
-            case "FF0000FF": return BLUE;
-            case "FF00008B": return DARK_BLUE;
-            default: throw new IllegalArgumentException("Unknown team colour: " + choice);
+            return values()[random.nextInt(values().length)];
+        } else {
+            String team = Integer.toHexString(PrefUtils.getInt(prefs, Key.TEAM_COLOUR)).toUpperCase();
+            return fromString(assertHexFormatting(team));
         }
     }
 
-    public static CotTeam random() {
-        Random random = new Random();
-        return values()[random.nextInt(values().length)];
+    /* In case we get an integer like 0x008009, which returns "8009" as a hex string. This is technically valid, but doesn't match any
+     * of the expected hex strings above. So we prepend the required chars: "FF" alpha channel and any padding "0"s
+    * doesn't match */
+    private static String assertHexFormatting(String hex) {
+        if (hex.length() == 8) {
+            return hex;
+        } else if (hex.length() == 6) {
+            return "FF" + hex;
+        } else if (hex.length() > 6) {
+            throw new IllegalArgumentException("Malformed hex string: " + hex);
+        }
+
+        StringBuilder hexBuilder = new StringBuilder(hex);
+        while (hexBuilder.length() < 6)
+            hexBuilder.insert(0, "0");
+        hexBuilder.insert(0, "FF");
+        return hexBuilder.toString();
     }
 }

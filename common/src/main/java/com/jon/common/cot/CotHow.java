@@ -15,12 +15,12 @@ public enum CotHow {
         return value;
     }
 
-    public static CotHow from(String how) {
-        switch (how) {
-            case "h-e":       return HE;
-            case "m-g":       return MG;
-            case "h-g-i-g-o": return HGIGO;
-            default:          throw new IllegalArgumentException("Unknown CoT how field: " + how);
+    public static CotHow fromString(String howString) {
+        for (CotHow how : values()) {
+            if (how.get().equals(howString)) {
+                return how;
+            }
         }
+        throw new IllegalArgumentException("Unknown CoT how: " + howString);
     }
 }
