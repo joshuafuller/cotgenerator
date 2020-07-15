@@ -17,6 +17,7 @@ public enum CotRole {
     RTO("RTO"),
     K9("K9");
 
+    private static final Random random = new Random();
     private final String role;
 
     CotRole(String role) {
@@ -39,7 +40,6 @@ public enum CotRole {
     public static CotRole fromPrefs(SharedPreferences prefs) {
         final boolean useRandom = PrefUtils.getBoolean(prefs, Key.RANDOM_ROLE);
         if (useRandom) {
-            Random random = new Random();
             return values()[random.nextInt(values().length)];
         } else {
             String role = PrefUtils.getString(prefs, Key.ICON_ROLE);
