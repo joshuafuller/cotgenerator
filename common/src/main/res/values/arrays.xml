@@ -7,12 +7,12 @@
         <item>#FF8000</item>
         <item>#FFFF00</item>
         <item>#FFFFFF</item>
-        <item>#008009</item>
-        <item>#00620B</item>
+        <item>#00FF00</item>
+        <item>#006400</item>
         <item>#00FFFF</item>
-        <item>#008784</item>
-        <item>#0003FB</item>
-        <item>#0000A0</item>
+        <item>#008080</item>
+        <item>#0000FF</item>
+        <item>#00008B</item>
     </array>
 
     <string-array name="transmissionProtocols">
