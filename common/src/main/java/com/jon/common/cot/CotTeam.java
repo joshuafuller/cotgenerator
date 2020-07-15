@@ -8,52 +8,47 @@ import com.jon.common.utils.PrefUtils;
 import java.util.Random;
 
 public enum CotTeam {
-    PURPLE("Purple"),
-    MAGENTA("Magenta"),
-    MAROON("Maroon"),
-    RED("Red"),
-    ORANGE("Orange"),
-    YELLOW("Yellow"),
-    WHITE("White"),
-    GREEN("Green"),
-    DARK_GREEN("Dark Green"),
-    CYAN("Cyan"),
-    TEAL("Teal"),
-    BLUE("Blue"),
-    DARK_BLUE("Dark Blue");
+    PURPLE(    "Purple",     "FF800080"),
+    MAGENTA(   "Magenta",    "FFFF00FF"),
+    MAROON(    "Maroon",     "FF800000"),
+    RED(       "Red",        "FFFF0000"),
+    ORANGE(    "Orange",     "FFFF8000"),
+    YELLOW(    "Yellow",     "FFFFFF00"),
+    WHITE(     "White",      "FFFFFFFF"),
+    GREEN(     "Green",      "FF008009"),
+    DARK_GREEN("Dark Green", "FF00620B"),
+    CYAN(      "Cyan",       "FF00FFFF"),
+    TEAL(      "Teal",       "FF008784"),
+    BLUE(      "Blue",       "FF0003FB"),
+    DARK_BLUE( "Dark Blue",  "FF0000A0");
 
-    final private String colour;
+    final private String colourName;
+    final private String colourHex;
 
-    CotTeam(String colour) { this.colour = colour; }
-
-    public String get() { return colour; }
-
-    public static CotTeam fromPrefs(final SharedPreferences prefs) {
-        boolean useRandom = PrefUtils.getBoolean(prefs, Key.RANDOM_COLOUR);
-        if (useRandom) {
-            return random();
-        }
-        String choice = Integer.toHexString(PrefUtils.getInt(prefs, Key.TEAM_COLOUR)).toUpperCase();
-        switch (choice) {
-            case "FF800080": return PURPLE;
-            case "FFFF00FF": return MAGENTA;
-            case "FF800000": return MAROON;
-            case "FFFF0000": return RED;
-            case "FFFF8000": return ORANGE;
-            case "FFFFFF00": return YELLOW;
-            case "FFFFFFFF": return WHITE;
-            case "FF00FF00": return GREEN;
-            case "FF006400": return DARK_GREEN;
-            case "FF00FFFF": return CYAN;
-            case "FF008080": return TEAL;
-            case "FF0000FF": return BLUE;
-            case "FF00008B": return DARK_BLUE;
-            default: throw new IllegalArgumentException("Unknown team colour: " + choice);
-        }
+    CotTeam(String name, String hex) {
+        colourName = name;
+        colourHex = hex;
     }
 
-    public static CotTeam random() {
-        Random random = new Random();
-        return values()[random.nextInt(values().length)];
+    public String get() { return colourName; }
+
+    private static CotTeam fromString(String teamString) {
+        for (CotTeam team : values()) {
+            if (team.colourHex.equals(teamString)) {
+                return team;
+            }
+        }
+        throw new IllegalArgumentException("Unknown CoT team: " + teamString);
+    }
+
+    public static CotTeam fromPrefs(final SharedPreferences prefs) {
+        final boolean useRandom = PrefUtils.getBoolean(prefs, Key.RANDOM_COLOUR);
+        if (useRandom) {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        } else {
+            String team = Integer.toHexString(PrefUtils.getInt(prefs, Key.TEAM_COLOUR)).toUpperCase();
+            return fromString(team);
+        }
     }
 }
