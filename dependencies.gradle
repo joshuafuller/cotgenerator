@@ -24,6 +24,7 @@ ext.versions = [
         commons_io              : '2.7',
         timber                  : '4.7.1',
         protobuf_lite           : '3.0.1',
+        threetenabp             : '1.2.4',
 
         // Testing
         junit                   : '4.13',

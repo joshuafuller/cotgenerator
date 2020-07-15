@@ -96,6 +96,9 @@ dependencies {
     /* Protobuf */
     implementation group: 'com.google.protobuf', name: 'protobuf-lite', version: "$versions.protobuf_lite"
 
+    /* Timestamps */
+    implementation group: 'com.jakewharton.threetenabp', name: 'threetenabp', version: "$versions.threetenabp"
+
     /* Testing */
     testApi group: 'junit', name: 'junit', version: "$versions.junit"
     testApi group: 'org.mockito', name: 'mockito-core', version: "$versions.mockito"
