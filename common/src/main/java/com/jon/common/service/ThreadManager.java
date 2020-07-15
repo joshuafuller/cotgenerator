@@ -2,13 +2,16 @@ package com.jon.common.service;
 
 import android.content.SharedPreferences;
 
-class CotManager implements SharedPreferences.OnSharedPreferenceChangeListener {
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
+class ThreadManager implements SharedPreferences.OnSharedPreferenceChangeListener {
     private final SharedPreferences prefs;
     private CotThread thread;
     private ThreadErrorListener errorListener;
     private Thread.UncaughtExceptionHandler exceptionHandler = (thread, throwable) -> errorListener.reportError(throwable);
 
-    CotManager(SharedPreferences prefs, ThreadErrorListener errorListener) {
+    ThreadManager(SharedPreferences prefs, ThreadErrorListener errorListener) {
         this.prefs = prefs;
         this.errorListener = errorListener;
     }
@@ -26,8 +29,11 @@ class CotManager implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     void shutdown() {
         if (thread != null) {
-            thread.shutdown();
-            thread = null;
+            Executor executor = Executors.newSingleThreadExecutor();
+            executor.execute(() -> {
+                thread.shutdown();
+                thread = null;
+            });
         }
     }
 
