@@ -121,6 +121,7 @@ abstract public class MainFragment
     protected void updatePreferences() {
         toggleProtocolSettingVisibility();
         toggleDataFormatSettingVisibility();
+        toggleEmulateMultipleUsersSettingVisibility();
 
         updatePresetPreferences();
         insertPresetAddressAndPort();
@@ -143,6 +144,7 @@ abstract public class MainFragment
             case Key.TRANSMISSION_PROTOCOL:
                 toggleProtocolSettingVisibility();
                 toggleDataFormatSettingVisibility();
+                toggleEmulateMultipleUsersSettingVisibility();
                 insertPresetAddressAndPort();
                 break;
             case Key.SSL_PRESETS:
@@ -172,6 +174,14 @@ abstract public class MainFragment
         boolean showDataFormatSetting = Protocol.fromPrefs(prefs) == Protocol.UDP;
         setPrefVisibleIfCondition(Key.DATA_FORMAT, showDataFormatSetting);
     }
+
+    private void toggleEmulateMultipleUsersSettingVisibility() {
+        /* Can only construct multiple sockets for TCP or UDP */
+        final Protocol selected = Protocol.fromPrefs(prefs);
+        final boolean selectedTcpOrSsl = (selected == Protocol.TCP) || (selected == Protocol.SSL);
+        setPrefVisibleIfCondition(Key.EMULATE_MULTIPLE_USERS, selectedTcpOrSsl);
+    }
+
 
     @Override
     public boolean onPreferenceChange(Preference pref, Object newValue) {

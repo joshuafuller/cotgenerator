@@ -1,9 +1,7 @@
 package com.jon.common.service;
 
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 
-import com.jon.common.cot.CursorOnTarget;
 import com.jon.common.presets.OutputPreset;
 import com.jon.common.presets.PresetRepository;
 import com.jon.common.utils.Constants;
@@ -11,9 +9,8 @@ import com.jon.common.utils.Key;
 import com.jon.common.utils.PrefUtils;
 
 import java.io.ByteArrayInputStream;
-import java.io.Closeable;
 import java.io.IOException;
-import java.net.SocketException;
+import java.net.Socket;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -21,15 +18,13 @@ import java.security.SecureRandom;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
+import javax.net.SocketFactory;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
-
-import timber.log.Timber;
 
 public class SslCotThread extends TcpCotThread {
     SslCotThread(SharedPreferences prefs) {
@@ -37,27 +32,7 @@ public class SslCotThread extends TcpCotThread {
     }
 
     @Override
-    void shutdown() {
-        super.shutdown();
-        closeFromMainThread(outputStream);
-        closeFromMainThread(socket);
-        outputStream = null;
-        socket = null;
-    }
-
-    @Override
-    protected void sendToDestination(CursorOnTarget cot) throws IOException {
-        try {
-            outputStream.write(cot.toBytes(dataFormat));
-            Timber.i("Sent cot: %s", cot.callsign);
-        } catch (NullPointerException | SocketException e) {
-            /* Thrown when the thread is cancelled from another thread and we try to access the sockets */
-            shutdown();
-        }
-    }
-
-    @Override
-    protected void openSocket() throws Exception {
+    protected void openSockets() throws Exception {
         OutputPreset preset = buildPreset();
         KeyStore certStore = loadKeyStore(
                 preset.clientCert,
@@ -73,9 +48,14 @@ public class SslCotThread extends TcpCotThread {
                 getTrustManagers(trustStore),
                 new SecureRandom()
         );
-        socket = sslContext.getSocketFactory().createSocket(destIp, destPort);
-        socket.setSoTimeout(Constants.TCP_SOCKET_TIMEOUT_MILLISECONDS);
-        outputStream = socket.getOutputStream();
+        final SocketFactory socketFactory = sslContext.getSocketFactory();
+
+        final int numSockets = emulateMultipleUsers ? cotIcons.size() : 1;
+        for (int i = 0; i < numSockets; i++) {
+            final Socket socket = socketFactory.createSocket(destIp, destPort);
+            socket.setSoTimeout(Constants.TCP_SOCKET_TIMEOUT_MILLISECONDS);
+            sockets.add(socket);
+        }
     }
 
     private OutputPreset buildPreset() {
@@ -118,26 +98,5 @@ public class SslCotThread extends TcpCotThread {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
         keyManagerFactory.init(certStore, password);
         return keyManagerFactory.getKeyManagers();
-    }
-
-    /* This workaround is only necessary because I was getting NetworkOnMainThreadExceptions when
-     * closing the SSLSocket via shutdown() from the UI thread. This wasn't an issue with TCP/UDP
-     * so this is just a patch to deal with it for now. */
-    private void closeFromMainThread(Closeable closeable) {
-        try {
-            new CloseSocketTask().execute(closeable).get();
-        } catch (ExecutionException | InterruptedException e) {
-            /* Ignore */
-        }
-    }
-
-    private static class CloseSocketTask extends AsyncTask<Closeable, Void, Void> {
-        protected Void doInBackground(Closeable... closeables) {
-            for (Closeable closeable : closeables) {
-                try { if (closeable != null) closeable.close(); }
-                catch (IOException e) { Timber.e(e); }
-            }
-            return null;
-        }
     }
 }

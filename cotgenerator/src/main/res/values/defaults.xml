@@ -11,4 +11,6 @@
     <string name="defaultMovementSpeed">5</string>
     <bool name="defaultStayAtGroundLevel">true</bool>
     <string name="defaultCentreAltitude">0</string>
+
+    <bool name="defaultEmulateMultipleUsers">false</bool>
 </resources>

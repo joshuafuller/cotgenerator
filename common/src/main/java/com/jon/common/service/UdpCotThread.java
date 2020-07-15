@@ -85,7 +85,6 @@ class UdpCotThread extends CotThread {
         }
     }
 
-    @Override
     protected void sendToDestination(CursorOnTarget cot) throws IOException {
         try {
             final byte[] buf = cot.toBytes(dataFormat);

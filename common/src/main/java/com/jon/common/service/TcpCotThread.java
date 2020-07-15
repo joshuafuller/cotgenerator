@@ -14,31 +14,35 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 import timber.log.Timber;
 
 class TcpCotThread extends CotThread {
-    protected Socket socket;
-    protected OutputStream outputStream;
+    protected List<Socket> sockets = new ArrayList<>();
+    protected List<CotStream> cotStreams = new ArrayList<>();
+    protected boolean emulateMultipleUsers;
 
     TcpCotThread(SharedPreferences prefs) {
         super(prefs);
         dataFormat = DataFormat.XML; // regardless of what the preference is set as
+        emulateMultipleUsers = PrefUtils.getBoolean(prefs, Key.EMULATE_MULTIPLE_USERS);
     }
 
     @Override
     void shutdown() {
         super.shutdown();
-        if (socket != null) {
-            try {
-                outputStream.close();
+        try {
+            for (CotStream cotStream : cotStreams)
+                cotStream.stream.close();
+            for (Socket socket : sockets)
                 socket.close();
-            } catch (Exception e) {
-                /* ignore, we're shutting down anyway */
-            }
-            outputStream = null;
-            socket = null;
+        } catch (IOException e) {
+            /* ignore, we're shutting down anyway */
         }
+        sockets.clear();
+        cotStreams.clear();
     }
 
     @Override
@@ -46,29 +50,32 @@ class TcpCotThread extends CotThread {
         try {
             super.run();
             initialiseDestAddress();
-            openSocket();
+            openSockets();
+            initialiseCotStreams();
             int bufferTimeMs = periodMilliseconds() / cotIcons.size();
 
             while (isRunning) {
-                for (CursorOnTarget cot : cotIcons) {
+                for (CotStream cotStream : cotStreams) {
                     if (!isRunning) break;
-                    sendToDestination(cot);
+                    sendToDestination(cotStream);
                     bufferSleep(bufferTimeMs);
                 }
-                cotIcons = cotFactory.generate();
+                updateCotStreams();
             }
-            shutdown();
         } catch (Exception e) {
-            shutdown();
+            /* We've encountered an unexpected exception, so close all sockets and pass the message back to our
+            * thread exception handler */
             throw new RuntimeException(e.getMessage());
+        } finally {
+            shutdown();
         }
     }
 
-    @Override
-    protected void sendToDestination(CursorOnTarget cot) throws IOException {
+    protected void sendToDestination(CotStream cotStream) throws IOException {
         try {
-            outputStream.write(cot.toBytes(dataFormat));
-            Timber.i("Sent cot: %s", cot.callsign);
+            final byte[] cotBytes = cotStream.cot.toBytes(dataFormat);
+            cotStream.stream.write(cotBytes);
+            Timber.i("Sent cot: %s", cotStream.cot.callsign);
         } catch (NullPointerException e) {
             /* Thrown when the thread is cancelled from another thread and we try to access the sockets */
             shutdown();
@@ -80,12 +87,38 @@ class TcpCotThread extends CotThread {
         destPort = PrefUtils.parseInt(prefs, Key.DEST_PORT);
     }
 
-    protected void openSocket() throws Exception {
-        socket = new Socket();
-        socket.connect(
-                new InetSocketAddress(destIp, destPort),
-                Constants.TCP_SOCKET_TIMEOUT_MILLISECONDS
-        );
-        outputStream = socket.getOutputStream();
+    protected void openSockets() throws Exception {
+        final int numSockets = emulateMultipleUsers ? cotIcons.size() : 1;
+        for (int i = 0; i < numSockets; i++) {
+            Socket socket = new Socket();
+            socket.connect(
+                    new InetSocketAddress(destIp, destPort),
+                    Constants.TCP_SOCKET_TIMEOUT_MILLISECONDS
+            );
+            sockets.add(socket);
+        }
+    }
+
+    private void initialiseCotStreams() throws IOException {
+        for (int i = 0; i < cotIcons.size(); i++) {
+            final CotStream cotStream = new CotStream();
+            cotStream.cot = cotIcons.get(i);
+            final int socketIndex = emulateMultipleUsers ? i : 0;
+            cotStream.stream = sockets.get(socketIndex).getOutputStream();
+            cotStreams.add(cotStream);
+        }
+    }
+
+    private void updateCotStreams() {
+        cotIcons = cotFactory.generate();
+        for (int i = 0; i < cotStreams.size(); i++) {
+            cotStreams.get(i).cot = cotIcons.get(i);
+        }
+    }
+
+    /* Simple container class for a CoT icon and a corresponding output stream */
+    protected class CotStream {
+        CursorOnTarget cot;
+        OutputStream stream;
     }
 }
