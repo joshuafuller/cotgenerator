@@ -41,24 +41,4 @@ dependencies {
     /* General */
     implementation group: 'androidx.appcompat', name: 'appcompat', version: "$versions.appcompat"
     implementation group: 'androidx.lifecycle', name: 'lifecycle-extensions', version: "$versions.lifecycle_extensions"
-    implementation group: 'com.google.android.material', name: 'material', version: "$versions.material"
-
-    /* Preferences */
-    implementation group: 'androidx.preference', name: 'preference', version: "$versions.preference"
-    implementation group: 'com.jaredrummler', name: 'colorpicker', version: "$versions.colorpicker"
-
-    /* Permission management */
-    implementation group: 'pub.devrel', name: 'easypermissions', version: "$versions.easypermissions"
-
-    /* RxJava */
-    implementation group: 'io.reactivex.rxjava2', name: 'rxjava', version: "$versions.rxjava"
-    implementation group: 'io.reactivex.rxjava2', name: 'rxandroid', version: "$versions.rxandroid"
-
-    /* Logging */
-    implementation group: 'com.jakewharton.timber', name: 'timber', version: "$versions.timber"
-
-    /* Testing */
-    testImplementation "junit:junit:$versions.junit"
-    androidTestImplementation "androidx.test.ext:junit:$versions.androidx_junit"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.espresso"
 }

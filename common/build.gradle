@@ -59,15 +59,15 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
     /* General */
-    implementation group: 'com.google.android.material', name: 'material', version: "$versions.material"
+    api group: 'com.google.android.material', name: 'material', version: "$versions.material"
     implementation group: 'androidx.constraintlayout', name: 'constraintlayout', version: "$versions.constraintlayout"
 
     /* Preferences */
-    implementation group: 'androidx.preference', name: 'preference', version: "$versions.preference"
-    implementation group: 'com.jaredrummler', name: 'colorpicker', version: "$versions.colorpicker"
+    api group: 'androidx.preference', name: 'preference', version: "$versions.preference"
+    api group: 'com.jaredrummler', name: 'colorpicker', version: "$versions.colorpicker"
 
     /* Permission management */
-    implementation group: 'pub.devrel', name: 'easypermissions', version: "$versions.easypermissions"
+    api group: 'pub.devrel', name: 'easypermissions', version: "$versions.easypermissions"
 
     /* GPS access */
     implementation group: 'com.google.android.gms', name: 'play-services-location', version: "$versions.play_services_location"
@@ -79,8 +79,8 @@ dependencies {
     testImplementation group: 'androidx.room', name: 'room-testing', version: "$versions.room"
 
     /* RxJava */
-    implementation group: 'io.reactivex.rxjava2', name: 'rxjava', version: "$versions.rxjava"
-    implementation group: 'io.reactivex.rxjava2', name: 'rxandroid', version: "$versions.rxandroid"
+    api group: 'io.reactivex.rxjava2', name: 'rxjava', version: "$versions.rxjava"
+    api group: 'io.reactivex.rxjava2', name: 'rxandroid', version: "$versions.rxandroid"
 
     /* HTTP */
     implementation group: 'com.squareup.retrofit2', name: 'retrofit', version: "$versions.retrofit"
@@ -91,13 +91,13 @@ dependencies {
     implementation group: 'commons-io', name: 'commons-io', version: "$versions.commons_io"
 
     /* Logging */
-    implementation group: 'com.jakewharton.timber', name: 'timber', version: "$versions.timber"
+    api group: 'com.jakewharton.timber', name: 'timber', version: "$versions.timber"
 
     /* Protobuf */
     implementation group: 'com.google.protobuf', name: 'protobuf-lite', version: "$versions.protobuf_lite"
 
     /* Testing */
-    testImplementation "junit:junit:$versions.junit"
-    androidTestImplementation "androidx.test.ext:junit:$versions.androidx_junit"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.espresso"
+    testApi group: 'junit', name: 'junit', version: "$versions.junit"
+    androidTestApi group: 'androidx.test.ext', name: 'junit', version: "$versions.androidx_junit"
+    androidTestApi group: 'androidx.test.espresso', name: 'espresso-core', version: "$versions.espresso"
 }
