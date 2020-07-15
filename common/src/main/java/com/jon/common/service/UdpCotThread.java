@@ -53,18 +53,23 @@ class UdpCotThread extends CotThread {
                 }
                 cotIcons = cotFactory.generate();
             }
-            shutdown();
         } catch (Exception e) {
-            shutdown();
+            /* We've encountered an unexpected exception, so close all sockets and pass the message back to our
+             * thread exception handler */
+            Timber.e(e);
             throw new RuntimeException(e.getMessage());
+        } finally {
+            shutdown();
         }
     }
 
+    @Override
     protected void initialiseDestAddress() throws UnknownHostException {
         destIp = InetAddress.getByName(PrefUtils.getString(prefs, Key.DEST_ADDRESS));
         destPort = PrefUtils.parseInt(prefs, Key.DEST_PORT);
     }
 
+    @Override
     protected void openSockets() throws IOException {
         if (destIp.isMulticastAddress()) {
             final List<NetworkInterface> interfaces = NetworkHelper.getValidInterfaces();

@@ -9,7 +9,9 @@ import com.jon.common.utils.Key;
 import com.jon.common.utils.PrefUtils;
 import com.jon.common.utils.Protocol;
 
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 
 abstract class CotThread extends Thread {
@@ -20,6 +22,9 @@ abstract class CotThread extends Thread {
     protected InetAddress destIp;
     protected int destPort;
     protected List<CursorOnTarget> cotIcons;
+
+    abstract protected void initialiseDestAddress() throws UnknownHostException;
+    abstract protected void openSockets() throws Exception;
 
     static CotThread fromPrefs(SharedPreferences prefs) {
         Protocol protocol = Protocol.fromPrefs(prefs);

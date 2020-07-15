@@ -82,11 +82,13 @@ class TcpCotThread extends CotThread {
         }
     }
 
+    @Override
     protected void initialiseDestAddress() throws UnknownHostException {
         destIp = InetAddress.getByName(PrefUtils.getString(prefs, Key.DEST_ADDRESS));
         destPort = PrefUtils.parseInt(prefs, Key.DEST_PORT);
     }
 
+    @Override
     protected void openSockets() throws Exception {
         final int numSockets = emulateMultipleUsers ? cotIcons.size() : 1;
         for (int i = 0; i < numSockets; i++) {
