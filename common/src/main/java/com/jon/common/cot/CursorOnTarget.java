@@ -59,7 +59,10 @@ public class CursorOnTarget {
     public final String os = String.valueOf(Build.VERSION.SDK_INT); // Android SDK version number
     public final String version = AppSpecific.getVersionName(); // application version number
 
-    public CursorOnTarget() { /* blank */ }
+    public CursorOnTarget() {
+        time = start = UtcTimestamp.now();
+        stale = start.add(10, TimeUnit.MINUTES);
+    }
 
     public byte[] toBytes(DataFormat dataFormat) {
         switch (dataFormat) {
