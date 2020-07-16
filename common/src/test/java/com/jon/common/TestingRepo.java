@@ -10,7 +10,7 @@ import com.jon.common.ui.MainFragment;
 import java.util.Date;
 
 /* App-specific repo used for unit testing, since we don't have an Application class to set this value */
-public class DefaultRepo implements AppSpecific.Repo {
+public class TestingRepo implements AppSpecific.Repo {
     @Override
     public MainFragment getMainFragment() {
         return null;

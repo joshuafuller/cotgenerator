@@ -25,7 +25,7 @@ public class CursorOnTarget {
     public CotType type = CotType.GROUND_COMBAT;
 
     // User info
-    public String uid = null;    // unique ID of the device. Stays constant when changing callsign
+    public String uid = "UUID";    // unique ID of the device. Stays constant when changing callsign
 
     // Time info
     public UtcTimestamp time;    // time when the icon was created
@@ -33,7 +33,7 @@ public class CursorOnTarget {
     public UtcTimestamp stale;   // time when the icon is considered invalid
 
     // Contact info
-    public String callsign = null; // ATAK callsign
+    public String callsign = "CALLSIGN"; // ATAK callsign
 
     // Position and movement info
     public double hae = 0.0;    // height above ellipsoid in metres
@@ -54,10 +54,10 @@ public class CursorOnTarget {
 
     // System info
     public Integer battery = 100; // internal battery charge percentage, scale of 1-100
-    public final String device = String.format("%s %s", Build.MANUFACTURER.toUpperCase(), Build.MODEL.toUpperCase()); // Android device model
-    public final String platform = AppSpecific.getPlatform(); // application name. set in constructor
+    public final String device = getDeviceName(); // Android device model
+    public final String platform = AppSpecific.getPlatform(); // application name
     public final String os = String.valueOf(Build.VERSION.SDK_INT); // Android SDK version number
-    public final String version = AppSpecific.getVersionName(); // application version number. set in constructor
+    public final String version = AppSpecific.getVersionName(); // application version number
 
     public CursorOnTarget() { /* blank */ }
 
@@ -73,18 +73,18 @@ public class CursorOnTarget {
         stale = start.add(dt, timeUnit);
     }
 
-    public byte[] toXml() {
+    private byte[] toXml() {
         return String.format(Locale.ENGLISH,
                 "<event version=\"2.0\" uid=\"%s\" type=\"%s\" time=\"%s\" start=\"%s\" stale=\"%s\" how=\"%s\"><point lat=\"%.7f\" " +
                         "lon=\"%.7f\" hae=\"%f\" ce=\"%f\" le=\"%f\"/><detail><track speed=\"%.7f\" course=\"%.7f\"/><contact callsign=\"%s\"/>" +
                         "<__group name=\"%s\" role=\"%s\"/><takv device=\"%s\" platform=\"%s\" os=\"%s\" version=\"%s\"/><status battery=\"%d\"/>" +
                         "<precisionlocation altsrc=\"%s\" geopointsrc=\"%s\" /></detail></event>",
                 uid, type.get(), time.toString(), start.toString(), stale.toString(), how.get(), lat, lon, hae, ce, le, speed,
-                course, callsign, team.get(), role.toString(), device, platform, os, version, battery, altsrc, geosrc)
+                course, callsign, team.get(), role.get(), device, platform, os, version, battery, altsrc, geosrc)
                 .getBytes();
     }
 
-    public byte[] toProtobuf() {
+    private byte[] toProtobuf() {
         byte[] cotBytes = TakMessage.newBuilder()
                 .setCotEvent(CotEvent.newBuilder()
                         .setType(type.get())
@@ -124,5 +124,14 @@ public class CursorOnTarget {
                 .build()
                 .toByteArray();
         return ArrayUtils.concatBytes(TAK_HEADER, cotBytes);
+    }
+
+    private String getDeviceName() {
+        try {
+            return String.format("%s %s", Build.MANUFACTURER.toUpperCase(), Build.MODEL.toUpperCase());
+        } catch (NullPointerException e) {
+            /* Thrown in unit tests */
+            return "DEVICE";
+        }
     }
 }
