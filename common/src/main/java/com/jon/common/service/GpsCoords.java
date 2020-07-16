@@ -60,7 +60,7 @@ public class GpsCoords {
     }
 
     public String gpsSource() {
-        return valid() ? "GPS" : "???";
+        return valid() ? "GPS" : "NO-GPS-FIX";
     }
 
     private boolean valid() {
