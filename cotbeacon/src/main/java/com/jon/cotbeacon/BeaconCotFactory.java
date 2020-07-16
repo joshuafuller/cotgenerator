@@ -34,14 +34,16 @@ public class BeaconCotFactory extends CotFactory {
         cot.callsign = PrefUtils.getString(prefs, Key.CALLSIGN);
         cot.role = CotRole.fromPrefs(prefs);
         cot.team = CotTeam.fromPrefs(prefs);
-        updateTime(cot);
+        cot.battery = battery.getPercentage();
+        updateTime();
         updateGpsData();
         return Collections.singletonList(cot);
     }
 
     @Override
     protected List<CursorOnTarget> update() {
-        updateTime(cot);
+        cot.battery = battery.getPercentage();
+        updateTime();
         updateGpsData();
         return Collections.singletonList(cot);
     }
@@ -51,7 +53,7 @@ public class BeaconCotFactory extends CotFactory {
         cot = null;
     }
 
-    private void updateTime(CursorOnTarget cot) {
+    private void updateTime() {
         final UtcTimestamp now = UtcTimestamp.now();
         cot.time = now;
         cot.start = now;
@@ -69,5 +71,4 @@ public class BeaconCotFactory extends CotFactory {
         cot.altsrc = gpsCoords.gpsSource();
         cot.geosrc = gpsCoords.gpsSource();
     }
-
 }

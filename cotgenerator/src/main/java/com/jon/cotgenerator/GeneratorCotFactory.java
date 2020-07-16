@@ -9,7 +9,6 @@ import com.jon.common.cot.CursorOnTarget;
 import com.jon.common.cot.UtcTimestamp;
 import com.jon.common.service.CotFactory;
 import com.jon.common.service.Point;
-import com.jon.common.utils.Battery;
 import com.jon.common.utils.Constants;
 import com.jon.common.utils.DeviceUid;
 import com.jon.common.utils.Key;
@@ -44,8 +43,6 @@ public class GeneratorCotFactory extends CotFactory {
     private long staleTimer;
     private Point distributionCentre;
 
-    private Battery battery;
-
     private static class IconData {
         CursorOnTarget cot;
         Point.Offset offset;
@@ -71,8 +68,6 @@ public class GeneratorCotFactory extends CotFactory {
         /* Stop any fuckery with distribution radii */
         movementSpeed = Math.min(movementSpeed, distributionRadius/2.0);
         travelDistance = movementSpeed * PrefUtils.getInt(prefs, Key.TRANSMISSION_PERIOD);
-
-        battery = Battery.getInstance();
     }
 
     @Override
