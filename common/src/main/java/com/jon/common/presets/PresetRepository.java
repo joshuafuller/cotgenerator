@@ -1,5 +1,6 @@
 package com.jon.common.presets;
 
+import androidx.annotation.StringRes;
 import androidx.room.Room;
 
 import com.jon.common.CotApplication;
@@ -20,25 +21,25 @@ public class PresetRepository {
     private static final List<OutputPreset> UDP_DEFAULTS = new ArrayList<OutputPreset>() {{
         add(new OutputPreset(
                 Protocol.UDP,
-                CotApplication.getContext().getString(R.string.udpDefaultSa),
-                CotApplication.getContext().getString(R.string.udpDefaultSaIp),
-                Integer.parseInt(CotApplication.getContext().getString(R.string.udpDefaultSaPort))
+                getString(R.string.udpDefaultSa),
+                getString(R.string.udpDefaultSaIp),
+                Integer.parseInt(getString(R.string.udpDefaultSaPort))
         ));
     }};
     private static final List<OutputPreset> TCP_DEFAULTS = new ArrayList<OutputPreset>() {{
         add(new OutputPreset(
                 Protocol.TCP,
-                CotApplication.getContext().getString(R.string.tcpFreetakserver),
-                CotApplication.getContext().getString(R.string.tcpFreetakserverIp),
-                Integer.parseInt(CotApplication.getContext().getString(R.string.tcpFreetakserverPort))
+                getString(R.string.tcpFreetakserver),
+                getString(R.string.tcpFreetakserverIp),
+                Integer.parseInt(getString(R.string.tcpFreetakserverPort))
         ));
     }};
     private static final List<OutputPreset> SSL_DEFAULTS = new ArrayList<OutputPreset>() {{
         add(new OutputPreset(
                 Protocol.SSL,
-                CotApplication.getContext().getString(R.string.sslTakserver),
-                CotApplication.getContext().getString(R.string.sslTakserverIp),
-                Integer.parseInt(CotApplication.getContext().getString(R.string.sslTakserverPort)),
+                getString(R.string.sslTakserver),
+                getString(R.string.sslTakserverIp),
+                Integer.parseInt(getString(R.string.sslTakserverPort)),
                 FileUtils.toByteArraySafe(R.raw.discord_client),
                 "atakatak",
                 FileUtils.toByteArraySafe(R.raw.discord_truststore),
@@ -109,5 +110,9 @@ public class PresetRepository {
             case UDP: return UDP_DEFAULTS;
             default: throw new IllegalArgumentException("Unknown protocol: " + protocol);
         }
+    }
+
+    private static String getString(@StringRes int id) {
+        return CotApplication.getContext().getString(id);
     }
 }

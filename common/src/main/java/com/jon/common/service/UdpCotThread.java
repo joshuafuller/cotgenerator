@@ -95,7 +95,7 @@ class UdpCotThread extends CotThread {
             final byte[] buf = cot.toBytes(dataFormat);
             for (int i = 0; i < sockets.size(); i++) {
                 sockets.get(i).send(new DatagramPacket(buf, buf.length, destIp, destPort));
-                Timber.i("Sent %s over %s: %s", cot.callsign, interfaceNames.get(i), new String(buf));
+                Timber.i("Sent %s over %s", cot.callsign, interfaceNames.get(i));
             }
         } catch (NullPointerException e) {
             /* Thrown when the thread is cancelled from another thread and we try to access the sockets */
