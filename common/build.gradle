@@ -99,10 +99,10 @@ dependencies {
     implementation group: 'com.jakewharton.threetenabp', name: 'threetenabp', version: "$versions.threetenabp"
 
     /* Testing */
-    testApi group: 'junit', name: 'junit', version: "$versions.junit"
-    testApi group: 'org.mockito', name: 'mockito-core', version: "$versions.mockito"
-    testApi group: 'com.github.IvanShafran', name: 'shared-preferences-mock', version: "$versions.shared_preferences_mock"
-    testApi group: 'org.hamcrest', name: 'hamcrest', version: "$versions.hamcrest"
-    androidTestApi group: 'androidx.test.ext', name: 'junit', version: "$versions.androidx_junit"
-    androidTestApi group: 'androidx.test.espresso', name: 'espresso-core', version: "$versions.espresso"
+    testImplementation group: 'junit', name: 'junit', version: "$versions.junit"
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: "$versions.mockito"
+    testImplementation group: 'com.github.IvanShafran', name: 'shared-preferences-mock', version: "$versions.shared_preferences_mock"
+    testImplementation group: 'org.hamcrest', name: 'hamcrest', version: "$versions.hamcrest"
+    androidTestImplementation group: 'androidx.test.ext', name: 'junit', version: "$versions.androidx_junit"
+    androidTestImplementation group: 'androidx.test.espresso', name: 'espresso-core', version: "$versions.espresso"
 }
