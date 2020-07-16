@@ -15,7 +15,7 @@ import java.util.Date;
 public class AppSpecific {
     AppSpecific() { /* blank */ }
 
-    private static Repo repo;
+    private static Repo repo = new DefaultRepo();
 
     public static void setReferenceRepo(Repo appSpecificRepo) {
         repo = appSpecificRepo;
