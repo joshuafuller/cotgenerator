@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'com.google.protobuf'
-apply from: '../dependencies.gradle'
 
 android {
     compileSdkVersion versions.targetSdk
@@ -57,52 +57,39 @@ protobuf {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
-    /* General */
-    api group: 'com.google.android.material', name: 'material', version: "$versions.material"
-    implementation group: 'androidx.constraintlayout', name: 'constraintlayout', version: "$versions.constraintlayout"
+    /* Kotlin */
+    implementation "androidx.core:core-ktx:$versions.core_ktx"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
 
-    /* Preferences */
-    api group: 'androidx.preference', name: 'preference', version: "$versions.preference"
-    api group: 'com.jaredrummler', name: 'colorpicker', version: "$versions.colorpicker"
-
-    /* Permission management */
-    api group: 'pub.devrel', name: 'easypermissions', version: "$versions.easypermissions"
-
-    /* GPS access */
-    implementation group: 'com.google.android.gms', name: 'play-services-location', version: "$versions.play_services_location"
+    /* UI */
+    api "com.google.android.material:material:$versions.material"
+    api "androidx.preference:preference:$versions.preference"
+    api "com.jaredrummler:colorpicker:$versions.colorpicker"
+    api "pub.devrel:easypermissions:$versions.easypermissions"
 
     /* Room Database */
-    implementation group: 'androidx.room', name: 'room-runtime', version: "$versions.room"
-    implementation group: 'androidx.room', name: 'room-rxjava2', version: "$versions.room"
-    annotationProcessor group: 'androidx.room', name: 'room-compiler', version: "$versions.room"
-    testImplementation group: 'androidx.room', name: 'room-testing', version: "$versions.room"
+    implementation "androidx.room:room-runtime:$versions.room"
+    implementation "androidx.room:room-rxjava2:$versions.room"
+    annotationProcessor "androidx.room:room-compiler:$versions.room"
+    testImplementation "androidx.room:room-testing:$versions.room"
 
-    /* RxJava */
-    api group: 'io.reactivex.rxjava2', name: 'rxjava', version: "$versions.rxjava"
-    api group: 'io.reactivex.rxjava2', name: 'rxandroid', version: "$versions.rxandroid"
-
-    /* HTTP */
-    implementation group: 'com.squareup.retrofit2', name: 'retrofit', version: "$versions.retrofit"
-    implementation group: 'com.squareup.retrofit2', name: 'converter-gson', version: "$versions.retrofit"
+    /* Networking */
+    api "io.reactivex.rxjava2:rxjava:$versions.rxjava"
+    api "io.reactivex.rxjava2:rxandroid:$versions.rxandroid"
+    implementation "com.squareup.retrofit2:retrofit:$versions.retrofit"
+    implementation "com.squareup.retrofit2:converter-gson:$versions.retrofit"
 
     /* Utils */
-    implementation group: 'org.apache.commons', name: 'commons-collections4', version: "$versions.commons_collections4"
-    implementation group: 'commons-io', name: 'commons-io', version: "$versions.commons_io"
-
-    /* Logging */
-    api group: 'com.jakewharton.timber', name: 'timber', version: "$versions.timber"
-
-    /* Protobuf */
-    implementation group: 'com.google.protobuf', name: 'protobuf-lite', version: "$versions.protobuf_lite"
-
-    /* Timestamps */
-    implementation group: 'com.jakewharton.threetenabp', name: 'threetenabp', version: "$versions.threetenabp"
+    api "com.jakewharton.timber:timber:$versions.timber"
+    implementation "com.google.android.gms:play-services-location:$versions.play_services_location"
+    implementation "com.google.protobuf:protobuf-lite:$versions.protobuf_lite"
+    implementation "commons-io:commons-io:$versions.commons_io"
 
     /* Testing */
-    testImplementation group: 'junit', name: 'junit', version: "$versions.junit"
-    testImplementation group: 'org.mockito', name: 'mockito-core', version: "$versions.mockito"
-    testImplementation group: 'com.github.IvanShafran', name: 'shared-preferences-mock', version: "$versions.shared_preferences_mock"
-    testImplementation group: 'org.hamcrest', name: 'hamcrest', version: "$versions.hamcrest"
-    androidTestImplementation group: 'androidx.test.ext', name: 'junit', version: "$versions.androidx_junit"
-    androidTestImplementation group: 'androidx.test.espresso', name: 'espresso-core', version: "$versions.espresso"
+    testImplementation "junit:junit:$versions.junit"
+    testImplementation "org.mockito:mockito-core:$versions.mockito"
+    testImplementation "com.github.IvanShafran:shared-preferences-mock:$versions.shared_preferences_mock"
+    testImplementation "org.hamcrest:hamcrest:$versions.hamcrest"
+    androidTestImplementation "androidx.test.ext:junit:$versions.androidx_junit"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.espresso"
 }
