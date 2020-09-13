@@ -19,7 +19,7 @@ class EditPresetFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeL
     private val prefs: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(requireContext()) }
     private val inputValidator = InputValidator()
 
-    override fun onCreatePreferences(savedInstanceState: Bundle, rootKey: String) {
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.edit_preset, rootKey)
 
         /* Tell these two "bytes" preferences to launch a file browser when clicked */
@@ -38,51 +38,51 @@ class EditPresetFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeL
 
     private fun prepopulateSpecifiedFields() {
         val bundle = arguments ?: return
-        initialPresetValues = OutputPreset.blank()
-
-        /* Protocol */
-        bundle.getString(IntentIds.EXTRA_EDIT_PRESET_PROTOCOL)?.let {
-            findPreference<ListPreference>(Key.PRESET_PROTOCOL)?.value = it
-            initialPresetValues.protocol = Protocol.fromString(it)
-        }
-        /* Alias */
-        bundle.getString(IntentIds.EXTRA_EDIT_PRESET_ALIAS)?.let {
-            findPreference<EditTextPreference>(Key.PRESET_ALIAS)?.text = it
-            initialPresetValues.alias = it
-        }
-        /* Address */
-        bundle.getString(IntentIds.EXTRA_EDIT_PRESET_ADDRESS)?.let {
-            findPreference<EditTextPreference>(Key.PRESET_DESTINATION_ADDRESS)?.text = it
-            initialPresetValues.address = it
-        }
-        /* Port */
-        bundle.getInt(IntentIds.EXTRA_EDIT_PRESET_PORT).let {
-            findPreference<EditTextPreference>(Key.PRESET_DESTINATION_PORT)?.text = it.toString()
-            initialPresetValues.port = it
-        }
-        /* Client cert bytes */
-        bundle.getString(IntentIds.EXTRA_EDIT_PRESET_CLIENT_BYTES)?.let {
-            val length = if (inputValidator.validateString(it)) it.length else 0
-            findPreference<Preference>(Key.PRESET_SSL_CLIENTCERT_BYTES)?.summary = "Loaded: $length bytes"
-            prefs.edit().putString(Key.PRESET_SSL_CLIENTCERT_BYTES, it).apply()
-            initialPresetValues.clientCert = it.toByteArray()
-        }
-        /* Client cert password */
-        bundle.getString(IntentIds.EXTRA_EDIT_PRESET_CLIENT_PASSWORD)?.let {
-            findPreference<EditTextPreference>(Key.PRESET_SSL_CLIENTCERT_PASSWORD)?.text = it
-            initialPresetValues.clientCertPassword = it
-        }
-        /* Trust store bytes */
-        bundle.getString(IntentIds.EXTRA_EDIT_PRESET_TRUST_BYTES)?.let {
-            val length = if (inputValidator.validateString(it)) it.length else 0
-            findPreference<Preference>(Key.PRESET_SSL_TRUSTSTORE_BYTES)?.summary = "Loaded: $length bytes"
-            prefs.edit().putString(Key.PRESET_SSL_TRUSTSTORE_BYTES, it).apply()
-            initialPresetValues.trustStore = it.toByteArray()
-        }
-        /* Trust store password */
-        bundle.getString(IntentIds.EXTRA_EDIT_PRESET_TRUST_PASSWORD)?.let {
-            findPreference<EditTextPreference>(Key.PRESET_SSL_TRUSTSTORE_PASSWORD)?.text = it
-            initialPresetValues.trustStorePassword = it
+        initialPresetValues = OutputPreset.blank().apply {
+            /* Protocol */
+            bundle.getString(IntentIds.EXTRA_EDIT_PRESET_PROTOCOL)?.let {
+                findPreference<ListPreference>(Key.PRESET_PROTOCOL)?.value = it
+                this.protocol = Protocol.fromString(it)
+            }
+            /* Alias */
+            bundle.getString(IntentIds.EXTRA_EDIT_PRESET_ALIAS)?.let {
+                findPreference<EditTextPreference>(Key.PRESET_ALIAS)?.text = it
+                this.alias = it
+            }
+            /* Address */
+            bundle.getString(IntentIds.EXTRA_EDIT_PRESET_ADDRESS)?.let {
+                findPreference<EditTextPreference>(Key.PRESET_DESTINATION_ADDRESS)?.text = it
+                this.address = it
+            }
+            /* Port */
+            bundle.getInt(IntentIds.EXTRA_EDIT_PRESET_PORT).let {
+                findPreference<EditTextPreference>(Key.PRESET_DESTINATION_PORT)?.text = it.toString()
+                this.port = it
+            }
+            /* Client cert bytes */
+            bundle.getString(IntentIds.EXTRA_EDIT_PRESET_CLIENT_BYTES)?.let {
+                val length = if (inputValidator.validateString(it)) it.length else 0
+                findPreference<Preference>(Key.PRESET_SSL_CLIENTCERT_BYTES)?.summary = "Loaded: $length bytes"
+                prefs.edit().putString(Key.PRESET_SSL_CLIENTCERT_BYTES, it).apply()
+                this.clientCert = it.toByteArray()
+            }
+            /* Client cert password */
+            bundle.getString(IntentIds.EXTRA_EDIT_PRESET_CLIENT_PASSWORD)?.let {
+                findPreference<EditTextPreference>(Key.PRESET_SSL_CLIENTCERT_PASSWORD)?.text = it
+                this.clientCertPassword = it
+            }
+            /* Trust store bytes */
+            bundle.getString(IntentIds.EXTRA_EDIT_PRESET_TRUST_BYTES)?.let {
+                val length = if (inputValidator.validateString(it)) it.length else 0
+                findPreference<Preference>(Key.PRESET_SSL_TRUSTSTORE_BYTES)?.summary = "Loaded: $length bytes"
+                prefs.edit().putString(Key.PRESET_SSL_TRUSTSTORE_BYTES, it).apply()
+                this.trustStore = it.toByteArray()
+            }
+            /* Trust store password */
+            bundle.getString(IntentIds.EXTRA_EDIT_PRESET_TRUST_PASSWORD)?.let {
+                findPreference<EditTextPreference>(Key.PRESET_SSL_TRUSTSTORE_PASSWORD)?.text = it
+                this.trustStorePassword = it
+            }
         }
     }
 
@@ -237,12 +237,12 @@ class EditPresetFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                 Key.PRESET_SSL_CLIENTCERT_PASSWORD,
                 Key.PRESET_SSL_TRUSTSTORE_PASSWORD
         )
-        private val PREFS_REQUIRING_VALIDATION: Map<String, String> = hashMapOf(
+        private val PREFS_REQUIRING_VALIDATION = hashMapOf(
                 Key.PRESET_DESTINATION_ADDRESS to "Should be a valid network address",
                 Key.PRESET_DESTINATION_PORT to "Should be an integer from 1-65355 inclusive"
         )
 
-        lateinit var initialPresetValues: OutputPreset
+        var initialPresetValues: OutputPreset? = null
 
         fun newInstance(): EditPresetFragment {
             return EditPresetFragment()

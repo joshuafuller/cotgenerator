@@ -28,18 +28,18 @@ abstract class MainFragment : PreferenceFragmentCompat(),
     private val compositeDisposable = CompositeDisposable()
     private val presetRepository = PresetRepository.getInstance()
 
-    protected open fun getPhoneInputKeys(): List<String> = listOf(Key.ICON_COUNT)
+    protected open fun getPhoneInputKeys() = mutableListOf(Key.ICON_COUNT)
 
-    protected open fun getSuffixes(): Map<String, String> = hashMapOf(
+    protected open fun getSuffixes() = mutableMapOf(
             Key.CENTRE_LATITUDE to "degrees",
             Key.CENTRE_LONGITUDE to "degrees"
     )
 
-    protected open fun getPrefValidationRationales(): Map<String, String> = hashMapOf(
+    protected open fun getPrefValidationRationales() = mutableMapOf(
             Key.CALLSIGN to "Contains invalid character(s)"
     )
 
-    protected open fun getSeekbarKeys(): List<String> = listOf(
+    protected open fun getSeekbarKeys() = mutableListOf(
             Key.STALE_TIMER,
             Key.TRANSMISSION_PERIOD
     )
@@ -104,7 +104,7 @@ abstract class MainFragment : PreferenceFragmentCompat(),
         super.onDestroy()
     }
 
-    override fun onSharedPreferenceChanged(prefs: SharedPreferences?, key: String) {
+    override fun onSharedPreferenceChanged(prefs: SharedPreferences, key: String) {
         val suffixes = getSuffixes()
         if (suffixes.containsKey(key)) {
             setPreferenceSuffix(this.prefs, key, suffixes[key])
@@ -120,7 +120,7 @@ abstract class MainFragment : PreferenceFragmentCompat(),
         }
     }
 
-    private fun setPrefVisibleIfCondition(key: String, condition: Boolean) {
+    protected fun setPrefVisibleIfCondition(key: String, condition: Boolean) {
         findPreference<Preference>(key)?.isVisible = condition
     }
 
@@ -154,7 +154,7 @@ abstract class MainFragment : PreferenceFragmentCompat(),
         }
     }
 
-    private fun errorIfInvalid(input: String, key: String?, result: Boolean): Boolean {
+    protected fun errorIfInvalid(input: String, key: String?, result: Boolean): Boolean {
         if (!result) {
             Notify.red(requireView(), "Invalid input: " + input + ". " + getPrefValidationRationales()[key])
         }

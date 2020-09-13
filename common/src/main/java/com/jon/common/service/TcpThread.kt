@@ -48,9 +48,9 @@ internal open class TcpThread(prefs: SharedPreferences) : BaseThread(prefs) {
             openSockets()
             initialiseCotStreams()
             val bufferTimeMs = periodMilliseconds() / cotIcons.size.toLong()
-            while (bIsRunning) {
+            while (isRunning()) {
                 for (cotStream in cotStreams) {
-                    if (!bIsRunning) break
+                    if (!isRunning()) break
                     sendToDestination(cotStream)
                     bufferSleep(bufferTimeMs)
                 }

@@ -20,11 +20,9 @@ internal class DefaultVariantRepo : VariantRepo {
     override val platform: String = ""
     override val isDebug: Boolean = true
     override val cotServiceClass: Class<out CotService> = CotService::class.java
-    override val mainActivityClass: Class<out MainActivity> = MainActivity::class.java
     override val listActivityClass: Class<out ListPresetsActivity> = ListPresetsActivity::class.java
     override val settingsXmlId: Int = 0
     override val iconColourId: Int = 0
-    override val menuId: Int = 0
 
     override fun getCotFactory(prefs: SharedPreferences): CotFactory = object : CotFactory(prefs) {
         override fun generate(): MutableList<CursorOnTarget> { return mutableListOf() }

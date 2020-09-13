@@ -23,6 +23,7 @@ import com.jon.common.utils.PrefUtils
 import com.jon.common.variants.Variant
 import pub.devrel.easypermissions.EasyPermissions
 import pub.devrel.easypermissions.EasyPermissions.PermissionCallbacks
+import timber.log.Timber
 
 open class MainActivity : ServiceBoundActivity(), PermissionCallbacks, OnSharedPreferenceChangeListener {
     private val prefs: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
@@ -69,7 +70,7 @@ open class MainActivity : ServiceBoundActivity(), PermissionCallbacks, OnSharedP
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(Variant.getMenuId(), menu)
+        menuInflater.inflate(R.menu.menu, menu)
         val start = menu.findItem(R.id.start)
         val stop = menu.findItem(R.id.stop)
         if (service != null) {
@@ -117,33 +118,17 @@ open class MainActivity : ServiceBoundActivity(), PermissionCallbacks, OnSharedP
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
 
-    override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
-        if (requestCode == PERMISSIONS_CODE) {
-            Notify.green(getRootView(), "Permissions successfully granted")
+    override fun onPermissionsGranted(requestCode: Int, grantedPermissions: List<String>) {
+        if (grantedPermissions.size == PERMISSIONS.size) {
+            /* All permissions granted */
+            buildActivity()
+        } else {
+            chastiseUserAndQuit()
         }
     }
 
     override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
-        if (requestCode == PERMISSIONS_CODE) {
-            if (!ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSIONS[0])) {
-                /* GPS permission has been permanently denied, so show a toast and open Android settings */
-                Notify.toast(this, getString(R.string.gpsPermissionBegging))
-                val uri = Uri.parse("package:" + Variant.getAppId())
-                startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri))
-            } else {
-                /* Permission has been temporarily denied, so we can re-ask within the app */
-                Notify.orange(getRootView(), getString(R.string.gpsPermissionRationale))
-            }
-            if (!ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSIONS[1])) {
-                /* Storage permission has been permanently denied, so show a toast and open Android settings */
-                Notify.toast(this, getString(R.string.storagePermissionBegging))
-                val uri = Uri.parse("package:" + Variant.getAppId())
-                startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri))
-            } else {
-                /* Storage permission has been temporarily denied, so we can re-ask within the app */
-                Notify.orange(getRootView(), getString(R.string.storagePermissionRationale))
-            }
-        }
+        chastiseUserAndQuit()
     }
 
     override fun onServiceStateChanged(state: ServiceState, throwable: Throwable?) {
@@ -155,6 +140,13 @@ open class MainActivity : ServiceBoundActivity(), PermissionCallbacks, OnSharedP
         if (Key.TRANSMISSION_PERIOD == key) {
             service?.updateGpsPeriod(PrefUtils.getInt(prefs, key))
         }
+    }
+
+    private fun chastiseUserAndQuit() {
+        val err = "You need to grant all permissions!"
+        Timber.e(err)
+        Notify.toast(applicationContext, err)
+        finish()
     }
 
     companion object {

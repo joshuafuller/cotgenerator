@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-apply from: '../dependencies.gradle'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion versions.targetSdk
@@ -7,10 +7,11 @@ android {
 
     defaultConfig {
         applicationId "com.jon.cotgenerator"
-        minSdkVersion 24  // Higher midSdk than CoT Beacon
+        minSdkVersion versions.minSdk
         targetSdkVersion versions.targetSdk
         versionCode versions.versionCode
         versionName versions.versionName
+        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "java.util.Date", "BUILD_TIME", "new java.util.Date(" + System.currentTimeMillis() + "L)"
         javaCompileOptions {
@@ -18,7 +19,7 @@ android {
                 arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
             }
         }
-        setProperty("archivesBaseName", "cotgenerator-$versionName")
+        setProperty("archivesBaseName", "$applicationId-$versionName")
     }
 
     buildTypes {
@@ -38,7 +39,12 @@ dependencies {
     implementation project(':common')
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    /* General */
-    implementation group: 'androidx.appcompat', name: 'appcompat', version: "$versions.appcompat"
-    implementation group: 'androidx.lifecycle', name: 'lifecycle-extensions', version: "$versions.lifecycle_extensions"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
+    implementation "androidx.appcompat:appcompat:$versions.appcompat"
+    implementation "androidx.lifecycle:lifecycle-extensions:$versions.lifecycle_extensions"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.viewmodel_ktx"
+    implementation "androidx.core:core-ktx:$versions.core_ktx"
+}
+repositories {
+    mavenCentral()
 }

@@ -12,7 +12,8 @@ open class CotApplication : Application() {
         super.onCreate()
         instance = this
 
-        /* Set night mode */AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        /* Set night mode */
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 
         /* Initialise logging */Timber.plant(object : DebugTree() {
             override fun createStackElementTag(element: StackTraceElement): String? {

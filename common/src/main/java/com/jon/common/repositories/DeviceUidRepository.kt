@@ -34,7 +34,7 @@ class DeviceUidRepository {
 
     @Throws(IOException::class)
     private fun readPreviousUid(context: Context): String {
-        val inputStream: InputStream = context.openFileInput(FILENAME)
+        val inputStream = context.openFileInput(FILENAME)
         val bufferedReader = BufferedReader(InputStreamReader(inputStream))
         val line = bufferedReader.readLine()
         inputStream.close()

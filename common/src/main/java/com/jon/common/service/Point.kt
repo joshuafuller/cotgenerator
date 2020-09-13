@@ -7,7 +7,10 @@ import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 
-data class Point(var lat: Double, var lon: Double) {
+data class Point(
+        var lat: Double, // radians
+        var lon: Double // radians
+) {
     fun add(offset: Offset): Point {
         val rOverR = offset.R / Constants.EARTH_RADIUS_METRES
         val theta = Math.toRadians(offset.theta) // travel bearing in radians

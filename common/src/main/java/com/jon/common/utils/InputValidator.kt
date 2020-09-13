@@ -2,6 +2,7 @@ package com.jon.common.utils
 
 import android.os.AsyncTask
 import java.net.InetAddress
+import java.net.UnknownHostException
 import java.util.regex.Pattern
 
 class InputValidator {
@@ -51,7 +52,7 @@ class InputValidator {
             return try {
                 InetAddress.getByName(params[0])
                 true
-            } catch (e: Exception) {
+            } catch (e: UnknownHostException) {
                 false
             }
         }

@@ -149,7 +149,11 @@ class EditPresetActivity : ServiceBoundActivity() {
     private fun overwritePresetInDatabase() {
         val original = EditPresetFragment.initialPresetValues
         val updated = getEnteredPresetValues()
-        presetRepository.updatePreset(original, updated)
+        if (original == null) {
+            presetRepository.insertPreset(updated)
+        } else {
+            presetRepository.updatePreset(original, updated)
+        }
     }
 
     private fun passPresetBackToMainActivity() {

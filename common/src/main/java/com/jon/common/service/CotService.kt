@@ -11,6 +11,7 @@ import com.google.android.gms.location.*
 import com.jon.common.BuildConfig
 import com.jon.common.R
 import com.jon.common.repositories.GpsRepository
+import com.jon.common.ui.main.MainActivity
 import com.jon.common.utils.GenerateInt
 import com.jon.common.utils.Notify
 import com.jon.common.utils.PrefUtils
@@ -30,7 +31,6 @@ abstract class CotService : Service(), ThreadErrorListener {
     private var locationRequest: LocationRequest? = null
     private val locationCallback: LocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
-            Timber.i("onLocationResult")
             gpsRepository.setLocation(locationResult.lastLocation)
         }
     }
@@ -107,7 +107,7 @@ abstract class CotService : Service(), ThreadErrorListener {
         val launchPendingIntent = PendingIntent.getActivity(
                 this,
                 LAUNCH_ACTIVITY_PENDING_INTENT,
-                Intent(this, Variant.getMainActivityClass()).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK),
+                Intent(this, MainActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK),
                 PendingIntent.FLAG_UPDATE_CURRENT
         )
         /* Intent to stop the service when the notification button is tapped */

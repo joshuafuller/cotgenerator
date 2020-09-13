@@ -3,21 +3,18 @@ package com.jon.common.repositories
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.BatteryManager
+import kotlin.math.roundToInt
 
 class BatteryRepository private constructor() {
     private val lock = Any()
     private lateinit var batteryIntent: Intent
-    private var batteryPercentage: Int = 100
-
-    fun setPercentage(percentage: Int) {
-        synchronized(lock) {
-            batteryPercentage = percentage
-        }
-    }
 
     fun getPercentage(): Int {
         synchronized(lock) {
-            return batteryPercentage
+            val level: Int = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+            val scale: Int = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
+            return (level * 100 / scale.toFloat()).roundToInt()
         }
     }
 

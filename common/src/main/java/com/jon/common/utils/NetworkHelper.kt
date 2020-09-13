@@ -8,7 +8,9 @@ class NetworkHelper {
     fun getValidInterfaces(): List<NetworkInterface> {
         return NetworkInterface.getNetworkInterfaces()
                 .asSequence()
-                .filter { it.isUp && interfaceHasIpv4Address(it) }
+                /* Remove any interfaces that are either inactive, have no addresses or are localhost.
+                 * Localhost is ignored because multicast loopback is enabled. */
+                .filter { it.isUp && interfaceHasIpv4Address(it) && it.name != "lo" }
                 .toList()
     }
 

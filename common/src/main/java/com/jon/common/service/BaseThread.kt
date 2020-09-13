@@ -12,8 +12,8 @@ import java.util.concurrent.TimeUnit
 
 internal abstract class BaseThread(protected val prefs: SharedPreferences) : Thread() {
 
-    protected val lock = Any()
-    protected var bIsRunning = false
+    private val lock = Any()
+    private var bIsRunning = false
 
     protected var dataFormat = DataFormat.fromPrefs(prefs)
     protected var cotFactory = Variant.getCotFactory(prefs)

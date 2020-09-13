@@ -19,14 +19,14 @@
         tools:ignore="AllowBackup,GoogleAppIndexingWarning"
         tools:targetApi="q">
 
-        <activity android:name="com.jon.common.ui.MainActivity">
+        <activity android:name="com.jon.common.ui.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.jon.common.ui.EditPresetActivity" />
-        <activity android:name="com.jon.common.ui.ListPresetsActivity" />
+        <activity android:name="com.jon.common.ui.editpreset.EditPresetActivity" />
+        <activity android:name="com.jon.common.ui.listpresets.ListPresetsActivity" />
 
         <service
             android:name=".GeneratorService"

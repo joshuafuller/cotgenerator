@@ -72,8 +72,8 @@ internal class UdpThread(prefs: SharedPreferences) : BaseThread(prefs) {
             val buf = cot.toBytes(dataFormat)
             sockets.forEach {
                 it.send(DatagramPacket(buf, buf.size, destIp, destPort))
-                Timber.i("Sent %s over %s", cot.callsign, it.inetAddress.hostAddress)
             }
+            Timber.i("Sent %s over %d sockets", cot.callsign, sockets.size)
         } catch (e: NullPointerException) {
             /* Thrown when the thread is cancelled from another thread and we try to access the sockets */
             shutdown()

@@ -6,7 +6,7 @@ import androidx.annotation.MenuRes
 import androidx.annotation.XmlRes
 
 object Variant {
-    private var repo: VariantRepo = DefaultVariantRepo()
+    private lateinit var repo: VariantRepo /* = DefaultVariantRepo()*/
 
     fun setAppVariantRepository(variantRepo: VariantRepo) {
         repo = variantRepo
@@ -23,9 +23,7 @@ object Variant {
     fun getPlatform() = repo.platform
     fun isDebug() = repo.isDebug
     fun getCotServiceClass() = repo.cotServiceClass
-    fun getMainActivityClass() = repo.mainActivityClass
     fun getListActivityClass() = repo.listActivityClass
     @XmlRes fun getSettingsXmlId() = repo.settingsXmlId
     @ColorRes fun getIconColourId() = repo.iconColourId
-    @MenuRes fun getMenuId() = repo.menuId
 }

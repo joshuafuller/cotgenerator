@@ -5,7 +5,7 @@ import com.jon.common.presets.OutputPreset
 import com.jon.common.repositories.PresetRepository
 import com.jon.common.utils.Constants
 import com.jon.common.utils.Key
-import com.jon.common.utils.PrefUtils.getString
+import com.jon.common.utils.PrefUtils
 import com.jon.common.utils.Protocol
 import timber.log.Timber
 import java.io.ByteArrayInputStream
@@ -60,7 +60,7 @@ internal class SslThread(prefs: SharedPreferences) : TcpThread(prefs) {
     private fun buildPreset(): OutputPreset {
         /* This contains only the basic values: protocol, alias, address and port. We now need to query the
          * database to grab SSL cert information, then return this upgraded OutputPreset object if successful. */
-        val prefString = getString(prefs, Key.SSL_PRESETS)
+        val prefString = PrefUtils.getString(prefs, Key.SSL_PRESETS)
         val basicPreset = OutputPreset.fromString(prefString)
                 ?: throw RuntimeException("Couldn't parse a preset from SSL preset string: '$prefString'")
         val repository = PresetRepository.getInstance()
