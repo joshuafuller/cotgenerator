@@ -40,8 +40,4 @@ object Key {
     const val PRESET_SSL_CLIENTCERT_PASSWORD = "presetSslClientCertPassword"
     const val PRESET_SSL_TRUSTSTORE_BYTES = "presetSslTrustStoreBytes"
     const val PRESET_SSL_TRUSTSTORE_PASSWORD = "presetSslTrustStorePassword"
-
-    /* Beacon persistence */
-    const val START_TRANSMITTING_ON_LAUNCH = "startTransmittingOnLaunch"
-    const val START_TRANSMITTING_ON_BOOT = "startTransmittingOnBoot"
 }

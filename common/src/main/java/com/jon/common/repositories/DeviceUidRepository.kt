@@ -7,7 +7,9 @@ import java.io.*
 import java.util.*
 
 class DeviceUidRepository {
-    val uid = generate(CotApplication.context)
+    private val uid = generate(CotApplication.context)
+
+    fun getUid() = uid
 
     private fun generate(context: Context): String {
         var generatedUid: String

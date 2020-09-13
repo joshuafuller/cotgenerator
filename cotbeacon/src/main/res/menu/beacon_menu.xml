@@ -1,0 +1,39 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".CotActivity">
+
+    <item
+        android:id="@+id/stop"
+        android:icon="@drawable/stop"
+        android:orderInCategory="1"
+        android:title="@string/stop"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/start"
+        android:icon="@drawable/start"
+        android:orderInCategory="1"
+        android:title="@string/start"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/startTransmittingOnLaunch"
+        android:checkable="true"
+        android:title="@string/startTransmittingOnLaunch"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/startTransmittingOnBoot"
+        android:checkable="true"
+        android:title="@string/startTransmittingOnBoot"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/about"
+        android:icon="@drawable/info"
+        android:orderInCategory="2"
+        android:title="@string/about"
+        app:showAsAction="never" />
+
+</menu>

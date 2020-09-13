@@ -21,7 +21,7 @@ class CursorOnTarget {
     var type = "a-f-G-U-C"
 
     // User info
-    var uid = "UUID" // unique ID of the device. Stays constant when changing callsign
+    var uid: String? = "UUID" // unique ID of the device. Stays constant when changing callsign
 
     // Time info
     var time: UtcTimestamp // time when the icon was created

@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.IdRes
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -17,11 +18,12 @@ import com.jon.common.ui.IntentIds
 import com.jon.common.ui.ServiceBoundActivity
 import com.jon.common.ui.editpreset.EditPresetActivity
 import com.jon.common.utils.Protocol
+import com.jon.common.variants.Variant
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
-class ListPresetsActivity : ServiceBoundActivity(), PresetClickListener {
+open class ListPresetsActivity : ServiceBoundActivity(), PresetClickListener {
     private data class PresetRecyclerInfo(@IdRes val recyclerViewId: Int, @IdRes val emptyMessageId: Int, var adapter: ListPresetsAdapter? = null)
 
     private val recyclerViewMap: Map<Protocol, PresetRecyclerInfo> = hashMapOf(
@@ -56,6 +58,8 @@ class ListPresetsActivity : ServiceBoundActivity(), PresetClickListener {
         }
         val fab = findViewById<ExtendedFloatingActionButton>(R.id.fab)
         fab.setOnClickListener { startActivity(Intent(this, EditPresetActivity::class.java)) }
+        fab.setTextColor(ContextCompat.getColor(this, Variant.getIconColourId()))
+        fab.setIconTintResource(Variant.getIconColourId())
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

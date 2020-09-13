@@ -7,4 +7,7 @@
         1) GPS - to translate into CoT;
         2) Storage - to read certificate files for SSL authentication</string>
 
+    <string name="startTransmittingOnLaunch">Start transmitting on app launch?</string>
+    <string name="startTransmittingOnBoot">Start transmitting on device boot?</string>
+
 </resources>
