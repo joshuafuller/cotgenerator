@@ -62,6 +62,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
 
     /* UI */
+    api "androidx.constraintlayout:constraintlayout:$versions.constraintlayout"
     api "com.google.android.material:material:$versions.material"
     api "androidx.preference:preference:$versions.preference"
     api "com.jaredrummler:colorpicker:$versions.colorpicker"
