@@ -1,0 +1,16 @@
+<resources>
+    <!-- CoT settings -->
+    <bool name="def_random_callsigns">true</bool>
+    <bool name="def_random_role">true</bool>
+    <bool name="def_random_colour">true</bool>
+    <string name="def_icon_count">10</string>
+
+    <!-- Location settings -->
+    <bool name="def_follow_my_gps_location">true</bool>
+    <string name="def_centre_latitude">53.725103</string>
+    <string name="def_centre_longitude">-1.351375</string>
+    <string name="def_radial_distribution">100</string>
+    <string name="def_movement_speed">5</string>
+    <bool name="def_stay_at_ground_level">true</bool>
+    <string name="def_centre_altitude">0</string>
+</resources>

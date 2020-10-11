@@ -1,6 +1,8 @@
 package com.jon.common.utils
 
 import android.content.SharedPreferences
+import com.jon.common.prefs.CommonPrefs
+import com.jon.common.prefs.getStringFromPair
 
 enum class DataFormat(private val format: String) {
     XML("XML"),
@@ -12,8 +14,9 @@ enum class DataFormat(private val format: String) {
 
     companion object {
         fun fromPrefs(prefs: SharedPreferences): DataFormat {
-            val formatString = PrefUtils.getString(prefs, Key.DATA_FORMAT)
-            return fromString(formatString)
+            return fromString(
+                    prefs.getStringFromPair(CommonPrefs.DATA_FORMAT)
+            )
         }
 
         fun fromString(formatString: String): DataFormat {

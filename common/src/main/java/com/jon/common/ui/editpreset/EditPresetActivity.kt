@@ -6,42 +6,39 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jon.common.R
+import com.jon.common.prefs.CommonPrefs
+import com.jon.common.prefs.getStringFromPair
+import com.jon.common.prefs.parseIntFromPair
 import com.jon.common.presets.OutputPreset
 import com.jon.common.repositories.PresetRepository
 import com.jon.common.ui.ServiceBoundActivity
-import com.jon.common.utils.*
+import com.jon.common.utils.InputValidator
+import com.jon.common.utils.Notify
+import com.jon.common.utils.Protocol
 
 class EditPresetActivity : ServiceBoundActivity() {
 
     private val presetRepository = PresetRepository.getInstance()
-
-    private lateinit var prefs: SharedPreferences
+    private val prefs: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity)
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        val actionBar = supportActionBar
-        if (actionBar != null) {
-            actionBar.setTitle(R.string.toolbarHeaderEditPreset)
-            actionBar.setDisplayHomeAsUpEnabled(true)
-            actionBar.setDisplayHomeAsUpEnabled(true)
+        setSupportActionBar(findViewById(R.id.toolbar))
+        supportActionBar?.let {
+            it.setTitle(R.string.toolbar_header_edit_preset)
+            it.setDisplayHomeAsUpEnabled(true)
         }
 
         /* Pass all inter-activity arguments directly to the fragment */
-        val fragment: Fragment = EditPresetFragment.newInstance()
+        val fragment = EditPresetFragment()
         fragment.arguments = intent.extras
         supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment, fragment)
                 .commit()
-
-        prefs = PreferenceManager.getDefaultSharedPreferences(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -70,8 +67,8 @@ class EditPresetActivity : ServiceBoundActivity() {
 
     override fun onBackPressed() {
         MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.goBack)
-                .setMessage(R.string.goBackMessage)
+                .setTitle(R.string.go_back)
+                .setMessage(R.string.go_back_message)
                 .setPositiveButton(android.R.string.ok) { _, _ -> super.onBackPressed() }
                 .setNegativeButton(android.R.string.cancel, null)
                 .show()
@@ -81,10 +78,10 @@ class EditPresetActivity : ServiceBoundActivity() {
         val inputValidator = InputValidator()
         try {
             /* Regular options */
-            val protocolStr: String = PrefUtils.getString(prefs, Key.PRESET_PROTOCOL)
-            val alias: String = PrefUtils.getString(prefs, Key.PRESET_ALIAS)
-            val address: String = PrefUtils.getString(prefs, Key.PRESET_DESTINATION_ADDRESS)
-            val portStr: String = PrefUtils.getString(prefs, Key.PRESET_DESTINATION_PORT)
+            val protocolStr: String = prefs.getStringFromPair(CommonPrefs.PRESET_PROTOCOL)
+            val alias: String = prefs.getStringFromPair(CommonPrefs.PRESET_ALIAS)
+            val address: String = prefs.getStringFromPair(CommonPrefs.PRESET_DESTINATION_ADDRESS)
+            val portStr: String = prefs.getStringFromPair(CommonPrefs.PRESET_DESTINATION_PORT)
             if (!inputValidator.validateString(protocolStr, ".*?")) {
                 Notify.orange(getRootView(), "No protocol chosen!")
                 return false
@@ -100,10 +97,10 @@ class EditPresetActivity : ServiceBoundActivity() {
             }
             if (getInputProtocol() == Protocol.SSL) {
                 /* SSL-only options */
-                val clientBytes: String = PrefUtils.getString(prefs, Key.PRESET_SSL_CLIENTCERT_BYTES)
-                val clientPass: String = PrefUtils.getString(prefs, Key.PRESET_SSL_CLIENTCERT_PASSWORD)
-                val trustBytes: String = PrefUtils.getString(prefs, Key.PRESET_SSL_TRUSTSTORE_BYTES)
-                val trustPass: String = PrefUtils.getString(prefs, Key.PRESET_SSL_TRUSTSTORE_PASSWORD)
+                val clientBytes: String = prefs.getStringFromPair(CommonPrefs.PRESET_SSL_CLIENTCERT_BYTES)
+                val clientPass: String = prefs.getStringFromPair(CommonPrefs.PRESET_SSL_CLIENTCERT_PASSWORD)
+                val trustBytes: String = prefs.getStringFromPair(CommonPrefs.PRESET_SSL_TRUSTSTORE_BYTES)
+                val trustPass: String = prefs.getStringFromPair(CommonPrefs.PRESET_SSL_TRUSTSTORE_PASSWORD)
                 if (!inputValidator.validateString(clientBytes)) {
                     Notify.orange(getRootView(), "No client certificate chosen!")
                     return false
@@ -129,15 +126,15 @@ class EditPresetActivity : ServiceBoundActivity() {
         val protocol = getInputProtocol()
         val preset = OutputPreset(
                 protocol,
-                PrefUtils.getString(prefs, Key.PRESET_ALIAS),
-                PrefUtils.getString(prefs, Key.PRESET_DESTINATION_ADDRESS),
-                PrefUtils.getString(prefs, Key.PRESET_DESTINATION_PORT).toInt()
+                prefs.getStringFromPair(CommonPrefs.PRESET_ALIAS),
+                prefs.getStringFromPair(CommonPrefs.PRESET_DESTINATION_ADDRESS),
+                prefs.getStringFromPair(CommonPrefs.PRESET_DESTINATION_PORT).toInt()
         )
         if (protocol == Protocol.SSL) {
-            preset.clientCert = PrefUtils.getString(prefs, Key.PRESET_SSL_CLIENTCERT_BYTES).toByteArray()
-            preset.trustStore = PrefUtils.getString(prefs, Key.PRESET_SSL_TRUSTSTORE_BYTES).toByteArray()
-            preset.clientCertPassword = PrefUtils.getString(prefs, Key.PRESET_SSL_CLIENTCERT_PASSWORD)
-            preset.trustStorePassword = PrefUtils.getString(prefs, Key.PRESET_SSL_TRUSTSTORE_PASSWORD)
+            preset.clientCert = prefs.getStringFromPair(CommonPrefs.PRESET_SSL_CLIENTCERT_BYTES).toByteArray()
+            preset.trustStore = prefs.getStringFromPair(CommonPrefs.PRESET_SSL_TRUSTSTORE_BYTES).toByteArray()
+            preset.clientCertPassword = prefs.getStringFromPair(CommonPrefs.PRESET_SSL_CLIENTCERT_PASSWORD)
+            preset.trustStorePassword = prefs.getStringFromPair(CommonPrefs.PRESET_SSL_TRUSTSTORE_PASSWORD)
         }
         return preset
     }
@@ -159,13 +156,14 @@ class EditPresetActivity : ServiceBoundActivity() {
     private fun passPresetBackToMainActivity() {
         val preset = OutputPreset(
                 getInputProtocol(),
-                PrefUtils.getString(prefs, Key.PRESET_ALIAS),
-                PrefUtils.getString(prefs, Key.PRESET_DESTINATION_ADDRESS), PrefUtils.getString(prefs, Key.PRESET_DESTINATION_PORT).toInt())
+                prefs.getStringFromPair(CommonPrefs.PRESET_ALIAS),
+                prefs.getStringFromPair(CommonPrefs.PRESET_DESTINATION_ADDRESS),
+                prefs.parseIntFromPair(CommonPrefs.PRESET_DESTINATION_PORT))
         val intent = Intent()
         intent.data = Uri.parse(preset.toString())
         setResult(RESULT_OK, intent)
         finish()
     }
 
-    private fun getInputProtocol() = Protocol.fromString(PrefUtils.getString(prefs, Key.PRESET_PROTOCOL))
+    private fun getInputProtocol() = Protocol.fromString(prefs.getStringFromPair(CommonPrefs.PRESET_PROTOCOL))
 }

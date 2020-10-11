@@ -5,9 +5,10 @@ import com.jon.common.cot.CotRole
 import com.jon.common.cot.CotTeam
 import com.jon.common.cot.CursorOnTarget
 import com.jon.common.cot.UtcTimestamp
+import com.jon.common.prefs.CommonPrefs
+import com.jon.common.prefs.getIntFromPair
+import com.jon.common.prefs.getStringFromPair
 import com.jon.common.service.CotFactory
-import com.jon.common.utils.Key
-import com.jon.common.utils.PrefUtils
 import java.util.concurrent.TimeUnit
 
 internal class BeaconCotFactory(prefs: SharedPreferences) : CotFactory(prefs) {
@@ -19,7 +20,7 @@ internal class BeaconCotFactory(prefs: SharedPreferences) : CotFactory(prefs) {
 
     override fun initialise(): List<CursorOnTarget> {
         cot.uid = deviceUidRepository.getUid()
-        cot.callsign = PrefUtils.getString(prefs, Key.CALLSIGN)
+        cot.callsign = prefs.getStringFromPair(CommonPrefs.CALLSIGN)
         cot.role = CotRole.fromPrefs(prefs)
         cot.team = CotTeam.fromPrefs(prefs)
         updateBattery()
@@ -47,7 +48,10 @@ internal class BeaconCotFactory(prefs: SharedPreferences) : CotFactory(prefs) {
         val now = UtcTimestamp.now()
         cot.time = now
         cot.start = now
-        cot.setStaleDiff(PrefUtils.getInt(prefs, Key.STALE_TIMER).toLong(), TimeUnit.MINUTES)
+        cot.setStaleDiff(
+                dt = prefs.getIntFromPair(CommonPrefs.STALE_TIMER).toLong(),
+                timeUnit = TimeUnit.MINUTES
+        )
     }
 
     private fun updateGpsData() {

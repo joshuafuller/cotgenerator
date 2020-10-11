@@ -17,7 +17,7 @@ import java.io.FileOutputStream
 import kotlin.math.min
 
 /*
-* COPYPASTED FROM https://handyopinion.com/get-file-path-from-uri-in-android-java/
+* Copy-pasted and trimmed down from https://handyopinion.com/get-file-path-from-uri-in-android-java/
 */
 @Suppress("DEPRECATION")
 object UriUtils {
@@ -128,6 +128,7 @@ object UriUtils {
         return System.getenv("EXTERNAL_STORAGE") + relativePath
     }
 
+    @SuppressLint("Recycle")
     private fun getMediaFilePathForN(uri: Uri, context: Context): String {
         val returnUri: Uri = uri
         var returnCursor: Cursor? = null

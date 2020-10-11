@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_random_callsigns">random_callsigns</string>
+    <string name="key_random_colour">random_colour</string>
+    <string name="key_random_role">random_role</string>
+    <string name="key_follow_my_gps_location">follow_my_gps_location</string>
+    <string name="key_centre_latitude">centre_latitude</string>
+    <string name="key_centre_longitude">centre_longitude</string>
+    <string name="key_stay_at_ground_level">stay_at_ground_level</string>
+    <string name="key_centre_altitude">centre_altitude</string>
+    <string name="key_radial_distribution">radial_distribution</string>
+    <string name="key_movement_speed">movement_speed</string>
+</resources>

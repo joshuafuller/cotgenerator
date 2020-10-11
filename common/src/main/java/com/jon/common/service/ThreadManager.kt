@@ -5,11 +5,10 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
-
 internal class ThreadManager(private val prefs: SharedPreferences, private val errorListener: ThreadErrorListener) : OnSharedPreferenceChangeListener {
     private var thread: BaseThread? = null
-    private val exceptionHandler = Thread.UncaughtExceptionHandler { _, throwable: Throwable -> errorListener.reportError(throwable) }
-    val isRunning: Boolean
+    private val exceptionHandler = Thread.UncaughtExceptionHandler { _, t: Throwable -> errorListener.reportError(t) }
+    private val isRunning: Boolean
         get() = thread?.isRunning() ?: false
 
     fun start() {

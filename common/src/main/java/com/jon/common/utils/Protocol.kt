@@ -1,11 +1,26 @@
 package com.jon.common.utils
 
 import android.content.SharedPreferences
+import com.jon.common.prefs.CommonPrefs
+import com.jon.common.prefs.PrefPair
+import com.jon.common.prefs.getStringFromPair
 
-enum class Protocol(private val protocol: String) {
-    SSL("SSL"),
-    TCP("TCP"),
-    UDP("UDP");
+enum class Protocol(
+        private val protocol: String,
+        val presetPref: PrefPair<String>
+) {
+    SSL(
+            protocol = "SSL",
+            presetPref = CommonPrefs.SSL_PRESETS
+    ),
+    TCP(
+            protocol = "TCP",
+            presetPref = CommonPrefs.TCP_PRESETS
+    ),
+    UDP(
+            protocol = "UDP",
+            presetPref = CommonPrefs.UDP_PRESETS
+    );
 
     override fun toString(): String {
         return protocol
@@ -13,7 +28,7 @@ enum class Protocol(private val protocol: String) {
 
     companion object {
         fun fromPrefs(prefs: SharedPreferences): Protocol {
-            val protocolString = PrefUtils.getString(prefs, Key.TRANSMISSION_PROTOCOL)
+            val protocolString = prefs.getStringFromPair(CommonPrefs.TRANSMISSION_PROTOCOL)
             return fromString(protocolString)
         }
 

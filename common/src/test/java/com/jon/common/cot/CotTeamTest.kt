@@ -1,7 +1,7 @@
 package com.jon.common.cot
 
 import com.jon.common.SharedPreferencesTest
-import com.jon.common.utils.Key
+import com.jon.common.prefs.CommonPrefs
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.junit.Before
@@ -18,20 +18,14 @@ class CotTeamTest : SharedPreferencesTest() {
 
     @Test
     fun fromPrefs_RandomValid() {
-        sharedPreferences.edit()
-                .putBoolean(Key.RANDOM_COLOUR, true)
-                .commit()
-        val team = CotTeam.fromPrefs(sharedPreferences)
+        val team = CotTeam.fromPrefs(sharedPreferences, isRandom = true)
         assertThat(ALL_TEAMS, hasItem(team))
     }
 
     @Test
     fun fromPrefs_RandomAllValid() {
-        sharedPreferences.edit()
-                .putBoolean(Key.RANDOM_COLOUR, true)
-                .commit()
         for (i in 0..100) {
-            val team = CotTeam.fromPrefs(sharedPreferences)
+            val team = CotTeam.fromPrefs(sharedPreferences, isRandom = true)
             assertThat(ALL_TEAMS, hasItem(team))
         }
     }
@@ -39,10 +33,9 @@ class CotTeamTest : SharedPreferencesTest() {
     @Test
     fun fromPrefs_SpecificValid() {
         sharedPreferences.edit()
-                .putBoolean(Key.RANDOM_COLOUR, false)
-                .putInt(Key.TEAM_COLOUR, colourToInteger(CotTeam.CYAN))
+                .putInt(CommonPrefs.TEAM_COLOUR.key, colourToInteger(CotTeam.CYAN))
                 .commit()
-        val team = CotTeam.fromPrefs(sharedPreferences)
+        val team = CotTeam.fromPrefs(sharedPreferences, isRandom = false)
         assertThat(team, equalTo(CotTeam.CYAN))
         assertThat(team.toString(), equalTo("Cyan"))
     }
@@ -50,10 +43,9 @@ class CotTeamTest : SharedPreferencesTest() {
     @Test(expected = IllegalArgumentException::class)
     fun fromPrefs_SpecificInvalid() {
         sharedPreferences.edit()
-                .putBoolean(Key.RANDOM_COLOUR, false)
-                .putInt(Key.TEAM_COLOUR, 0x000000) // black, not an option
+                .putInt(CommonPrefs.TEAM_COLOUR.key, 0x000000) // black, not an option
                 .commit()
-        val team = CotTeam.fromPrefs(sharedPreferences)
+        CotTeam.fromPrefs(sharedPreferences, isRandom = false)
     }
 
     private fun colourToInteger(team: CotTeam): Int {

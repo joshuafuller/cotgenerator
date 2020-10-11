@@ -1,7 +1,7 @@
 package com.jon.common.cot
 
 import com.jon.common.SharedPreferencesTest
-import com.jon.common.utils.Key
+import com.jon.common.prefs.CommonPrefs
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.junit.Before
@@ -49,21 +49,15 @@ class CotRoleTest : SharedPreferencesTest() {
     @Test
     fun fromPrefs_RandomValid() {
         initSharedPrefs()
-        sharedPreferences.edit()
-                .putBoolean(Key.RANDOM_ROLE, true)
-                .commit()
-        val role = CotRole.fromPrefs(sharedPreferences)
+        val role = CotRole.fromPrefs(sharedPreferences, isRandom = true)
         assertThat(allRoles, hasItem(role))
     }
 
     @Test
     fun fromPrefs_RandomAllValid() {
         initSharedPrefs()
-        sharedPreferences.edit()
-                .putBoolean(Key.RANDOM_ROLE, true)
-                .commit()
         for (i in 0..49) {
-            val role = CotRole.fromPrefs(sharedPreferences)
+            val role = CotRole.fromPrefs(sharedPreferences, isRandom = true)
             assertThat(allRoles, hasItem(role))
         }
     }
@@ -73,10 +67,9 @@ class CotRoleTest : SharedPreferencesTest() {
         initSharedPrefs()
         allRoles.forEach { role ->
             sharedPreferences.edit()
-                    .putBoolean(Key.RANDOM_ROLE, false)
-                    .putString(Key.ICON_ROLE, role.toString())
+                    .putString(CommonPrefs.ICON_ROLE.key, role.toString())
                     .commit()
-            val parsed = CotRole.fromPrefs(sharedPreferences)
+            val parsed = CotRole.fromPrefs(sharedPreferences, isRandom = false)
             assertThat(parsed, equalTo(role))
         }
     }
@@ -85,9 +78,8 @@ class CotRoleTest : SharedPreferencesTest() {
     fun fromPrefs_SpecificInvalid() {
         initSharedPrefs()
         sharedPreferences.edit()
-                .putBoolean(Key.RANDOM_ROLE, false)
-                .putString(Key.ICON_ROLE, "INVALID ROLE")
+                .putString(CommonPrefs.ICON_ROLE.key, "INVALID ROLE")
                 .commit()
-        CotRole.fromPrefs(sharedPreferences)
+        CotRole.fromPrefs(sharedPreferences, false)
     }
 }

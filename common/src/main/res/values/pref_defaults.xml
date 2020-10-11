@@ -1,0 +1,18 @@
+<resources>
+    <!-- CoT settings -->
+    <string name="def_callsign">GENERATED</string>
+    <string name="def_icon_role">@string/role_team_member</string>
+    <integer name="def_stale_timer">5</integer>
+    <integer name="def_team_colour">0xFF00FFFF</integer> <!-- Cyan -->
+
+    <!-- Transmission settings -->
+    <string name="def_data_format">@string/data_format_protobuf</string>
+    <string name="def_transmission_protocol">@string/transmission_protocol_udp</string>
+    <integer name="def_transmission_period">3</integer>
+    <string name="def_icon_count">10</string>
+
+    <!-- Preset settings -->
+    <string name="def_ssl_preset">@string/ssl_takserver_value</string>
+    <string name="def_tcp_preset">@string/tcp_freetakserver_value</string>
+    <string name="def_udp_preset">@string/udp_default_sa_value</string>
+</resources>

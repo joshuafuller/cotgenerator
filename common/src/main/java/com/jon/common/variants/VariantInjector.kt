@@ -7,7 +7,7 @@ import com.jon.common.ui.listpresets.ListPresetsActivity
 import com.jon.common.ui.main.MainFragment
 import java.util.*
 
-interface VariantRepo {
+interface VariantInjector {
     val mainFragment: MainFragment
     val buildDate: Date
     val buildVersionCode: Int

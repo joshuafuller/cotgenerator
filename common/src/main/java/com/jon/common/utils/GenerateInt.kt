@@ -1,9 +1,12 @@
 package com.jon.common.utils
 
 object GenerateInt {
+    private val lock = Any()
     private var i = 3
 
     operator fun next(): Int {
-        return i++
+        synchronized(lock) {
+            return i++
+        }
     }
 }

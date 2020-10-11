@@ -3,33 +3,33 @@
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
-        app:title="Preset Options">
+        app:title="@string/pref_category_new_preset">
 
         <ListPreference
-            android:key="presetProtocol"
+            android:key="@string/key_preset_protocol"
             app:entries="@array/transmissionProtocols"
             app:entryValues="@array/transmissionProtocols"
             app:iconSpaceReserved="false"
-            app:title="Protocol"
+            app:title="@string/desc_new_preset_protocol"
             app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference
-            android:key="presetAlias"
+            android:key="@string/key_preset_alias"
             app:iconSpaceReserved="false"
-            app:title="Alias"
+            app:title="@string/desc_new_preset_alias"
             app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference
             android:inputType="textWebEmailAddress"
-            android:key="presetDestinationAddress"
+            android:key="@string/key_preset_destination_address"
             app:iconSpaceReserved="false"
-            app:title="Destination Address"
+            app:title="@string/desc_new_preset_address"
             app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference
-            android:key="presetDestinationPort"
+            android:key="@string/key_preset_destination_port"
             app:iconSpaceReserved="false"
-            app:title="Destination Port"
+            app:title="@string/desc_new_preset_port"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
@@ -38,29 +38,29 @@
         android:key="sslOptionsCategory"
         app:iconSpaceReserved="false"
         app:isPreferenceVisible="false"
-        app:title="SSL Options">
+        app:title="@string/pref_category_new_preset_ssl">
 
         <Preference
-            android:key="presetSslClientCertBytes"
+            android:key="@string/key_preset_ssl_client_cert_bytes"
             app:iconSpaceReserved="false"
-            app:title="Find Client Certificate..."
+            app:title="@string/desc_new_preset_client_cert"
             app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference
-            android:key="presetSslClientCertPassword"
+            android:key="@string/key_preset_ssl_client_cert_password"
             app:iconSpaceReserved="false"
-            app:title="Client Certificate Password" />
+            app:title="@string/desc_new_preset_client_cert_password" />
 
         <Preference
-            android:key="presetSslTrustStoreBytes"
+            android:key="@string/key_preset_ssl_trust_store_bytes"
             app:iconSpaceReserved="false"
-            app:title="Find Trust Store..."
+            app:title="@string/desc_new_preset_trust_store"
             app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference
-            android:key="presetSslTrustStorePassword"
+            android:key="@string/key_preset_ssl_trust_store_password"
             app:iconSpaceReserved="false"
-            app:title="Trust Store Password" />
+            app:title="@string/desc_new_preset_trust_store_password" />
 
     </PreferenceCategory>
 

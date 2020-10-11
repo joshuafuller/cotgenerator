@@ -2,9 +2,9 @@ package com.jon.common.service
 
 import android.content.SharedPreferences
 import com.jon.common.cot.CursorOnTarget
-import com.jon.common.utils.Key
+import com.jon.common.prefs.CommonPrefs
+import com.jon.common.prefs.getStringFromPair
 import com.jon.common.utils.NetworkHelper
-import com.jon.common.utils.PrefUtils
 import timber.log.Timber
 import java.io.IOException
 import java.net.*
@@ -45,8 +45,8 @@ internal class UdpThread(prefs: SharedPreferences) : BaseThread(prefs) {
 
     @Throws(UnknownHostException::class)
     override fun initialiseDestAddress() {
-        destIp = InetAddress.getByName(PrefUtils.getString(prefs, Key.DEST_ADDRESS))
-        destPort = PrefUtils.parseInt(prefs, Key.DEST_PORT)
+        destIp = InetAddress.getByName(prefs.getString(CommonPrefs.DEST_ADDRESS, ""))
+        destPort = prefs.getString(CommonPrefs.DEST_PORT, "")!!.toInt()
     }
 
     @Throws(IOException::class)

@@ -7,10 +7,11 @@ import android.os.Bundle
 import android.text.InputType
 import androidx.preference.*
 import androidx.preference.EditTextPreference.OnBindEditTextListener
+import com.jon.common.prefs.CommonPrefs
+import com.jon.common.prefs.PrefPair
 import com.jon.common.presets.OutputPreset
 import com.jon.common.repositories.PresetRepository
 import com.jon.common.utils.InputValidator
-import com.jon.common.utils.Key
 import com.jon.common.utils.Notify
 import com.jon.common.utils.Protocol
 import com.jon.common.variants.Variant
@@ -28,20 +29,21 @@ abstract class MainFragment : PreferenceFragmentCompat(),
     private val compositeDisposable = CompositeDisposable()
     private val presetRepository = PresetRepository.getInstance()
 
-    protected open fun getPhoneInputKeys() = mutableListOf(Key.ICON_COUNT)
+    protected open fun getPhoneInputKeys() = mutableListOf<String>(
+            /* blank, all phone inputs are in Generator only */
+    )
 
-    protected open fun getSuffixes() = mutableMapOf(
-            Key.CENTRE_LATITUDE to "degrees",
-            Key.CENTRE_LONGITUDE to "degrees"
+    protected open fun getSuffixes() = mutableMapOf<String, String>(
+            /* blank, all suffixes are in Generator only */
     )
 
     protected open fun getPrefValidationRationales() = mutableMapOf(
-            Key.CALLSIGN to "Contains invalid character(s)"
+            CommonPrefs.CALLSIGN.key to "Contains invalid character(s)"
     )
 
     protected open fun getSeekbarKeys() = mutableListOf(
-            Key.STALE_TIMER,
-            Key.TRANSMISSION_PERIOD
+            CommonPrefs.STALE_TIMER.key,
+            CommonPrefs.TRANSMISSION_PERIOD.key
     )
 
     override fun onCreatePreferences(savedState: Bundle?, rootKey: String?) {
@@ -64,7 +66,7 @@ abstract class MainFragment : PreferenceFragmentCompat(),
         }
 
         /* Launch a new activity when clicking "Edit Presets" */
-        findPreference<Preference>(Key.EDIT_PRESETS)?.let {
+        findPreference<Preference>(CommonPrefs.EDIT_PRESETS)?.let {
             it.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 startActivity(Intent(activity, Variant.getListActivityClass()))
                 true
@@ -93,7 +95,6 @@ abstract class MainFragment : PreferenceFragmentCompat(),
     protected open fun updatePreferences() {
         toggleProtocolSettingVisibility()
         toggleDataFormatSettingVisibility()
-        toggleEmulateMultipleUsersSettingVisibility()
         updatePresetPreferences()
         insertPresetAddressAndPort()
     }
@@ -110,46 +111,41 @@ abstract class MainFragment : PreferenceFragmentCompat(),
             setPreferenceSuffix(this.prefs, key, suffixes[key])
         }
         when (key) {
-            Key.TRANSMISSION_PROTOCOL -> {
+            CommonPrefs.TRANSMISSION_PROTOCOL.key -> {
                 toggleProtocolSettingVisibility()
                 toggleDataFormatSettingVisibility()
-                toggleEmulateMultipleUsersSettingVisibility()
                 insertPresetAddressAndPort()
             }
-            Key.SSL_PRESETS, Key.TCP_PRESETS, Key.UDP_PRESETS -> insertPresetAddressAndPort()
+            CommonPrefs.SSL_PRESETS.key, CommonPrefs.TCP_PRESETS.key, CommonPrefs.UDP_PRESETS.key ->
+                insertPresetAddressAndPort()
         }
     }
 
-    protected fun setPrefVisibleIfCondition(key: String, condition: Boolean) {
-        findPreference<Preference>(key)?.isVisible = condition
+    protected fun <T> setPrefVisibleIfCondition(pref: PrefPair<T>, condition: Boolean) {
+        findPreference<Preference>(pref.key)?.isVisible = condition
     }
 
     private fun toggleProtocolSettingVisibility() {
         val protocol = Protocol.fromPrefs(prefs)
-        setPrefVisibleIfCondition(Key.SSL_PRESETS, protocol == Protocol.SSL)
-        setPrefVisibleIfCondition(Key.TCP_PRESETS, protocol == Protocol.TCP)
-        setPrefVisibleIfCondition(Key.UDP_PRESETS, protocol == Protocol.UDP)
+        setPrefVisibleIfCondition(CommonPrefs.SSL_PRESETS, protocol == Protocol.SSL)
+        setPrefVisibleIfCondition(CommonPrefs.TCP_PRESETS, protocol == Protocol.TCP)
+        setPrefVisibleIfCondition(CommonPrefs.UDP_PRESETS, protocol == Protocol.UDP)
     }
 
     private fun toggleDataFormatSettingVisibility() {
         /* Data format is only relevant for UDP, since TAK Server only takes XML data */
         val showDataFormatSetting = Protocol.fromPrefs(prefs) == Protocol.UDP
-        setPrefVisibleIfCondition(Key.DATA_FORMAT, showDataFormatSetting)
-    }
-
-    private fun toggleEmulateMultipleUsersSettingVisibility() {
-        /* Can only construct multiple sockets for TCP or UDP */
-        val selected = Protocol.fromPrefs(prefs)
-        val selectedTcpOrSsl = selected == Protocol.TCP || selected == Protocol.SSL
-        setPrefVisibleIfCondition(Key.EMULATE_MULTIPLE_USERS, selectedTcpOrSsl)
+        setPrefVisibleIfCondition(CommonPrefs.DATA_FORMAT, showDataFormatSetting)
     }
 
     override fun onPreferenceChange(pref: Preference, newValue: Any): Boolean {
         val input = newValue as String
         val inputValidator = InputValidator()
         return when (val key = pref.key) {
-            Key.CALLSIGN -> errorIfInvalid(input, key, inputValidator.validateCallsign(input))
-            Key.TRANSMISSION_PERIOD -> errorIfInvalid(input, key, inputValidator.validateInt(input, 1, null))
+            CommonPrefs.CALLSIGN.key ->
+                errorIfInvalid(input, key, inputValidator.validateCallsign(input))
+            CommonPrefs.TRANSMISSION_PERIOD.key ->
+                errorIfInvalid(input, key, inputValidator.validateInt(input, 1, null))
             else -> true
         }
     }
@@ -170,14 +166,11 @@ abstract class MainFragment : PreferenceFragmentCompat(),
     }
 
     private fun insertPresetAddressAndPort() {
-        val key = when (Protocol.fromPrefs(prefs)) {
-            Protocol.SSL -> Key.SSL_PRESETS
-            Protocol.TCP -> Key.TCP_PRESETS
-            Protocol.UDP -> Key.UDP_PRESETS
-        }
-        val addressPref = findPreference<EditTextPreference>(Key.DEST_ADDRESS)
-        val portPref = findPreference<EditTextPreference>(Key.DEST_PORT)
-        val presetPref = findPreference<ListPreference>(key)
+        val addressPref = findPreference<EditTextPreference>(CommonPrefs.DEST_ADDRESS)
+        val portPref = findPreference<EditTextPreference>(CommonPrefs.DEST_PORT)
+        val presetPref = findPreference<ListPreference>(
+                Protocol.fromPrefs(prefs).presetPref.key
+        )
         if (addressPref != null && portPref != null && presetPref != null) {
             val preset = OutputPreset.fromString(presetPref.value)
             if (preset != null) {
@@ -195,21 +188,21 @@ abstract class MainFragment : PreferenceFragmentCompat(),
         compositeDisposable.add(presetRepository.getByProtocol(Protocol.SSL)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ updatePresetEntries(it, Key.SSL_PRESETS) }) { notifyError(it) })
+                .subscribe({ updatePresetEntries(it, CommonPrefs.SSL_PRESETS) }) { notifyError(it) })
         compositeDisposable.add(presetRepository.getByProtocol(Protocol.TCP)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ updatePresetEntries(it, Key.TCP_PRESETS) }) { notifyError(it) })
+                .subscribe({ updatePresetEntries(it, CommonPrefs.TCP_PRESETS) }) { notifyError(it) })
         compositeDisposable.add(presetRepository.getByProtocol(Protocol.UDP)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ updatePresetEntries(it, Key.UDP_PRESETS) }) { notifyError(it) })
+                .subscribe({ updatePresetEntries(it, CommonPrefs.UDP_PRESETS) }) { notifyError(it) })
     }
 
-    private fun updatePresetEntries(presets: List<OutputPreset>, prefKey: String) {
+    private fun updatePresetEntries(presets: List<OutputPreset>, pref: PrefPair<String>) {
         val entries = OutputPreset.getAliases(presets).toTypedArray()
         val entryValues = presets.map { it.toString() }.toTypedArray()
-        findPreference<ListPreference>(prefKey)?.let {
+        findPreference<ListPreference>(pref.key)?.let {
             val previousValue = it.value
             it.entries = entries
             it.entryValues = entryValues

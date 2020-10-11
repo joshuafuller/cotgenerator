@@ -39,7 +39,7 @@ open class ListPresetsActivity : ServiceBoundActivity(), PresetClickListener {
         setContentView(R.layout.activity_list_presets)
         setSupportActionBar(findViewById(R.id.toolbar))
         supportActionBar?.apply {
-            setTitle(R.string.toolbarHeaderListPresets)
+            setTitle(R.string.toolbar_header_list_presets)
             setDisplayHomeAsUpEnabled(true)
             setDisplayHomeAsUpEnabled(true)
         }

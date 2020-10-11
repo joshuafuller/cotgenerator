@@ -5,15 +5,14 @@ import android.content.Intent
 import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView.OnItemClickListener
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
 import androidx.annotation.DrawableRes
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.jon.common.BuildConfig
 import com.jon.common.R
 import com.jon.common.variants.Variant
 import com.jon.common.versioncheck.GithubRelease
@@ -26,14 +25,13 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.max
 
-internal class AboutDialog(private val context: Context) {
+internal class AboutDialogBuilder(context: Context) : MaterialAlertDialogBuilder(context) {
     private data class Row(val title: String, var subtitle: String, @DrawableRes var iconId: Int? = null)
 
-    private val dialogBuilder = MaterialAlertDialogBuilder(context)
     private val updateChecker = UpdateChecker()
 
     private val rows: List<Row> = listOf(
-            Row("Version", BuildConfig.VERSION_NAME),
+            Row("Version", Variant.getVersionName()),
             Row("Build Type", BUILD_TYPE),
             Row("Build Time", BUILD_DATE),
             Row("Latest Github Release", LOADING, R.drawable.refresh),
@@ -66,7 +64,7 @@ internal class AboutDialog(private val context: Context) {
         }
 
         override fun onFailure(call: Call<List<GithubRelease>>, t: Throwable) {
-            rows[LATEST_INDEX].subtitle = "[Error: " + t.message + "]"
+            rows[LATEST_INDEX].subtitle = "[Error: ${t.message}]"
             adapter.notifyDataSetChanged()
         }
     }
@@ -74,7 +72,7 @@ internal class AboutDialog(private val context: Context) {
     init {
         val listView = View.inflate(context, R.layout.about_listview, null) as ListView
         listView.adapter = adapter
-        listView.onItemClickListener = OnItemClickListener { _, _, position: Int, _ ->
+        listView.setOnItemClickListener { _, _, position: Int, _ ->
             if (position == GITHUB_INDEX) {
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.data = Uri.parse(rows[position].subtitle)
@@ -85,14 +83,14 @@ internal class AboutDialog(private val context: Context) {
                 updateChecker.check(callback)
             }
         }
-        dialogBuilder.setTitle(R.string.about)
+        this.setTitle(R.string.menu_about)
                 .setView(listView)
                 .setPositiveButton(android.R.string.ok, null)
     }
 
-    fun show() {
-        dialogBuilder.show()
+    override fun show(): AlertDialog {
         updateChecker.check(callback)
+        return super.show()
     }
 
     private fun getVersionSuffix(discoveredVersionStr: String): String {
@@ -116,7 +114,7 @@ internal class AboutDialog(private val context: Context) {
             }
             return " - You're up-to-date!"
         } catch (e: Exception) {
-            " - Failed parsing version numbers! Tell me if you see this please..."
+            " - Failed parsing version numbers: ${e.message}"
         }
     }
 
@@ -125,7 +123,7 @@ internal class AboutDialog(private val context: Context) {
         const val LATEST_INDEX = 3
         const val GITHUB_INDEX = 4
 
-        private val BUILD_TYPE = if (BuildConfig.DEBUG) "Debug" else "Release"
+        private val BUILD_TYPE = if (Variant.isDebug()) "Debug" else "Release"
         private val BUILD_DATE = SimpleDateFormat("HH:mm:ss dd MMM yyyy z", Locale.ENGLISH).format(Variant.getBuildDate())
     }
 }

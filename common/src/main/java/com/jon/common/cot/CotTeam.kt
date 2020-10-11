@@ -2,8 +2,8 @@ package com.jon.common.cot
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
-import com.jon.common.utils.Key
-import com.jon.common.utils.PrefUtils
+import com.jon.common.prefs.CommonPrefs
+import com.jon.common.prefs.getIntFromPair
 import java.util.*
 
 
@@ -38,12 +38,11 @@ enum class CotTeam(private val colourName: String, private val colourHex: String
         }
 
         @SuppressLint("DefaultLocale")
-        fun fromPrefs(prefs: SharedPreferences): CotTeam {
-            val useRandom = PrefUtils.getBoolean(prefs, Key.RANDOM_COLOUR)
-            return if (useRandom) {
+        fun fromPrefs(prefs: SharedPreferences, isRandom: Boolean = false): CotTeam {
+            return if (isRandom) {
                 values()[random.nextInt(values().size)]
             } else {
-                val team = Integer.toHexString(PrefUtils.getInt(prefs, Key.TEAM_COLOUR)).toUpperCase()
+                val team = Integer.toHexString(prefs.getIntFromPair(CommonPrefs.TEAM_COLOUR)).toUpperCase()
                 fromHexString(assertHexFormatting(team))
             }
         }

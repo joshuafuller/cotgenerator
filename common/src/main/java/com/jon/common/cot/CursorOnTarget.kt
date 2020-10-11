@@ -15,13 +15,12 @@ import com.jon.common.variants.Variant
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-@Suppress("JoinDeclarationAndAssignment")
 class CursorOnTarget {
     var how = "m-g"
     var type = "a-f-G-U-C"
 
     // User info
-    var uid: String? = "UUID" // unique ID of the device. Stays constant when changing callsign
+    var uid: String? = null // unique ID of the device. Stays constant when changing callsign
 
     // Time info
     var time: UtcTimestamp // time when the icon was created
@@ -72,7 +71,7 @@ class CursorOnTarget {
                         "lon=\"%.7f\" hae=\"%f\" ce=\"%f\" le=\"%f\"/><detail><track speed=\"%.7f\" course=\"%.7f\"/><contact callsign=\"%s\"/>" +
                         "<__group name=\"%s\" role=\"%s\"/><takv device=\"%s\" platform=\"%s\" os=\"%s\" version=\"%s\"/><status battery=\"%d\"/>" +
                         "<precisionlocation altsrc=\"%s\" geopointsrc=\"%s\" /></detail></event>",
-                uid, type, time.toString(), start.toString(), stale.toString(), how, lat, lon, hae, ce, le, speed,
+                uid, type, time.isoTimestamp(), start.isoTimestamp(), stale.isoTimestamp(), how, lat, lon, hae, ce, le, speed,
                 course, callsign, team.toString(), role.toString(), device, platform, os, version, battery, altsrc, geosrc)
                 .toByteArray()
     }
@@ -132,12 +131,17 @@ class CursorOnTarget {
 
     companion object {
         // Prepended to every protobuf packet
-        private val TAK_HEADER = byteArrayOf(0xbf.toByte(), 0x01.toByte(), 0xbf.toByte())
+        private val TAK_HEADER = byteArrayOf(
+                0xbf.toByte(), // magic byte
+                0x01.toByte(), // protocol version
+                0xbf.toByte()  // magic byte
+        )
     }
 
     init {
-        start = UtcTimestamp.now()
-        time = start
+        val now = UtcTimestamp.now()
+        start = now
+        time = now
         stale = start.add(10, TimeUnit.MINUTES)
     }
 }

@@ -1,31 +1,32 @@
 package com.jon.common.ui.main
 
 import android.Manifest
-import android.content.Intent
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
-import androidx.core.app.ActivityCompat
 import androidx.preference.PreferenceManager
 import com.jon.common.R
+import com.jon.common.prefs.CommonPrefs
+import com.jon.common.prefs.getIntFromPair
+import com.jon.common.prefs.getStringFromPair
 import com.jon.common.presets.OutputPreset
 import com.jon.common.service.ServiceState
-import com.jon.common.ui.AboutDialog
+import com.jon.common.ui.AboutDialogBuilder
 import com.jon.common.ui.ServiceBoundActivity
 import com.jon.common.utils.GenerateInt
-import com.jon.common.utils.Key
 import com.jon.common.utils.Notify
-import com.jon.common.utils.PrefUtils
+import com.jon.common.utils.Protocol
 import com.jon.common.variants.Variant
 import pub.devrel.easypermissions.EasyPermissions
 import pub.devrel.easypermissions.EasyPermissions.PermissionCallbacks
 import timber.log.Timber
 
-open class MainActivity : ServiceBoundActivity(), PermissionCallbacks, OnSharedPreferenceChangeListener {
+open class MainActivity : ServiceBoundActivity(),
+        PermissionCallbacks,
+        OnSharedPreferenceChangeListener {
+
     private val prefs: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,17 +52,13 @@ open class MainActivity : ServiceBoundActivity(), PermissionCallbacks, OnSharedP
             setDisplayHomeAsUpEnabled(false)
         }
         supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment, Variant.getSettingsFragment())
+                .replace(R.id.fragment, Variant.getMainFragment())
                 .commitNow()
     }
 
     override fun onResume() {
         super.onResume()
         prefs.registerOnSharedPreferenceChangeListener(this)
-        if (service != null) {
-            /* Refresh our state on resuming */
-            onServiceStateChanged(service!!.state, null)
-        }
     }
 
     public override fun onDestroy() {
@@ -74,9 +71,8 @@ open class MainActivity : ServiceBoundActivity(), PermissionCallbacks, OnSharedP
         val start = menu.findItem(R.id.start)
         val stop = menu.findItem(R.id.stop)
         if (service != null) {
-            val state = service?.state ?: ServiceState.STOPPED
-            start.isVisible = state == ServiceState.STOPPED
-            stop.isVisible = state == ServiceState.RUNNING
+            start.isVisible = stateViewModel.currentState == ServiceState.STOPPED
+            stop.isVisible = stateViewModel.currentState == ServiceState.RUNNING
         } else {
             start.isVisible = true
             stop.isVisible = false
@@ -90,28 +86,26 @@ open class MainActivity : ServiceBoundActivity(), PermissionCallbacks, OnSharedP
                 if (presetIsSelected()) {
                     service?.start()
                     invalidateOptionsMenu()
-                    Notify.green(getRootView(), "Service started")
                 } else {
                     Notify.red(getRootView(), "Select an output destination first!")
                 }
             }
             R.id.stop -> {
-                service?.stop()
+                service?.shutdown()
                 invalidateOptionsMenu()
-                Notify.blue(getRootView(), "Service stopped")
             }
             R.id.about -> {
-                AboutDialog(this).show()
+                AboutDialogBuilder(this).show()
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
     private fun presetIsSelected(): Boolean {
-        val presetKey = PrefUtils.getPresetPrefKeyFromSharedPrefs(prefs)
-        return PrefUtils.getString(prefs, Key.DEST_ADDRESS).isNotEmpty() &&
-                PrefUtils.getString(prefs, Key.DEST_PORT).isNotEmpty() &&
-                PrefUtils.getString(prefs, presetKey).split(OutputPreset.SEPARATOR).toTypedArray().size > 1
+        val presetPref = Protocol.fromPrefs(prefs).presetPref
+        return !prefs.getString(CommonPrefs.DEST_ADDRESS, "").isNullOrEmpty() &&
+                !prefs.getString(CommonPrefs.DEST_PORT, "").isNullOrEmpty() &&
+                prefs.getStringFromPair(presetPref).split(OutputPreset.SEPARATOR).toTypedArray().isNotEmpty()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -131,14 +125,9 @@ open class MainActivity : ServiceBoundActivity(), PermissionCallbacks, OnSharedP
         chastiseUserAndQuit()
     }
 
-    override fun onServiceStateChanged(state: ServiceState, throwable: Throwable?) {
-        invalidateOptionsMenu()
-        super.onServiceStateChanged(state, throwable)
-    }
-
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
-        if (Key.TRANSMISSION_PERIOD == key) {
-            service?.updateGpsPeriod(PrefUtils.getInt(prefs, key))
+        if (CommonPrefs.TRANSMISSION_PERIOD.key == key) {
+            service?.updateGpsPeriod(prefs.getIntFromPair(CommonPrefs.TRANSMISSION_PERIOD))
         }
     }
 

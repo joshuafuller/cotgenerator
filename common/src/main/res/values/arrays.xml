@@ -16,49 +16,49 @@
     </array>
 
     <string-array name="transmissionProtocols">
-        <item>@string/transmissionProtocolSsl</item>
-        <item>@string/transmissionProtocolTcp</item>
-        <item>@string/transmissionProtocolUdp</item>
+        <item>@string/transmission_protocol_ssl</item>
+        <item>@string/transmission_protocol_tcp</item>
+        <item>@string/transmission_protocol_udp</item>
     </string-array>
 
     <string-array name="dataFormats">
-        <item>@string/dataFormatXml</item>
-        <item>@string/dataFormatProtobuf</item>
+        <item>@string/data_format_xml</item>
+        <item>@string/data_format_protobuf</item>
     </string-array>
 
     <string-array name="iconRoles">
-        <item>@string/roleTeamMember</item>
-        <item>@string/roleTeamLeader</item>
-        <item>@string/roleHq</item>
-        <item>@string/roleSniper</item>
-        <item>@string/roleMedic</item>
-        <item>@string/roleForwardObserver</item>
-        <item>@string/roleRto</item>
-        <item>@string/roleK9</item>
+        <item>@string/role_team_member</item>
+        <item>@string/role_team_leader</item>
+        <item>@string/role_hq</item>
+        <item>@string/role_sniper</item>
+        <item>@string/role_medic</item>
+        <item>@string/role_forward_observer</item>
+        <item>@string/role_rto</item>
+        <item>@string/role_k9</item>
     </string-array>
 
     <string-array name="sslPresetEntries">
-        <item>@string/sslTakserver</item>
+        <item>@string/ssl_takserver_name</item>
     </string-array>
 
     <string-array name="sslPresetValues">
-        <item>@string/sslTakserverValue</item>
+        <item>@string/ssl_takserver_value</item>
     </string-array>
 
     <string-array name="tcpPresetEntries">
-        <item>@string/tcpFreetakserver</item>
+        <item>@string/tcp_freetakserver_name</item>
     </string-array>
 
     <string-array name="tcpPresetValues">
-        <item>@string/tcpFreetakserverValue</item>
+        <item>@string/tcp_freetakserver_value</item>
     </string-array>
 
     <string-array name="udpPresetEntries">
-        <item>@string/udpDefaultSa</item>
+        <item>@string/udp_default_sa</item>
     </string-array>
 
     <string-array name="udpPresetValues">
-        <item>@string/udpDefaultSaValue</item>
+        <item>@string/udp_default_sa_value</item>
     </string-array>
 
 </resources>

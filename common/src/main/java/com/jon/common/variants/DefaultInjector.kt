@@ -5,11 +5,10 @@ import com.jon.common.cot.CursorOnTarget
 import com.jon.common.service.CotFactory
 import com.jon.common.service.CotService
 import com.jon.common.ui.listpresets.ListPresetsActivity
-import com.jon.common.ui.main.MainActivity
 import com.jon.common.ui.main.MainFragment
 import java.util.*
 
-internal class DefaultVariantRepo : VariantRepo {
+internal class DefaultInjector : VariantInjector {
     override val mainFragment: MainFragment = object : MainFragment() {}
     override val buildDate: Date = Date()
     override val buildVersionCode: Int = 0
@@ -24,6 +23,7 @@ internal class DefaultVariantRepo : VariantRepo {
     override val settingsXmlId: Int = 0
     override val iconColourId: Int = 0
 
+    /* Blank implementation, just to keep the compiler happy */
     override fun getCotFactory(prefs: SharedPreferences): CotFactory = object : CotFactory(prefs) {
         override fun generate(): MutableList<CursorOnTarget> { return mutableListOf() }
         override fun initialise(): MutableList<CursorOnTarget> { return mutableListOf() }

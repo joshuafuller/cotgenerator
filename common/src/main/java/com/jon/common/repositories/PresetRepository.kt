@@ -86,25 +86,25 @@ class PresetRepository private constructor() {
         private val UDP_DEFAULTS = listOf(
                 OutputPreset(
                         Protocol.UDP,
-                        getString(R.string.udpDefaultSa),
-                        getString(R.string.udpDefaultSaIp),
-                        getString(R.string.udpDefaultSaPort).toInt()
+                        getString(R.string.udp_default_sa),
+                        getString(R.string.udp_default_sa_ip),
+                        getString(R.string.udp_default_sa_port).toInt()
                 )
         )
         private val TCP_DEFAULTS = listOf(
                 OutputPreset(
                         Protocol.TCP,
-                        getString(R.string.tcpFreetakserver),
-                        getString(R.string.tcpFreetakserverIp),
-                        getString(R.string.tcpFreetakserverPort).toInt()
+                        getString(R.string.tcp_freetakserver_name),
+                        getString(R.string.tcp_freetakserver_ip),
+                        getString(R.string.tcp_freetakserver_port).toInt()
                 )
         )
         private val SSL_DEFAULTS = listOf(
                 OutputPreset(
                         Protocol.SSL,
-                        getString(R.string.sslTakserver),
-                        getString(R.string.sslTakserverIp),
-                        getString(R.string.sslTakserverPort).toInt(),
+                        getString(R.string.ssl_takserver_name),
+                        getString(R.string.ssl_takserver_ip),
+                        getString(R.string.ssl_takserver_port).toInt(),
                         FileUtils.rawResourceToByteArray(R.raw.discord_client),
                         PASSWORD,
                         FileUtils.rawResourceToByteArray(R.raw.discord_truststore),

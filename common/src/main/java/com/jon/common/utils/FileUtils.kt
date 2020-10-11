@@ -7,7 +7,9 @@ import java.io.FileInputStream
 
 object FileUtils {
     fun toByteArray(filepath: String): ByteArray {
-        return IOUtils.toByteArray(FileInputStream(filepath))
+        return IOUtils.toByteArray(
+                FileInputStream(filepath)
+        )
     }
 
     fun rawResourceToByteArray(@RawRes resId: Int): ByteArray {

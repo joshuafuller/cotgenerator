@@ -1,10 +1,8 @@
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="ButtonCase">
-
+<resources>
     <string name="app_name">CoT Generator</string>
-    <string name="appNameAllCaps">COT-GENERATOR</string>
+    <string name="app_name_all_caps">COT-GENERATOR</string>
 
-    <string name="permissionRationale">Two permissions are required:
+    <string name="permission_rationale">Two permissions are required:
         1) GPS - for the "Follow My GPS Position" setting;
         2) Storage - to read certificate files for SSL authentication</string>
-
 </resources>

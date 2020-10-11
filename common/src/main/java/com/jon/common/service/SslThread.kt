@@ -1,44 +1,48 @@
 package com.jon.common.service
 
 import android.content.SharedPreferences
+import android.os.AsyncTask
+import com.jon.common.cot.CursorOnTarget
+import com.jon.common.prefs.CommonPrefs
+import com.jon.common.prefs.getStringFromPair
 import com.jon.common.presets.OutputPreset
 import com.jon.common.repositories.PresetRepository
 import com.jon.common.utils.Constants
-import com.jon.common.utils.Key
-import com.jon.common.utils.PrefUtils
-import com.jon.common.utils.Protocol
 import timber.log.Timber
 import java.io.ByteArrayInputStream
+import java.io.Closeable
 import java.io.IOException
-import java.net.Socket
+import java.net.SocketException
 import java.security.*
 import java.security.cert.CertificateException
-import java.util.*
-import java.util.concurrent.Executors
-import javax.net.SocketFactory
+import java.util.concurrent.ExecutionException
 import javax.net.ssl.*
 
 internal class SslThread(prefs: SharedPreferences) : TcpThread(prefs) {
 
-    override fun openSockets() {
-        sockets.clear()
-        val socketFactory = buildSocketFactory()
-        Timber.d("Opening sockets")
-        val numSockets = if (emulateMultipleUsers) cotIcons.size else 1
-        val executorService = Executors.newCachedThreadPool()
-
-        /* Thread-safe list */
-        val synchronisedSockets = Collections.synchronizedList(ArrayList<Socket>())
-        for (i in 0 until numSockets) {
-            /* Execute the socket-building code on a separate thread per socket, since it takes a while with lots of sockets */
-            executorService.execute { buildSocket(socketFactory, synchronisedSockets) }
-        }
-        collectSynchronisedSockets(executorService, synchronisedSockets)
+    override fun shutdown() {
+        super.shutdown()
+        closeFromMainThread(outputStream)
+        closeFromMainThread(socket)
+        outputStream = null
+        socket = null
     }
 
-    @Throws(KeyStoreException::class, CertificateException::class, NoSuchAlgorithmException::class, IOException::class, UnrecoverableKeyException::class, KeyManagementException::class)
-    private fun buildSocketFactory(): SocketFactory {
-        Timber.d("Building SSL context")
+    @Throws(IOException::class)
+    override fun sendToDestination(cot: CursorOnTarget) {
+        try {
+            outputStream!!.write(cot.toBytes(dataFormat))
+            Timber.i("Sent cot: %s", cot.callsign)
+        } catch (e: NullPointerException) {
+            /* Thrown when the thread is cancelled from another thread and we try to access the sockets */
+            shutdown()
+        } catch (e: SocketException) {
+            shutdown()
+        }
+    }
+
+    @Throws(Exception::class)
+    override fun openSockets() {
         val preset = buildPreset()
         val certStore = loadKeyStore(
                 preset.clientCert,
@@ -54,21 +58,22 @@ internal class SslThread(prefs: SharedPreferences) : TcpThread(prefs) {
                 getTrustManagers(trustStore),
                 SecureRandom()
         )
-        return sslContext.socketFactory
+        socket = (sslContext.socketFactory.createSocket(destIp, destPort) as SSLSocket).also {
+            it.soTimeout = Constants.TCP_SOCKET_TIMEOUT_MS
+            outputStream = it.outputStream
+        }
     }
 
     private fun buildPreset(): OutputPreset {
         /* This contains only the basic values: protocol, alias, address and port. We now need to query the
          * database to grab SSL cert information, then return this upgraded OutputPreset object if successful. */
-        val prefString = PrefUtils.getString(prefs, Key.SSL_PRESETS)
-        val basicPreset = OutputPreset.fromString(prefString)
-                ?: throw RuntimeException("Couldn't parse a preset from SSL preset string: '$prefString'")
+        val basicPreset = OutputPreset.fromString(prefs.getStringFromPair(CommonPrefs.SSL_PRESETS))
         val repository = PresetRepository.getInstance()
-        val sslPreset = repository.getPreset(Protocol.SSL, basicPreset.address, basicPreset.port)
+        val sslPreset = repository.getPreset(basicPreset!!.protocol, basicPreset.address, basicPreset.port)
         return if (sslPreset == null) {
             /* If there is no database entry corresponding to the above protocol/address/port combo,
              * we treat this as a default. So grab the values from default certs */
-            val sslDefaults = repository.defaultsByProtocol(Protocol.SSL)
+            val sslDefaults = repository.defaultsByProtocol(basicPreset.protocol)
             if (sslDefaults.isNotEmpty()) {
                 sslDefaults[0] // Discord TAK Server
             } else {
@@ -88,29 +93,42 @@ internal class SslThread(prefs: SharedPreferences) : TcpThread(prefs) {
     }
 
     @Throws(NoSuchAlgorithmException::class, KeyStoreException::class)
-    private fun getTrustManagers(trustStore: KeyStore): Array<TrustManager> {
+    private fun getTrustManagers(trustStore: KeyStore): Array<TrustManager?>? {
         val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
         trustManagerFactory.init(trustStore)
         return trustManagerFactory.trustManagers
     }
 
     @Throws(NoSuchAlgorithmException::class, KeyStoreException::class, UnrecoverableKeyException::class)
-    private fun getKeyManagers(certStore: KeyStore, password: CharArray): Array<KeyManager> {
+    private fun getKeyManagers(certStore: KeyStore, password: CharArray): Array<KeyManager?>? {
         val keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm())
         keyManagerFactory.init(certStore, password)
         return keyManagerFactory.keyManagers
     }
 
-    private fun buildSocket(socketFactory: SocketFactory, synchronisedSockets: MutableList<Socket>) {
+    /* This workaround is only necessary because I was getting NetworkOnMainThreadExceptions when
+     * closing the SSLSocket via shutdown() from the UI thread. This wasn't an issue with TCP/UDP
+     * so this is just a patch to deal with it for now. */
+    private fun closeFromMainThread(closeable: Closeable?) {
         try {
-            Timber.d("Opening socket")
-            val socket: Socket = socketFactory.createSocket(destIp, destPort)
-            socket.soTimeout = Constants.TCP_SOCKET_TIMEOUT_MS
-            synchronisedSockets.add(socket)
-            Timber.d("Opened socket on port %d", socket.localPort)
-        } catch (e: Exception) {
-            Timber.e(e)
-            throw RuntimeException(e)
+            CloseSocketTask().execute(closeable).get()
+        } catch (e: ExecutionException) {
+            /* Ignore */
+        } catch (e: InterruptedException) {
+            /* Ignore */
+        }
+    }
+
+    private class CloseSocketTask : AsyncTask<Closeable?, Void, Void?>() {
+        override fun doInBackground(vararg closeables: Closeable?): Void? {
+            for (closeable in closeables) {
+                try {
+                    closeable?.close()
+                } catch (e: IOException) {
+                    Timber.e(e)
+                }
+            }
+            return null
         }
     }
 }

@@ -2,15 +2,14 @@ package com.jon.common.service
 
 import android.content.SharedPreferences
 import androidx.annotation.CallSuper
+import com.jon.common.prefs.CommonPrefs
+import com.jon.common.prefs.getIntFromPair
 import com.jon.common.utils.DataFormat
-import com.jon.common.utils.Key
-import com.jon.common.utils.PrefUtils
 import com.jon.common.utils.Protocol
 import com.jon.common.variants.Variant
 import java.net.InetAddress
-import java.util.concurrent.TimeUnit
 
-internal abstract class BaseThread(protected val prefs: SharedPreferences) : Thread() {
+abstract class BaseThread(protected val prefs: SharedPreferences) : Thread() {
 
     private val lock = Any()
     private var bIsRunning = false
@@ -55,9 +54,7 @@ internal abstract class BaseThread(protected val prefs: SharedPreferences) : Thr
     }
 
     protected open fun periodMilliseconds(): Long {
-        return TimeUnit.SECONDS.toMillis(
-                PrefUtils.getInt(prefs, Key.TRANSMISSION_PERIOD).toLong()
-        )
+        return prefs.getIntFromPair(CommonPrefs.TRANSMISSION_PERIOD).toLong() * 1000
     }
 
     companion object {

@@ -6,12 +6,11 @@ import com.jon.common.cot.CotRole
 import com.jon.common.cot.CotTeam
 import com.jon.common.cot.CursorOnTarget
 import com.jon.common.cot.UtcTimestamp
+import com.jon.common.prefs.*
 import com.jon.common.service.CotFactory
 import com.jon.common.service.Point
 import com.jon.common.service.Point.Offset
 import com.jon.common.utils.Constants
-import com.jon.common.utils.Key
-import com.jon.common.utils.PrefUtils
 import com.jon.cotgenerator.streams.DoubleRandomStream
 import com.jon.cotgenerator.streams.IntRandomStream
 import com.jon.cotgenerator.streams.RandomStream
@@ -25,16 +24,19 @@ internal class GeneratorCotFactory(prefs: SharedPreferences) : CotFactory(prefs)
 
     private val random = Random(System.currentTimeMillis())
 
-    private val iconCount = PrefUtils.parseInt(prefs, Key.ICON_COUNT)
+    private val useRandomCallsigns = prefs.getBooleanFromPair(GeneratorPrefs.RANDOM_CALLSIGNS)
+    private val useRandomTeams = prefs.getBooleanFromPair(GeneratorPrefs.RANDOM_COLOUR)
+    private val useRandomRoles = prefs.getBooleanFromPair(GeneratorPrefs.RANDOM_ROLE)
+    private val iconCount = prefs.parseIntFromPair(GeneratorPrefs.ICON_COUNT)
     private val callsigns = getCallsigns()
-    private val distributionRadius = PrefUtils.parseDouble(prefs, Key.RADIAL_DISTRIBUTION)
-    private val followGps = PrefUtils.getBoolean(prefs, Key.FOLLOW_GPS_LOCATION)
-    private val centreLat = PrefUtils.parseDouble(prefs, Key.CENTRE_LATITUDE)
-    private val centreLon = PrefUtils.parseDouble(prefs, Key.CENTRE_LONGITUDE)
-    private val stayAtGroundLevel = PrefUtils.getBoolean(prefs, Key.STAY_AT_GROUND_LEVEL)
-    private val centreAlt = if (stayAtGroundLevel) 0.0 else PrefUtils.getInt(prefs, Key.CENTRE_ALTITUDE).toDouble()
-    private val staleTimer = PrefUtils.getInt(prefs, Key.STALE_TIMER).toLong()
-    private var movementSpeed = PrefUtils.parseDouble(prefs, Key.MOVEMENT_SPEED) * Constants.MPH_TO_METRES_PER_SECOND
+    private val distributionRadius = prefs.parseDoubleFromPair(GeneratorPrefs.RADIAL_DISTRIBUTION)
+    private val followGps = prefs.getBooleanFromPair(GeneratorPrefs.FOLLOW_GPS_LOCATION)
+    private val centreLat = prefs.parseDoubleFromPair(GeneratorPrefs.CENTRE_LATITUDE)
+    private val centreLon = prefs.parseDoubleFromPair(GeneratorPrefs.CENTRE_LONGITUDE)
+    private val stayAtGroundLevel = prefs.getBooleanFromPair(GeneratorPrefs.STAY_AT_GROUND_LEVEL)
+    private val centreAlt = if (stayAtGroundLevel) 0.0 else prefs.parseDoubleFromPair(GeneratorPrefs.CENTRE_ALTITUDE)
+    private val staleTimer = prefs.getIntFromPair(CommonPrefs.STALE_TIMER).toLong()
+    private var movementSpeed = prefs.parseDoubleFromPair(GeneratorPrefs.MOVEMENT_SPEED) * Constants.MPH_TO_METRES_PER_SECOND
     private var travelDistance: Double
 
     private lateinit var distributionCentre: Point
@@ -43,7 +45,7 @@ internal class GeneratorCotFactory(prefs: SharedPreferences) : CotFactory(prefs)
     init {
         /* Stop any fuckery with distribution radii */
         movementSpeed = min(movementSpeed, distributionRadius / 2.0)
-        travelDistance = movementSpeed * PrefUtils.getInt(prefs, Key.TRANSMISSION_PERIOD)
+        travelDistance = movementSpeed * prefs.getIntFromPair(CommonPrefs.TRANSMISSION_PERIOD)
     }
 
     override fun clear() {
@@ -72,8 +74,8 @@ internal class GeneratorCotFactory(prefs: SharedPreferences) : CotFactory(prefs)
             cot.start = now
             cot.time = cot.start
             cot.setStaleDiff(staleTimer, TimeUnit.MINUTES)
-            cot.team = CotTeam.fromPrefs(prefs)
-            cot.role = CotRole.fromPrefs(prefs)
+            cot.team = CotTeam.fromPrefs(prefs, useRandomTeams)
+            cot.role = CotRole.fromPrefs(prefs, useRandomRoles)
             cot.speed = movementSpeed
             cot.lat = distributionCentre.lat * Constants.RAD_TO_DEG
             cot.lon = distributionCentre.lon * Constants.RAD_TO_DEG
@@ -107,7 +109,7 @@ internal class GeneratorCotFactory(prefs: SharedPreferences) : CotFactory(prefs)
 
     private fun getCallsigns(): List<String> {
         val callsigns: MutableList<String> = ArrayList()
-        if (PrefUtils.getBoolean(prefs, Key.RANDOM_CALLSIGNS)) {
+        if (useRandomCallsigns) {
             /* Grab the list of all valid callsigns and shuffle it into a random order */
             val resources = CotApplication.context.resources
             val allCallsigns = mutableListOf(*resources.getStringArray(R.array.atakCallsigns))
@@ -118,7 +120,7 @@ internal class GeneratorCotFactory(prefs: SharedPreferences) : CotFactory(prefs)
             }
         } else {
             /* Use custom callsign as entered in the settings */
-            val baseCallsign = PrefUtils.getString(prefs, Key.CALLSIGN)
+            val baseCallsign = prefs.getStringFromPair(CommonPrefs.CALLSIGN)
             for (i in 0 until iconCount) {
                 callsigns.add(String.format(Locale.ENGLISH, "%s-%d", baseCallsign, i))
             }
@@ -210,7 +212,7 @@ internal class GeneratorCotFactory(prefs: SharedPreferences) : CotFactory(prefs)
         return if (stayAtGroundLevel) {
             0.0
         } else {
-            /* Direction is either -1, 0 or +1; representing falling, staying steady or rising */
+            /* Direction is either -1, 0 or +1; representing falling, staying steady or rising respectively */
             val direction = IntRandomStream(random, -1, 1).next()
             var newAltitude = altitude + direction * movementSpeed
 

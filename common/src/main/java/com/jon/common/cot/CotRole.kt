@@ -2,8 +2,8 @@ package com.jon.common.cot
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
-import com.jon.common.utils.Key
-import com.jon.common.utils.PrefUtils
+import com.jon.common.prefs.CommonPrefs
+import com.jon.common.prefs.getStringFromPair
 import java.util.*
 
 enum class CotRole(private val role: String) {
@@ -27,13 +27,11 @@ enum class CotRole(private val role: String) {
                     ?: throw IllegalArgumentException("Unknown CoT role: $roleString")
         }
 
-        fun fromPrefs(prefs: SharedPreferences): CotRole {
-            val useRandom = PrefUtils.getBoolean(prefs, Key.RANDOM_ROLE)
-            return if (useRandom) {
+        fun fromPrefs(prefs: SharedPreferences, isRandom: Boolean = false): CotRole {
+            return if (isRandom) {
                 values()[random.nextInt(values().size)]
             } else {
-                val role = PrefUtils.getString(prefs, Key.ICON_ROLE)
-                fromString(role)
+                fromString(roleString = prefs.getStringFromPair(CommonPrefs.ICON_ROLE))
             }
         }
     }

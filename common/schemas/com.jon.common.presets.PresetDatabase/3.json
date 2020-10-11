@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "abf7ecb7d7851c713f6be02bbe202fe6",
+    "identityHash": "ef874dcc6467a9e133d7a151c884f9a6",
     "entities": [
       {
         "tableName": "Presets",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `Protocol` TEXT, `Alias` TEXT, `Address` TEXT, `Port` INTEGER NOT NULL, `ClientCert` BLOB, `ClientCertPassword` TEXT, `TrustStore` BLOB, `TrustStorePassword` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `Protocol` TEXT NOT NULL, `Alias` TEXT NOT NULL, `Address` TEXT NOT NULL, `Port` INTEGER NOT NULL, `ClientCert` BLOB, `ClientCertPassword` TEXT, `TrustStore` BLOB, `TrustStorePassword` TEXT)",
         "fields": [
           {
             "fieldPath": "id",
@@ -18,19 +18,19 @@
             "fieldPath": "protocol",
             "columnName": "Protocol",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "alias",
             "columnName": "Alias",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "address",
             "columnName": "Address",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "port",
@@ -87,7 +87,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'abf7ecb7d7851c713f6be02bbe202fe6')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ef874dcc6467a9e133d7a151c884f9a6')"
     ]
   }
 }

@@ -8,6 +8,6 @@ class BeaconApplication : CotApplication() {
         super.onCreate()
 
         /* To supply app-specific info during runtime like package name, build time/version, etc. */
-        Variant.setAppVariantRepository(BeaconRepo())
+        Variant.setInjector(BeaconInjector())
     }
 }

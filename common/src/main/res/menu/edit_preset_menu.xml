@@ -7,7 +7,7 @@
         android:id="@+id/save"
         android:icon="@drawable/save"
         android:orderInCategory="1"
-        android:title="@string/save"
+        android:title="@string/menu_save"
         app:showAsAction="ifRoom" />
 
 </menu>

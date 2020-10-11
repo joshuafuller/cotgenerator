@@ -6,7 +6,7 @@
     <item
         android:id="@+id/delete_all"
         android:orderInCategory="1"
-        android:title="@string/delete_all"
+        android:title="@string/menu_delete_all"
         app:showAsAction="always" />
 
 </menu>

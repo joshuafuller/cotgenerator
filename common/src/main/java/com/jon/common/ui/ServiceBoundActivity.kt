@@ -6,32 +6,23 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.jon.common.variants.Variant
+import com.jon.common.CotApplication
+import com.jon.common.repositories.StatusRepository
 import com.jon.common.service.CotService
 import com.jon.common.service.CotService.ServiceBinder
 import com.jon.common.service.ServiceState
-import com.jon.common.service.ServiceStateListener
 import com.jon.common.utils.Notify
+import com.jon.common.variants.Variant
 
-abstract class ServiceBoundActivity : AppCompatActivity(), ServiceStateListener {
+abstract class ServiceBoundActivity : AppCompatActivity(),
+        ServiceConnection {
+
+    private val statusRepository = StatusRepository.getInstance()
+    protected val stateViewModel: StateViewModel by viewModels()
 
     protected var service: CotService? = null
-
-    private var serviceConnection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName, binder: IBinder) {
-            service = (binder as ServiceBinder).service
-            service?.let {
-                it.addStateListener(this@ServiceBoundActivity)
-                onServiceStateChanged(it.state, null)
-            }
-        }
-
-        override fun onServiceDisconnected(name: ComponentName) {
-            service!!.removeStateListener(this@ServiceBoundActivity)
-            service = null
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,34 +30,51 @@ abstract class ServiceBoundActivity : AppCompatActivity(), ServiceStateListener 
         /* Start the service and bind to it */
         val intent = Intent(this, Variant.getCotServiceClass())
         startService(intent)
-        bindService(intent, serviceConnection, BIND_AUTO_CREATE)
+        bindService(intent, this, BIND_AUTO_CREATE)
+
+        observeServiceStatus()
     }
 
     override fun onResume() {
         super.onResume()
-        service?.addStateListener(this)
+        CotApplication.activityIsVisible = true
     }
 
     override fun onPause() {
         super.onPause()
-        service?.removeStateListener(this)
+        CotApplication.activityIsVisible = false
     }
 
     override fun onDestroy() {
         super.onDestroy()
         service?.let {
             service = null
-            unbindService(serviceConnection)
+            unbindService(this)
         }
+    }
+
+    override fun onServiceConnected(name: ComponentName, binder: IBinder) {
+        service = (binder as ServiceBinder).service
+    }
+
+    override fun onServiceDisconnected(name: ComponentName) {
+        service = null
     }
 
     protected fun getRootView(): View {
         return findViewById(android.R.id.content)
     }
 
-    override fun onServiceStateChanged(state: ServiceState, throwable: Throwable?) {
-        if (state == ServiceState.ERROR && throwable != null) {
-            Notify.red(getRootView(), "Error: " + throwable.message)
+    private fun observeServiceStatus() {
+        statusRepository.getStatus().observe(this) {
+            stateViewModel.currentState = it
+            invalidateOptionsMenu()
+            when (it) {
+                ServiceState.RUNNING -> Notify.green(getRootView(), "Service is running")
+                ServiceState.STOPPED -> Notify.blue(getRootView(), "Service is not running")
+                ServiceState.ERROR -> Notify.red(getRootView(), "Error: ${ServiceState.errorMessage}")
+                else -> throw IllegalArgumentException("Unknown service state '$it'")
+            }
         }
     }
 }

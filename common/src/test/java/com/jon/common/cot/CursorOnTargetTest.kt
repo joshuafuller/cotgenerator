@@ -1,6 +1,6 @@
 package com.jon.common.cot
 
-import com.jon.common.TestingRepo
+import com.jon.common.TestingInjector
 import com.jon.common.utils.DataFormat
 import com.jon.common.variants.Variant
 import org.hamcrest.Matcher
@@ -17,7 +17,7 @@ class CursorOnTargetTest {
 
     @Before
     fun initialise() {
-        Variant.setAppVariantRepository(TestingRepo())
+        Variant.setInjector(TestingInjector())
         cot = CursorOnTarget()
         cot.start = UtcTimestamp.now()
         cot.time = cot.start
@@ -29,9 +29,9 @@ class CursorOnTargetTest {
         val xml = String(cot.toBytes(DataFormat.XML))
         assertThat(xml, containsXml("event", "uid", cot.uid))
         assertThat(xml, containsXml("event", "type", cot.type))
-        assertThat(xml, containsXml("event", "time", cot.time.toString()))
-        assertThat(xml, containsXml("event", "start", cot.start.toString()))
-        assertThat(xml, containsXml("event", "stale", cot.stale.toString()))
+        assertThat(xml, containsXml("event", "time", cot.time.isoTimestamp()))
+        assertThat(xml, containsXml("event", "start", cot.start.isoTimestamp()))
+        assertThat(xml, containsXml("event", "stale", cot.stale.isoTimestamp()))
         assertThat(xml, containsXml("event", "how", cot.how))
         assertThat(xml, containsXml("point", "lat", "%.7f".format(cot.lat)))
         assertThat(xml, containsXml("point", "lon", "%.7f".format(cot.lon)))
@@ -64,7 +64,7 @@ class CursorOnTargetTest {
     @Test
     fun toBytes_Protobuf_Reparse() {
         val protobuf = cot.toBytes(DataFormat.PROTOBUF)
-
+        FINISH THIS
     }
 
     @Test
@@ -91,7 +91,7 @@ class CursorOnTargetTest {
         assertThat(cot.stale.milliseconds() - cot.start.milliseconds(), equalTo(TimeUnit.HOURS.toMillis(-1L)))
     }
 
-    private fun containsXml(tag: String, attribute: String, value: String): Matcher<String> {
+    private fun containsXml(tag: String, attribute: String, value: String?): Matcher<String> {
         return matchesRegex(".*<%s.*?%s=\"%s\".*?>.*".format(tag, attribute, value))
     }
 }

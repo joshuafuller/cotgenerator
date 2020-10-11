@@ -1,13 +1,8 @@
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="ButtonCase">
-
+<resources>
     <string name="app_name">CoT Beacon</string>
-    <string name="appNameAllCaps">COT-BEACON</string>
+    <string name="app_name_all_caps">COT-BEACON</string>
 
-    <string name="permissionRationale">Two permissions are required:
+    <string name="permission_rationale">Two permissions are required:
         1) GPS - to translate into CoT;
         2) Storage - to read certificate files for SSL authentication</string>
-
-    <string name="startTransmittingOnLaunch">Start transmitting on app launch?</string>
-    <string name="startTransmittingOnBoot">Start transmitting on device boot?</string>
-
 </resources>
