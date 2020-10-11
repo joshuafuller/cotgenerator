@@ -1,12 +1,15 @@
 package com.jon.common.ui.main
 
 import android.Manifest
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.preference.PreferenceManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jon.common.R
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getIntFromPair
@@ -19,15 +22,24 @@ import com.jon.common.utils.GenerateInt
 import com.jon.common.utils.Notify
 import com.jon.common.utils.Protocol
 import com.jon.common.variants.Variant
+import com.jon.common.versioncheck.GithubRelease
+import com.jon.common.versioncheck.UpdateChecker
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import pub.devrel.easypermissions.EasyPermissions
 import pub.devrel.easypermissions.EasyPermissions.PermissionCallbacks
 import timber.log.Timber
+import java.io.IOException
+import java.net.UnknownHostException
 
 open class MainActivity : ServiceBoundActivity(),
         PermissionCallbacks,
         OnSharedPreferenceChangeListener {
 
     private val prefs: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
+    private val updateChecker = UpdateChecker()
+    private val compositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +66,16 @@ open class MainActivity : ServiceBoundActivity(),
         supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment, Variant.getMainFragment())
                 .commitNow()
+
+        compositeDisposable.add(
+                updateChecker.fetchReleases()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                { onReleasesFetched(it) },
+                                { onReleaseFetchingFailure(it) }
+                        )
+        )
     }
 
     override fun onResume() {
@@ -61,9 +83,10 @@ open class MainActivity : ServiceBoundActivity(),
         prefs.registerOnSharedPreferenceChangeListener(this)
     }
 
-    public override fun onDestroy() {
+    override fun onDestroy() {
         super.onDestroy()
         prefs.unregisterOnSharedPreferenceChangeListener(this)
+        compositeDisposable.clear()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -71,8 +94,8 @@ open class MainActivity : ServiceBoundActivity(),
         val start = menu.findItem(R.id.start)
         val stop = menu.findItem(R.id.stop)
         if (service != null) {
-            start.isVisible = stateViewModel.currentState == ServiceState.STOPPED
-            stop.isVisible = stateViewModel.currentState == ServiceState.RUNNING
+            start.isVisible = viewModel.currentState == ServiceState.STOPPED
+            stop.isVisible = viewModel.currentState == ServiceState.RUNNING
         } else {
             start.isVisible = true
             stop.isVisible = false
@@ -136,6 +159,34 @@ open class MainActivity : ServiceBoundActivity(),
         Timber.e(err)
         Notify.toast(applicationContext, err)
         finish()
+    }
+
+    private fun onReleasesFetched(releases: List<GithubRelease>) {
+        val latest = updateChecker.getLatestRelease(releases)
+        if (latest != null && updateChecker.isNewerVersion(latest) && updateChecker.releaseIsNotIgnored(latest, prefs)) {
+            val msg = "Installed = ${Variant.getVersionName()}\nLatest = ${latest.name}\n\n" +
+                    "Would you like to visit the Github page to download it?\n\n"
+            MaterialAlertDialogBuilder(this)
+                    .setTitle("Update Available")
+                    .setMessage(msg)
+                    .setPositiveButton(android.R.string.ok) { _, _ ->
+                        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(latest.htmlUrl))
+                        startActivity(browserIntent)
+                    }.setNegativeButton("IGNORE") { dialog, _ ->
+                        updateChecker.ignoreRelease(latest, prefs)
+                        dialog.dismiss()
+                    }.setNeutralButton("LATER", null)
+                    .show()
+        }
+    }
+
+    private fun onReleaseFetchingFailure(throwable: Throwable) {
+        if (throwable !is IOException) {
+            /* Don't show an error snackbar if the exception was due to network problems.
+             * If the user is off-grid I don't want to annoy them. */
+            Timber.e(throwable)
+            Notify.red(getRootView(), "Failed to check latest version on Github: ${throwable.message}")
+        }
     }
 
     companion object {

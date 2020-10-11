@@ -1,5 +1,6 @@
 package com.jon.common.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -17,13 +18,10 @@ import com.jon.common.R
 import com.jon.common.variants.Variant
 import com.jon.common.versioncheck.GithubRelease
 import com.jon.common.versioncheck.UpdateChecker
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.HttpException
-import retrofit2.Response
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.math.max
 
 internal class AboutDialogBuilder(context: Context) : MaterialAlertDialogBuilder(context) {
     private data class Row(val title: String, var subtitle: String, @DrawableRes var iconId: Int? = null)
@@ -37,6 +35,7 @@ internal class AboutDialogBuilder(context: Context) : MaterialAlertDialogBuilder
             Row("Latest Github Release", LOADING, R.drawable.refresh),
             Row("Github Repository", "https://github.com/jonapoul/cotgenerator", R.drawable.go_to)
     )
+
     private val adapter = object : ArrayAdapter<Row>(context, R.layout.about_listview_item, R.id.aboutItemTextTitle, rows) {
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             val view = super.getView(position, null, parent)
@@ -51,24 +50,6 @@ internal class AboutDialogBuilder(context: Context) : MaterialAlertDialogBuilder
         }
     }
 
-    private val callback = object : Callback<List<GithubRelease>> {
-        override fun onResponse(call: Call<List<GithubRelease>>, response: Response<List<GithubRelease>>) {
-            val latest = updateChecker.getLatestRelease(response.body())
-            if (latest != null) {
-                val suffix = getVersionSuffix(latest.name)
-                rows[LATEST_INDEX].subtitle = latest.name + suffix
-                adapter.notifyDataSetChanged()
-            } else {
-                onFailure(call, HttpException(response))
-            }
-        }
-
-        override fun onFailure(call: Call<List<GithubRelease>>, t: Throwable) {
-            rows[LATEST_INDEX].subtitle = "[Error: ${t.message}]"
-            adapter.notifyDataSetChanged()
-        }
-    }
-
     init {
         val listView = View.inflate(context, R.layout.about_listview, null) as ListView
         listView.adapter = adapter
@@ -80,7 +61,7 @@ internal class AboutDialogBuilder(context: Context) : MaterialAlertDialogBuilder
             } else if (position == LATEST_INDEX) {
                 rows[LATEST_INDEX].subtitle = LOADING
                 adapter.notifyDataSetChanged()
-                updateChecker.check(callback)
+                fetchLatestVersion()
             }
         }
         this.setTitle(R.string.menu_about)
@@ -89,32 +70,39 @@ internal class AboutDialogBuilder(context: Context) : MaterialAlertDialogBuilder
     }
 
     override fun show(): AlertDialog {
-        updateChecker.check(callback)
+        fetchLatestVersion()
         return super.show()
     }
 
-    private fun getVersionSuffix(discoveredVersionStr: String): String {
-        return try {
-            /* Split into arrays of major, minor version numbers */
-            val discovered = discoveredVersionStr.split(".").map { it.toInt() }.toMutableList()
-            val installed = Variant.getVersionName().split(".").map { it.toInt() }.toMutableList()
-            val longest = max(discovered.size, installed.size)
+    @SuppressLint("CheckResult")
+    private fun fetchLatestVersion() {
+        updateChecker.fetchReleases()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map { updateChecker.getLatestRelease(it) }
+                .subscribe(::onSuccess, ::onFailure)
+    }
 
-            /* Make them both the same length, padded with trailing zeros. Accounts for comparisons between
-            * versions like "1.3.2" and "1.4"  */
-            discovered += List(longest - discovered.size) { 0 }
-            installed += List(longest - installed.size) { 0 }
+    private fun onSuccess(release: GithubRelease?) {
+        if (release != null) {
+            val suffix = getVersionSuffix(release)
+            rows[LATEST_INDEX].subtitle = release.name + suffix
+            adapter.notifyDataSetChanged()
+        } else {
+            onFailure(Exception("Null response"))
+        }
+    }
 
-            for (i in 0..longest) {
-                if (discovered[i] > installed[i]) {
-                    return " - Update available!"
-                } else if (discovered[i] < installed[i]) {
-                    return " - You're from the future!"
-                }
-            }
-            return " - You're up-to-date!"
-        } catch (e: Exception) {
-            " - Failed parsing version numbers: ${e.message}"
+    private fun onFailure(throwable: Throwable) {
+        rows[LATEST_INDEX].subtitle = "[Error: ${throwable.message}]"
+        adapter.notifyDataSetChanged()
+    }
+
+    private fun getVersionSuffix(latest: GithubRelease): String {
+        return if (updateChecker.isNewerVersion(latest)) {
+            " - Update available!"
+        } else {
+            " - You're up-to-date!"
         }
     }
 

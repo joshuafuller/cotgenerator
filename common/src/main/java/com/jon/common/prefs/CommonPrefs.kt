@@ -33,4 +33,7 @@ object CommonPrefs {
     val PRESET_SSL_CLIENTCERT_PASSWORD = PrefPair.string(R.string.key_preset_ssl_client_cert_password, R.string.unknown)
     val PRESET_SSL_TRUSTSTORE_BYTES = PrefPair.string(R.string.key_preset_ssl_trust_store_bytes, R.string.unknown)
     val PRESET_SSL_TRUSTSTORE_PASSWORD = PrefPair.string(R.string.key_preset_ssl_trust_store_password, R.string.unknown)
+
+    /* Update Checking. This doesn't reference a resource string because it's not used in any XML files */
+    val IGNORED_UPDATE_VERSIONS = "ignored_update_versions"
 }

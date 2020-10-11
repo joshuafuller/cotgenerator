@@ -20,7 +20,7 @@ abstract class ServiceBoundActivity : AppCompatActivity(),
         ServiceConnection {
 
     private val statusRepository = StatusRepository.getInstance()
-    protected val stateViewModel: StateViewModel by viewModels()
+    protected val viewModel: StateViewModel by viewModels()
 
     protected var service: CotService? = null
 
@@ -67,7 +67,7 @@ abstract class ServiceBoundActivity : AppCompatActivity(),
 
     private fun observeServiceStatus() {
         statusRepository.getStatus().observe(this) {
-            stateViewModel.currentState = it
+            viewModel.currentState = it
             invalidateOptionsMenu()
             when (it) {
                 ServiceState.RUNNING -> Notify.green(getRootView(), "Service is running")

@@ -10,5 +10,9 @@ data class GithubRelease(
 
         @SerializedName("published_at")
         @Expose
-        val publishedAt: String
+        val publishedAt: String,
+
+        @SerializedName("html_url")
+        @Expose
+        val htmlUrl: String
 )
