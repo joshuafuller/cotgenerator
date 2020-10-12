@@ -1,61 +1,49 @@
 <resources>
+    <string name="toolbar_header_edit_preset">Edit Preset</string>
+    <string name="toolbar_header_list_presets">Custom Presets</string>
 
-    <string name="toolbarHeaderEditPreset">Edit Preset</string>
-    <string name="toolbarHeaderListPresets">Custom Presets</string>
+    <string name="menu_stop">Stop</string>
+    <string name="menu_start">Start</string>
+    <string name="menu_about">About</string>
+    <string name="menu_save">Save</string>
+    <string name="menu_delete_all">Delete All</string>
 
-    <string name="gpsPermissionRationale">GPS access is required for this app. If you don\'t accept, it won\'t work!</string>
-    <string name="gpsPermissionBegging">GPS permission has been denied! You\'ll have to manually change this in the Android settings.</string>
-    <string name="storagePermissionRationale">Storage access is required to access certificates when building SSL presets.</string>
-    <string name="storagePermissionBegging">Storage permission has been denied! You\'ll have to manually change this in the Android settings.</string>
+    <string name="transmission_protocol_ssl">SSL</string>
+    <string name="transmission_protocol_tcp">TCP</string>
+    <string name="transmission_protocol_udp">UDP</string>
 
-    <string name="stop">Stop</string>
-    <string name="start">Start</string>
-    <string name="about">About</string>
-    <string name="save">Save</string>
-    <string name="delete_all">Delete All</string>
+    <string name="data_format_xml">XML</string>
+    <string name="data_format_protobuf">Protobuf</string>
 
-    <string name="transmissionProtocolSsl">SSL</string>
-    <string name="transmissionProtocolTcp">TCP</string>
-    <string name="transmissionProtocolUdp">UDP</string>
+    <string name="role_team_member">Team Member</string>
+    <string name="role_team_leader">Team Leader</string>
+    <string name="role_hq">HQ</string>
+    <string name="role_sniper">Sniper</string>
+    <string name="role_medic">Medic</string>
+    <string name="role_forward_observer">Forward Observer</string>
+    <string name="role_rto">RTO</string>
+    <string name="role_k9">K9</string>
 
-    <string name="dataFormatXml">XML</string>
-    <string name="dataFormatProtobuf">Protobuf</string>
+    <string name="ssl_takserver_value">SSL¶Discord TAK Server¶discordtakserver.mooo.com¶58088</string>
+    <string name="ssl_takserver_name">Discord TAK Server</string>
+    <string name="ssl_takserver_ip">discordtakserver.mooo.com</string>
+    <string name="ssl_takserver_port">58088</string>
 
-    <string name="roleTeamMember">Team Member</string>
-    <string name="roleTeamLeader">Team Leader</string>
-    <string name="roleHq">HQ</string>
-    <string name="roleSniper">Sniper</string>
-    <string name="roleMedic">Medic</string>
-    <string name="roleForwardObserver">Forward Observer</string>
-    <string name="roleRto">RTO</string>
-    <string name="roleK9">K9</string>
+    <string name="tcp_freetakserver_value">TCP¶Public FreeTakServer¶204.48.30.216¶8087</string>
+    <string name="tcp_freetakserver_name">Public FreeTakServer</string>
+    <string name="tcp_freetakserver_ip">204.48.30.216</string>
+    <string name="tcp_freetakserver_port">8087</string>
 
-    <string name="sslTakserverValue">SSL¶Discord TAK Server¶discordtakserver.mooo.com¶58088</string>
-    <string name="sslTakserver">Discord TAK Server</string>
-    <string name="sslTakserverIp">discordtakserver.mooo.com</string>
-    <string name="sslTakserverPort">58088</string>
+    <string name="udp_default_sa_value">UDP¶Default Multicast SA¶239.2.3.1¶6969</string>
+    <string name="udp_default_sa">Default Multicast SA</string>
+    <string name="udp_default_sa_ip">239.2.3.1</string>
+    <string name="udp_default_sa_port">6969</string>
 
-    <string name="tcpFreetakserverValue">TCP¶Public FreeTakServer¶204.48.30.216¶8087</string>
-    <string name="tcpFreetakserver">Public FreeTakServer</string>
-    <string name="tcpFreetakserverIp">204.48.30.216</string>
-    <string name="tcpFreetakserverPort">8087</string>
+    <string name="go_back">Go back?</string>
+    <string name="go_back_message">This will discard any current changes.</string>
 
-    <string name="udpDefaultSaValue">UDP¶Default Multicast SA¶239.2.3.1¶6969</string>
-    <string name="udpDefaultSa">Default Multicast SA</string>
-    <string name="udpDefaultSaIp">239.2.3.1</string>
-    <string name="udpDefaultSaPort">6969</string>
+    <string name="no_presets_found">No custom presets found!</string>
+    <string name="fab_create_new_preset">CREATE NEW</string>
 
-    <string name="addNewPresetProtocol">Protocol:</string>
-    <string name="addNewPresetAlias">Alias:</string>
-    <string name="addNewPresetAddress">Address:</string>
-    <string name="addNewPresetPort">Port:</string>
-    <string name="addNewPresetTrustStore">Trust Store:</string>
-    <string name="addNewPresetClientCert">Client Cert:</string>
-
-    <string name="goBack">Go back?</string>
-    <string name="goBackMessage">This will discard all current changes.</string>
-
-    <string name="noPresetsFound">No custom presets found!</string>
-    <string name="createNewPreset">CREATE NEW</string>
-
+    <string name="unknown">UNKNOWN</string>
 </resources>

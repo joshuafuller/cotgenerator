@@ -1,15 +1,17 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.3"
+    compileSdkVersion versions.targetSdk
+    buildToolsVersion versions.buildTools
 
     defaultConfig {
         applicationId "com.jon.cotgenerator"
-        minSdkVersion 24
-        targetSdkVersion 29
-        versionCode 150
-        versionName "1.5.1"
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
+        versionCode versions.versionCode
+        versionName versions.versionName
+        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "java.util.Date", "BUILD_TIME", "new java.util.Date(" + System.currentTimeMillis() + "L)"
         javaCompileOptions {
@@ -17,7 +19,7 @@ android {
                 arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
             }
         }
-        setProperty("archivesBaseName", "cotgenerator-$versionName")
+        setProperty("archivesBaseName", "$applicationId-$versionName")
     }
 
     buildTypes {
@@ -37,27 +39,12 @@ dependencies {
     implementation project(':common')
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    /* General */
-    implementation group: 'androidx.appcompat', name: 'appcompat', version: '1.1.0'
-    implementation group: 'androidx.lifecycle', name: 'lifecycle-extensions', version: '2.2.0'
-    implementation group: 'com.google.android.material', name: 'material', version: '1.1.0'
-
-    /* Preferences */
-    implementation group: 'androidx.preference', name: 'preference', version: '1.1.1'
-    implementation group: 'com.jaredrummler', name: 'colorpicker', version: '1.1.0'
-
-    /* Permission management */
-    implementation group: 'pub.devrel', name: 'easypermissions', version: '3.0.0'
-
-    /* RxJava */
-    implementation group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.2.19'
-    implementation group: 'io.reactivex.rxjava2', name: 'rxandroid', version: '2.1.1'
-
-    /* Logging */
-    implementation group: 'com.jakewharton.timber', name: 'timber', version: '4.7.1'
-
-    /* Testing */
-    testImplementation 'junit:junit:4.13'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
+    implementation "androidx.appcompat:appcompat:$versions.appcompat"
+    implementation "androidx.lifecycle:lifecycle-extensions:$versions.lifecycle_extensions"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.viewmodel_ktx"
+    implementation "androidx.core:core-ktx:$versions.core_ktx"
+}
+repositories {
+    mavenCentral()
 }

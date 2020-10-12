@@ -7,21 +7,21 @@
         android:id="@+id/stop"
         android:icon="@drawable/stop"
         android:orderInCategory="1"
-        android:title="@string/stop"
+        android:title="@string/menu_stop"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/start"
         android:icon="@drawable/start"
         android:orderInCategory="1"
-        android:title="@string/start"
+        android:title="@string/menu_start"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/about"
         android:icon="@drawable/info"
         android:orderInCategory="2"
-        android:title="@string/about"
+        android:title="@string/menu_about"
         app:showAsAction="never" />
 
 </menu>

@@ -1,4 +1,4 @@
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -6,9 +6,13 @@
     android:animateLayoutChanges="true">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/toolbar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:theme="@style/AppTheme.AppBarOverlay"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -19,104 +23,115 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <LinearLayout
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_layout">
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/padding"
-            android:layout_marginTop="@dimen/padding"
-            android:layout_marginBottom="@dimen/smallPadding"
-            android:text="@string/transmissionProtocolSsl"
-            android:textColor="@color/white"
-            android:textStyle="bold" />
+            android:orientation="vertical">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/listPresetsSslRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/padding"
-            android:layout_marginEnd="@dimen/padding"
-            tools:itemCount="1"
-            tools:listitem="@layout/preset_list_item" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding"
+                android:layout_marginTop="@dimen/padding"
+                android:layout_marginBottom="@dimen/smallPadding"
+                android:text="@string/transmission_protocol_ssl"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/sslNoneFound"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="@string/noPresetsFound"
-            android:visibility="gone" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/listPresetsSslRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding"
+                android:layout_marginEnd="@dimen/padding"
+                tools:itemCount="1"
+                tools:listitem="@layout/preset_list_item" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/padding"
-            android:layout_marginTop="@dimen/padding"
-            android:layout_marginBottom="@dimen/smallPadding"
-            android:text="@string/transmissionProtocolTcp"
-            android:textColor="@color/white"
-            android:textStyle="bold" />
+            <TextView
+                android:id="@+id/sslNoneFound"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/no_presets_found"
+                android:visibility="gone" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/listPresetsTcpRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/padding"
-            android:layout_marginEnd="@dimen/padding"
-            tools:itemCount="2"
-            tools:listitem="@layout/preset_list_item" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding"
+                android:layout_marginTop="@dimen/padding"
+                android:layout_marginBottom="@dimen/smallPadding"
+                android:text="@string/transmission_protocol_tcp"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tcpNoneFound"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="@string/noPresetsFound"
-            android:visibility="gone" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/listPresetsTcpRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding"
+                android:layout_marginEnd="@dimen/padding"
+                tools:itemCount="2"
+                tools:listitem="@layout/preset_list_item" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/padding"
-            android:layout_marginTop="@dimen/padding"
-            android:layout_marginBottom="@dimen/smallPadding"
-            android:text="@string/transmissionProtocolUdp"
-            android:textColor="@color/white"
-            android:textStyle="bold" />
+            <TextView
+                android:id="@+id/tcpNoneFound"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/no_presets_found"
+                android:visibility="gone" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/listPresetsUdpRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/padding"
-            android:layout_marginEnd="@dimen/padding"
-            tools:itemCount="2"
-            tools:listitem="@layout/preset_list_item" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding"
+                android:layout_marginTop="@dimen/padding"
+                android:layout_marginBottom="@dimen/smallPadding"
+                android:text="@string/transmission_protocol_udp"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/udpNoneFound"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="@string/noPresetsFound"
-            android:visibility="gone" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/listPresetsUdpRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding"
+                android:layout_marginEnd="@dimen/padding"
+                tools:itemCount="2"
+                tools:listitem="@layout/preset_list_item" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/udpNoneFound"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/no_presets_found"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/padding"
-        android:text="@string/createNewPreset"
+        android:text="@string/fab_create_new_preset"
         android:textColor="@color/textColour"
         app:icon="@drawable/add"
-        app:iconTint="@color/textColour" />
+        app:iconTint="@color/textColour"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base settings -->
+    <string name="key_callsign">callsign</string>
+    <string name="key_team_colour">team_colour</string>
+    <string name="key_icon_role">icon_role</string>
+    <string name="key_icon_count">icon_count</string>
+    <string name="key_stale_timer">stale_timer</string>
+    <string name="key_transmission_period">transmission_period</string>
+    <string name="key_transmission_protocol">transmission_protocol</string>
+    <string name="key_data_format">data_format</string>
+    <string name="key_ssl_presets">ssl_presets</string>
+    <string name="key_tcp_presets">tcp_presets</string>
+    <string name="key_udp_presets">udp_presets</string>
+    <string name="key_dest_address">dest_address</string>
+    <string name="key_dest_port">dest_port</string>
+    <string name="key_edit_presets">edit_presets</string>
+
+    <!-- Edit preset screen -->
+    <string name="key_preset_protocol">preset_protocol</string>
+    <string name="key_preset_alias">preset_alias</string>
+    <string name="key_preset_destination_address">preset_destination_address</string>
+    <string name="key_preset_destination_port">preset_destination_port</string>
+    <string name="key_ssl_options_category">ssl_options_category</string>
+    <string name="key_preset_ssl_client_cert_bytes">preset_ssl_client_cert_bytes</string>
+    <string name="key_preset_ssl_client_cert_password">preset_ssl_client_cert_password</string>
+    <string name="key_preset_ssl_trust_store_bytes">preset_ssl_trust_store_bytes</string>
+    <string name="key_preset_ssl_trust_store_password">preset_ssl_trust_store_password</string>
+</resources>

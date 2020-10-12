@@ -1,11 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.jon.beacon">
+    package="com.jon.cotbeacon">
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name=".BeaconApplication"
@@ -19,17 +20,17 @@
         tools:ignore="AllowBackup,GoogleAppIndexingWarning"
         tools:targetApi="q">
 
-        <activity android:name="com.jon.common.ui.MainActivity">
+        <activity android:name="com.jon.common.ui.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.jon.common.ui.EditPresetActivity" />
+        <activity android:name="com.jon.common.ui.editpreset.EditPresetActivity" />
         <activity android:name=".BeaconListPresetsActivity" />
 
         <service
-            android:name=".BeaconService"
+            android:name="com.jon.common.service.CotService"
             android:enabled="true"
             android:exported="false" />
 

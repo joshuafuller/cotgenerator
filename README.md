@@ -68,7 +68,7 @@ Note that some of the following settings are not available on CoT Beacon.
 ## Permissions
 Two permissions requested:
 - **GPS**: Only used for the "Follow My GPS Position" option, with which each generated icon will follow your GPS location as you move around.
-- **Storage**: Only used to read client certificates and trust stores when configurinng custom SSL presets.
+- **Storage**: Only used to read client certificates and trust stores when configuring custom SSL presets.
 
 ## Security
 Note that any SSL certificates/passwords loaded into the app are stored in a database in the application's private directory, and the password is in plaintext. Don't expect this to be super high-security!
