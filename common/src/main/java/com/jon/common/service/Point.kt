@@ -21,11 +21,6 @@ data class Point(
         return Point(lat2, lon2)
     }
 
-    data class Offset(
-            var R: Double,    /* travel distance in metres */
-            var theta: Double /* bearing in degrees */
-    )
-
     companion object {
         fun fromCot(cot: CursorOnTarget): Point {
             return Point(

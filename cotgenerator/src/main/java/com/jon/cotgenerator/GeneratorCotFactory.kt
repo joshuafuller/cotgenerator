@@ -8,16 +8,19 @@ import com.jon.common.cot.CursorOnTarget
 import com.jon.common.cot.UtcTimestamp
 import com.jon.common.prefs.*
 import com.jon.common.service.CotFactory
+import com.jon.common.service.Offset
 import com.jon.common.service.Point
-import com.jon.common.service.Point.Offset
+import com.jon.common.utils.Bearing
 import com.jon.common.utils.Constants
+import com.jon.common.utils.GeometryUtils.arcdistance
 import com.jon.cotgenerator.streams.DoubleRandomStream
 import com.jon.cotgenerator.streams.IntRandomStream
-import com.jon.cotgenerator.streams.RandomStream
 import com.jon.cotgenerator.streams.RadialDistanceRandomStream
+import com.jon.cotgenerator.streams.RandomStream
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.math.*
+import kotlin.math.max
+import kotlin.math.min
 
 internal class GeneratorCotFactory(prefs: SharedPreferences) : CotFactory(prefs) {
     private data class IconData(var cot: CursorOnTarget, var offset: Offset)
@@ -100,7 +103,8 @@ internal class GeneratorCotFactory(prefs: SharedPreferences) : CotFactory(prefs)
             it.offset = generateBoundedOffset(courseItr, Point.fromCot(it.cot))
             val oldPoint = Point.fromCot(it.cot)
             setPositionFromOffset(it.cot, it.offset)
-            it.cot.course = bearing(oldPoint, Point.fromCot(it.cot))
+            val newPoint = Point.fromCot(it.cot)
+            it.cot.course = Bearing.from(oldPoint).to(newPoint)
             it.cot.hae = updateAltitude(it.cot.hae)
             it.cot.battery = batteryRepository.getPercentage()
         }
@@ -148,31 +152,27 @@ internal class GeneratorCotFactory(prefs: SharedPreferences) : CotFactory(prefs)
         )
     }
 
-    private fun generateBoundedOffset(courseItr: RandomStream<Double>, startPoint: Point): Offset {
-        val offset = Offset(travelDistance, courseItr.next())
-        val endPoint = startPoint.add(offset)
-        return if (arcdistance(endPoint, distributionCentre) > distributionRadius) {
-            /* Invalid offset, so try again */
-            generateBoundedOffset(courseItr, startPoint)
+    private fun generateBoundedOffset(
+            courseItr: RandomStream<Double>,
+            startPoint: Point,
+            attemptsRemaining: Int = MAX_OFFSET_GENERATION_ATTEMPTS
+    ): Offset {
+        if (attemptsRemaining == 0) {
+            /* The recursive algorithm has failed too many times, so to avoid a stack overflow we just pick
+             * a random point along the radius of the centrepoint and generate an Offset that will take us there */
+            val offsetToEdge = Offset(travelDistance, courseItr.next())
+            val nextPoint = distributionCentre.add(offsetToEdge)
+            return Offset.from(startPoint).to(nextPoint)
         } else {
-            offset
+            val offset = Offset(travelDistance, courseItr.next())
+            val endPoint = startPoint.add(offset)
+            return if (arcdistance(endPoint, distributionCentre) > distributionRadius) {
+                /* Invalid offset, so try again */
+                generateBoundedOffset(courseItr, startPoint, attemptsRemaining - 1)
+            } else {
+                offset
+            }
         }
-    }
-
-    private fun arcdistance(p1: Point, p2: Point?): Double {
-        val lat1 = p1.lat
-        val lat2 = p2!!.lat
-        val dlat = p2.lat - p1.lat
-        val dlon = p2.lon - p1.lon
-        /* I can feel myself getting sweaty just looking at this */
-        val a = sin(dlat / 2.0) * sin(dlat / 2.0) + cos(lat1) * cos(lat2) * sin(dlon / 2.0) * sin(dlon / 2.0)
-        return 2.0 * Constants.EARTH_RADIUS_METRES * atan2(sqrt(a), sqrt(1.0 - a))
-    }
-
-    private fun bearing(start: Point, end: Point): Double {
-        val y = sin(end.lon - start.lon) * cos(end.lat)
-        val x = cos(start.lat) * sin(end.lat) - sin(start.lat) * cos(end.lat) * cos(end.lon - start.lon)
-        return (atan2(y, x) * Constants.RAD_TO_DEG + 360.0) % 360.0
     }
 
     private fun doubleIterator(min: Double, max: Double): RandomStream<Double> {
@@ -224,5 +224,9 @@ internal class GeneratorCotFactory(prefs: SharedPreferences) : CotFactory(prefs)
             if (newAltitude > centreAlt + distributionRadius) newAltitude = centreAlt + distributionRadius
             newAltitude
         }
+    }
+
+    private companion object {
+        const val MAX_OFFSET_GENERATION_ATTEMPTS = 10
     }
 }
