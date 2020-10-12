@@ -32,7 +32,7 @@ class GeneratorFragment : MainFragment() {
         put(GeneratorPrefs.CENTRE_LONGITUDE.key, "Should be a number between -180 and +180")
         put(GeneratorPrefs.RADIAL_DISTRIBUTION.key, "Should be a positive integer")
         put(GeneratorPrefs.MOVEMENT_SPEED.key, "Should be a positive number")
-        put(GeneratorPrefs.CENTRE_ALTITUDE.key, "Should be an integer")
+        put(GeneratorPrefs.CENTRE_ALTITUDE.key, "Should be an integer between 0 and 50,000")
     }
 
     override fun updatePreferences() {
@@ -93,12 +93,12 @@ class GeneratorFragment : MainFragment() {
         val input = newValue as String
         val inputValidator = InputValidator()
         return when (val key = pref.key) {
-            GeneratorPrefs.ICON_COUNT.key -> errorIfInvalid(input, key, inputValidator.validateInt(input, 1, 9999))
-            GeneratorPrefs.CENTRE_LATITUDE.key -> errorIfInvalid(input, key, inputValidator.validateDouble(input, -90.0, 90.0))
-            GeneratorPrefs.CENTRE_LONGITUDE.key -> errorIfInvalid(input, key, inputValidator.validateDouble(input, -180.0, 180.0))
-            GeneratorPrefs.RADIAL_DISTRIBUTION.key -> errorIfInvalid(input, key, inputValidator.validateInt(input, 1, null))
-            GeneratorPrefs.MOVEMENT_SPEED.key -> errorIfInvalid(input, key, inputValidator.validateDouble(input, 0.0, null))
-            GeneratorPrefs.CENTRE_ALTITUDE.key -> errorIfInvalid(input, key, inputValidator.validateInt(input))
+            GeneratorPrefs.ICON_COUNT.key -> errorIfInvalid(input, key, inputValidator.validateInt(input, min = 1, max = 9999))
+            GeneratorPrefs.CENTRE_LATITUDE.key -> errorIfInvalid(input, key, inputValidator.validateDouble(input, min = -90.0, max = 90.0))
+            GeneratorPrefs.CENTRE_LONGITUDE.key -> errorIfInvalid(input, key, inputValidator.validateDouble(input, min = -180.0, max = 180.0))
+            GeneratorPrefs.RADIAL_DISTRIBUTION.key -> errorIfInvalid(input, key, inputValidator.validateInt(input, min = 1))
+            GeneratorPrefs.MOVEMENT_SPEED.key -> errorIfInvalid(input, key, inputValidator.validateDouble(input, min = 0.0))
+            GeneratorPrefs.CENTRE_ALTITUDE.key -> errorIfInvalid(input, key, inputValidator.validateInt(input, min = 0, max = 50000))
             else -> true
         }
     }
