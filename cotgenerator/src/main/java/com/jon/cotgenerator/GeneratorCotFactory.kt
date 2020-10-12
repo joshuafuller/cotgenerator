@@ -98,7 +98,7 @@ internal class GeneratorCotFactory(prefs: SharedPreferences) : CotFactory(prefs)
         val courseItr = doubleIterator(0.0, 360.0)
         icons.forEach {
             it.cot.start = now
-            it.cot.time = it.cot.start
+            it.cot.time = now
             it.cot.setStaleDiff(staleTimer, TimeUnit.MINUTES)
             it.offset = generateBoundedOffset(courseItr, Point.fromCot(it.cot))
             val oldPoint = Point.fromCot(it.cot)

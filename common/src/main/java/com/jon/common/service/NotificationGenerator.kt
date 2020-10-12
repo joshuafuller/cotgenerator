@@ -15,7 +15,7 @@ import com.jon.common.utils.GenerateInt
 import com.jon.common.utils.Protocol
 import com.jon.common.variants.Variant
 
-class NotificationGenerator(
+internal class NotificationGenerator(
         private val context: Context,
         private val prefs: SharedPreferences
 ) {

@@ -29,7 +29,7 @@ class CotService : Service(),
 
     /* GPS fetching */
     private var updateRateSeconds = 0
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var fusedLocationClient: FusedLocationProviderClient? = null
     private var locationRequest: LocationRequest? = null
     private val locationCallback = GpsLocationCallback(gpsRepository)
 
@@ -64,8 +64,9 @@ class CotService : Service(),
 
     fun initialiseFusedLocationClient() {
         try {
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-            fusedLocationClient.lastLocation.addOnSuccessListener { gpsRepository.setLocation(it) }
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this).apply {
+                lastLocation.addOnSuccessListener { gpsRepository.setLocation(it) }
+            }
             initialiseLocationRequest()
         } catch (e: SecurityException) {
             error(e)
@@ -122,14 +123,14 @@ class CotService : Service(),
 
     private fun registerGpsUpdates() {
         try {
-            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+            fusedLocationClient?.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
         } catch (e: SecurityException) {
             error(e)
         }
     }
 
     private fun unregisterGpsUpdates() {
-        fusedLocationClient.removeLocationUpdates(locationCallback)
+        fusedLocationClient?.removeLocationUpdates(locationCallback)
     }
 
     override fun onThreadError(throwable: Throwable) {

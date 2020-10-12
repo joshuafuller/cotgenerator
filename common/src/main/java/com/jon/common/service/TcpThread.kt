@@ -15,7 +15,7 @@ import java.net.UnknownHostException
 import java.util.*
 
 
-open class TcpThread(prefs: SharedPreferences) : BaseThread(prefs) {
+internal open class TcpThread(prefs: SharedPreferences) : BaseThread(prefs) {
     protected var sockets: MutableList<Socket> = ArrayList()
 
     init {

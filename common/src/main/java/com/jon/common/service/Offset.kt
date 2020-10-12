@@ -14,17 +14,6 @@ data class Offset(
     }
 
     class Builder(private val startPoint: Point) {
-        private var endPoint: Point? = null
-
-        private fun setStart(start: Point): Builder {
-            return this
-        }
-
-        private fun setEnd(end: Point): Builder {
-            endPoint = end
-            return this
-        }
-
         fun to(endPoint: Point): Offset {
             return Offset(
                     R = arcdistance(startPoint, endPoint),
