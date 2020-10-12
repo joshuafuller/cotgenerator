@@ -75,6 +75,7 @@ open class MainActivity : ServiceBoundActivity(),
                                 { onReleaseFetchingFailure(it) }
                         )
         )
+        startCotService()
     }
 
     override fun onResume() {

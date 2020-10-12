@@ -21,7 +21,6 @@ object Variant {
     fun getVersionName() = injector.versionName
     fun getPlatform() = injector.platform
     fun isDebug() = injector.isDebug
-    fun getCotServiceClass() = injector.cotServiceClass
     fun getListActivityClass() = injector.listActivityClass
     @XmlRes fun getSettingsXmlId() = injector.settingsXmlId
     @ColorRes fun getIconColourId() = injector.iconColourId

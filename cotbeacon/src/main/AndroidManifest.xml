@@ -30,7 +30,7 @@
         <activity android:name=".BeaconListPresetsActivity" />
 
         <service
-            android:name=".BeaconService"
+            android:name="com.jon.common.service.CotService"
             android:enabled="true"
             android:exported="false" />
 

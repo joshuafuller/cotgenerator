@@ -17,7 +17,6 @@ interface VariantInjector {
     val versionName: String
     val platform: String
     val isDebug: Boolean
-    val cotServiceClass: Class<out CotService>
     val listActivityClass: Class<out ListPresetsActivity>
     val settingsXmlId: Int
     val iconColourId: Int

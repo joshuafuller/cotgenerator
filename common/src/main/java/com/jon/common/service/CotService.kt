@@ -15,7 +15,8 @@ import com.jon.common.utils.Notify
 import com.jon.common.variants.Variant
 import timber.log.Timber
 
-abstract class CotService : Service(), ThreadErrorListener {
+class CotService : Service(),
+        ThreadErrorListener {
     /* Repositories */
     private val gpsRepository = GpsRepository.getInstance()
     private val statusRepository = StatusRepository.getInstance()
@@ -61,7 +62,7 @@ abstract class CotService : Service(), ThreadErrorListener {
         return super.onStartCommand(intent, flags, startId)
     }
 
-    protected fun initialiseFusedLocationClient() {
+    fun initialiseFusedLocationClient() {
         try {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
             fusedLocationClient.lastLocation.addOnSuccessListener { gpsRepository.setLocation(it) }

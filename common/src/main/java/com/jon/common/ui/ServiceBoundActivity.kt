@@ -3,7 +3,6 @@ package com.jon.common.ui
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
-import android.os.Bundle
 import android.os.IBinder
 import android.view.View
 import androidx.activity.viewModels
@@ -24,11 +23,9 @@ abstract class ServiceBoundActivity : AppCompatActivity(),
 
     protected var service: CotService? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
+    protected fun startCotService() {
         /* Start the service and bind to it */
-        val intent = Intent(this, Variant.getCotServiceClass())
+        val intent = Intent(this, CotService::class.java)
         startService(intent)
         bindService(intent, this, BIND_AUTO_CREATE)
 
@@ -55,6 +52,7 @@ abstract class ServiceBoundActivity : AppCompatActivity(),
 
     override fun onServiceConnected(name: ComponentName, binder: IBinder) {
         service = (binder as ServiceBinder).service
+        service?.initialiseFusedLocationClient()
     }
 
     override fun onServiceDisconnected(name: ComponentName) {

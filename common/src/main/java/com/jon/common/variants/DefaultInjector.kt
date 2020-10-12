@@ -18,7 +18,6 @@ internal class DefaultInjector : VariantInjector {
     override val versionName: String = ""
     override val platform: String = ""
     override val isDebug: Boolean = true
-    override val cotServiceClass: Class<out CotService> = CotService::class.java
     override val listActivityClass: Class<out ListPresetsActivity> = ListPresetsActivity::class.java
     override val settingsXmlId: Int = 0
     override val iconColourId: Int = 0

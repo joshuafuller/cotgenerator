@@ -19,7 +19,6 @@ class GeneratorInjector : VariantInjector {
     override val versionName = BuildConfig.VERSION_NAME
     override val platform = CotApplication.context.getString(R.string.app_name_all_caps)
     override val isDebug = BuildConfig.DEBUG
-    override val cotServiceClass: Class<out CotService> = GeneratorService::class.java
     override val listActivityClass: Class<out ListPresetsActivity> = ListPresetsActivity::class.java
     override val settingsXmlId = R.xml.settings
     override val iconColourId = R.color.white
