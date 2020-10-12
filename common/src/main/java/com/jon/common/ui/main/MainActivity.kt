@@ -31,7 +31,6 @@ import pub.devrel.easypermissions.EasyPermissions
 import pub.devrel.easypermissions.EasyPermissions.PermissionCallbacks
 import timber.log.Timber
 import java.io.IOException
-import java.net.UnknownHostException
 
 open class MainActivity : ServiceBoundActivity(),
         PermissionCallbacks,

@@ -7,14 +7,11 @@ import java.util.concurrent.Executors
 
 internal class ThreadManager(private val prefs: SharedPreferences, private val errorListener: ThreadErrorListener) : OnSharedPreferenceChangeListener {
     private var thread: BaseThread? = null
-    private val exceptionHandler = Thread.UncaughtExceptionHandler { _, t: Throwable -> errorListener.reportError(t) }
-    private val isRunning: Boolean
-        get() = thread?.isRunning() ?: false
 
     fun start() {
         prefs.registerOnSharedPreferenceChangeListener(this)
         thread = BaseThread.fromPrefs(prefs).apply {
-            uncaughtExceptionHandler = exceptionHandler
+            setUncaughtExceptionHandler { _, t: Throwable -> errorListener.onThreadError(t) }
             start()
         }
     }
@@ -31,9 +28,13 @@ internal class ThreadManager(private val prefs: SharedPreferences, private val e
 
     override fun onSharedPreferenceChanged(prefs: SharedPreferences, key: String) {
         /* If any preferences are changed, kill the thread and instantly reload with the new settings */
-        if (isRunning) {
+        if (isRunning()) {
             shutdown()
             start()
         }
+    }
+
+    private fun isRunning(): Boolean {
+        return thread?.isRunning() ?: false
     }
 }

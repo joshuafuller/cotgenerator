@@ -62,12 +62,6 @@ class CursorOnTargetTest {
     }
 
     @Test
-    fun toBytes_Protobuf_Reparse() {
-        val protobuf = cot.toBytes(DataFormat.PROTOBUF)
-        FINISH THIS
-    }
-
-    @Test
     fun setStaleDiff_OneHour() {
         cot.setStaleDiff(1, TimeUnit.HOURS)
         assertThat(cot.stale.milliseconds() - cot.start.milliseconds(), equalTo(TimeUnit.HOURS.toMillis(1L)))

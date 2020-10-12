@@ -11,6 +11,7 @@ import androidx.core.app.NotificationCompat
 import com.jon.common.R
 import com.jon.common.prefs.getStringFromPair
 import com.jon.common.presets.OutputPreset
+import com.jon.common.utils.GenerateInt
 import com.jon.common.utils.Protocol
 import com.jon.common.variants.Variant
 
@@ -24,15 +25,15 @@ class NotificationGenerator(
         /* Intent to stop the service when the notification button is tapped */
         val stopPendingIntent = PendingIntent.getService(
                 context,
-                CotService.STOP_SERVICE_PENDING_INTENT,
-                Intent(context, Variant.getCotServiceClass()).setAction(CotService.STOP_SERVICE),
+                STOP_SERVICE_PENDING_INTENT,
+                Intent(context, CotService::class.java).setAction(CotService.STOP_SERVICE),
                 0
         )
         val channelId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel()
-            CotService.FOREGROUND_CHANNEL_ID
+            FOREGROUND_CHANNEL_ID
         } else {
-            CotService.FOREGROUND_CHANNEL_NAME
+            FOREGROUND_CHANNEL_NAME
         }
         foregroundNotificationBuilder = NotificationCompat.Builder(context, channelId)
                 .setOngoing(true)
@@ -55,8 +56,8 @@ class NotificationGenerator(
         val manager = context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
         manager.createNotificationChannel(
                 NotificationChannel(
-                        CotService.FOREGROUND_CHANNEL_ID,
-                        CotService.FOREGROUND_CHANNEL_NAME,
+                        FOREGROUND_CHANNEL_ID,
+                        FOREGROUND_CHANNEL_NAME,
                         NotificationManager.IMPORTANCE_HIGH
                 ).apply {
                     lightColor = Color.BLUE
@@ -73,5 +74,11 @@ class NotificationGenerator(
         val protocol = Protocol.fromPrefs(prefs)
         val preset = OutputPreset.fromString(prefs.getStringFromPair(protocol.presetPref))
         return protocol.toString() + if (preset == null) ": Unknown" else ": " + preset.alias
+    }
+
+    private companion object {
+        val STOP_SERVICE_PENDING_INTENT = GenerateInt.next()
+        val FOREGROUND_CHANNEL_ID = "${Variant.getAppId()}.FOREGROUND"
+        val FOREGROUND_CHANNEL_NAME = Variant.getAppName()
     }
 }

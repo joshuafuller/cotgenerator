@@ -11,7 +11,6 @@ import com.google.android.gms.location.LocationServices
 import com.jon.common.CotApplication
 import com.jon.common.repositories.GpsRepository
 import com.jon.common.repositories.StatusRepository
-import com.jon.common.utils.GenerateInt
 import com.jon.common.utils.Notify
 import com.jon.common.variants.Variant
 import timber.log.Timber
@@ -33,23 +32,17 @@ abstract class CotService : Service(), ThreadErrorListener {
     private var locationRequest: LocationRequest? = null
     private val locationCallback = GpsLocationCallback(gpsRepository)
 
-    /* Thread management */
-    private lateinit var threadManager: ThreadManager
-
     /* Settings */
-    protected val prefs: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
+    private val prefs: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
+
+    /* Thread management */
+    private val threadManager by lazy { ThreadManager(prefs, this) }
 
     /* Notifications */
     private val notificationGenerator: NotificationGenerator by lazy { NotificationGenerator(this, prefs) }
 
     override fun onBind(intent: Intent): IBinder? {
         return binder
-    }
-
-    override fun onCreate() {
-        super.onCreate()
-        Timber.i("onCreate")
-        threadManager = ThreadManager(prefs, this)
     }
 
     override fun onDestroy() {
@@ -138,7 +131,7 @@ abstract class CotService : Service(), ThreadErrorListener {
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
-    override fun reportError(throwable: Throwable) {
+    override fun onThreadError(throwable: Throwable) {
         /* Get an error from a thread, so pass the message down to our activity and show the user */
         error(throwable)
     }
@@ -146,10 +139,5 @@ abstract class CotService : Service(), ThreadErrorListener {
     companion object {
         private val BASE_INTENT_ID = "${Variant.getAppId()}.CotService."
         val STOP_SERVICE = "${BASE_INTENT_ID}.STOP"
-
-        val STOP_SERVICE_PENDING_INTENT = GenerateInt.next()
-
-        val FOREGROUND_CHANNEL_ID = "${Variant.getAppId()}.FOREGROUND"
-        val FOREGROUND_CHANNEL_NAME = Variant.getAppName()
     }
 }
