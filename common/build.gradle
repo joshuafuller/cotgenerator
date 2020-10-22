@@ -78,6 +78,7 @@ dependencies {
     api "com.google.android.material:material:$versions.material"
     api "androidx.preference:preference:$versions.preference"
     api "com.jaredrummler:colorpicker:$versions.colorpicker"
+    api "com.nbsp:materialfilepicker:$versions.materialfilepicker"
     api "pub.devrel:easypermissions:$versions.easypermissions"
 
     /* Room Database */

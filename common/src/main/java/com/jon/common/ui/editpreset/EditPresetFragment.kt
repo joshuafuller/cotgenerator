@@ -14,7 +14,10 @@ import com.jon.common.prefs.getStringFromPair
 import com.jon.common.presets.OutputPreset
 import com.jon.common.ui.IntentIds
 import com.jon.common.utils.*
+import com.nbsp.materialfilepicker.MaterialFilePicker
+import com.nbsp.materialfilepicker.ui.FilePickerActivity
 import timber.log.Timber
+import java.util.regex.Pattern
 
 class EditPresetFragment : PreferenceFragmentCompat(),
         OnSharedPreferenceChangeListener,
@@ -22,28 +25,31 @@ class EditPresetFragment : PreferenceFragmentCompat(),
 
     private val prefs: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(requireContext()) }
     private val inputValidator = InputValidator()
+    private lateinit var bundle: Bundle
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.edit_preset, rootKey)
 
         /* Tell these two "bytes" preferences to launch a file browser when clicked */
-        findPreference<Preference>(CommonPrefs.PRESET_SSL_CLIENTCERT_BYTES.key)?.onPreferenceClickListener = fileBrowserOnClickListener(CLIENT_CERT_FILE_REQUEST_CODE)
-        findPreference<Preference>(CommonPrefs.PRESET_SSL_TRUSTSTORE_BYTES.key)?.onPreferenceClickListener = fileBrowserOnClickListener(TRUST_STORE_FILE_REQUEST_CODE)
+        findPreference<Preference>(CommonPrefs.PRESET_SSL_CLIENTCERT_BYTES.key)?.onPreferenceClickListener = fileBrowserOnClickListener(CLIENT_CERT_FILE_REQUEST_CODE, "Client")
+        findPreference<Preference>(CommonPrefs.PRESET_SSL_TRUSTSTORE_BYTES.key)?.onPreferenceClickListener = fileBrowserOnClickListener(TRUST_STORE_FILE_REQUEST_CODE, "Trust Store")
 
-        /* Restrict input types */
-        PASSWORD_PREF_KEYS.forEach {
-            findPreference<EditTextPreference>(it)?.setOnBindEditTextListener(PASSWORD_INPUT_TYPE)
-        }
         findPreference<EditTextPreference>(CommonPrefs.PRESET_DESTINATION_ADDRESS.key)?.setOnBindEditTextListener { it.inputType = InputType.TYPE_TEXT_VARIATION_URI }
         findPreference<EditTextPreference>(CommonPrefs.PRESET_DESTINATION_PORT.key)?.setOnBindEditTextListener { it.inputType = InputType.TYPE_CLASS_PHONE }
 
         /* Set all prefs requiring validation to apply checks before committing any changes */
         PREFS_REQUIRING_VALIDATION.keys.forEach { findPreference<Preference>(it)?.onPreferenceChangeListener = this }
         prepopulateSpecifiedFields()
+
+        /* Restrict input types and set the summary as a string of asterisks */
+        PASSWORD_PREF_KEYS.forEach {
+            findPreference<EditTextPreference>(it)?.setOnBindEditTextListener(PASSWORD_INPUT_TYPE)
+            setPasswordSummary(it)
+        }
     }
 
     private fun prepopulateSpecifiedFields() {
-        val bundle = arguments ?: return
+        bundle = arguments ?: return
         initialPresetValues = OutputPreset.blank().apply {
             /* Protocol */
             bundle.getString(IntentIds.EXTRA_EDIT_PRESET_PROTOCOL)?.let {
@@ -92,12 +98,17 @@ class EditPresetFragment : PreferenceFragmentCompat(),
         }
     }
 
-    private fun fileBrowserOnClickListener(requestCode: Int) = Preference.OnPreferenceClickListener {
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-            addCategory(Intent.CATEGORY_OPENABLE)
-            type = "application/x-pkcs12" // .p12 files only
-        }
-        startActivityForResult(intent, requestCode)
+    private fun fileBrowserOnClickListener(requestCode: Int, type: String) = Preference.OnPreferenceClickListener {
+        MaterialFilePicker()
+                .withSupportFragment(this)
+                .withCloseMenu(true)
+                .withPath(Paths.ATAK_DIRECTORY.absolutePath)
+                .withRootPath(Paths.EXTERNAL_DIRECTORY.absolutePath)
+                .withFilter(Pattern.compile(".*\\.p12$"))
+                .withFilterDirectories(false)
+                .withTitle("Import P12 $type Certificate")
+                .withRequestCode(requestCode)
+                .start()
         true
     }
 
@@ -117,20 +128,23 @@ class EditPresetFragment : PreferenceFragmentCompat(),
         clearPrefs()
     }
 
-    @SuppressLint("DefaultLocale", "ApplySharedPref")
+    @Suppress("CascadeIf")
     override fun onActivityResult(requestCode: Int, resultCode: Int, result: Intent?) {
-        if (result == null || result.data == null) return
-        /* Get the preference key corresponding to the request code */
-        val key = when (requestCode) {
-            CLIENT_CERT_FILE_REQUEST_CODE -> CommonPrefs.PRESET_SSL_CLIENTCERT_BYTES.key
-            TRUST_STORE_FILE_REQUEST_CODE -> CommonPrefs.PRESET_SSL_TRUSTSTORE_BYTES.key
-            else -> throw RuntimeException("Unexpected request code: $requestCode")
-        }
-        if (resultCode != Activity.RESULT_OK) {
-            return
+        if (result == null) {
+            Notify.orange(requireView(), "Nothing imported!")
+        } else if (resultCode != Activity.RESULT_OK) {
+            Notify.red(requireView(), "Failed importing file!")
         } else {
+            /* Get the preference key corresponding to the request code */
+            val key = when (requestCode) {
+                CLIENT_CERT_FILE_REQUEST_CODE -> CommonPrefs.PRESET_SSL_CLIENTCERT_BYTES.key
+                TRUST_STORE_FILE_REQUEST_CODE -> CommonPrefs.PRESET_SSL_TRUSTSTORE_BYTES.key
+                else -> throw RuntimeException("Unexpected request code: $requestCode")
+            }
+
             try {
-                val path = UriUtils.getPathFromUri(requireContext(), result.data!!)
+                /* Pull the picked filepath out of the intent, and store the file as bytes in shared preferences */
+                val path = result.getStringExtra(FilePickerActivity.RESULT_FILE_PATH)
                 val bytes = FileUtils.toByteArray(path!!)
                 prefs.edit().putString(key, String(bytes)).apply()
                 findPreference<Preference>(key)?.summary = "Loaded: ${bytes.size} bytes"
@@ -165,7 +179,7 @@ class EditPresetFragment : PreferenceFragmentCompat(),
 
     private fun setPasswordSummary(key: String) {
         findPreference<EditTextPreference>(key)?.let {
-            val length = it.text.length
+            val length = prefs.getString(key, "")!!.length
             it.summary = "*".repeat(length)
         }
     }

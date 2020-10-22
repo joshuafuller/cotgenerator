@@ -90,7 +90,7 @@ open class MainActivity : ServiceBoundActivity(),
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu, menu)
+        menuInflater.inflate(R.menu.main_menu, menu)
         val start = menu.findItem(R.id.start)
         val stop = menu.findItem(R.id.stop)
         if (service != null) {

@@ -46,7 +46,7 @@ object UriUtils {
                         cursor = context.contentResolver.query(uri, arrayOf(MediaStore.MediaColumns.DISPLAY_NAME), null, null, null)
                         if (cursor != null && cursor.moveToFirst()) {
                             val fileName = cursor.getString(0)
-                            val path = Environment.getExternalStorageDirectory().toString() + "/Download/" + fileName
+                            val path = Paths.EXTERNAL_DIRECTORY.toString() + "/Download/" + fileName
                             if (!TextUtils.isEmpty(path)) {
                                 return path
                             }
@@ -116,7 +116,7 @@ object UriUtils {
         val relativePath = "/" + pathData[1]
         var fullPath: String
         if ("primary".equals(type, ignoreCase = true)) {
-            fullPath = Environment.getExternalStorageDirectory().toString() + relativePath
+            fullPath = Paths.EXTERNAL_DIRECTORY.toString() + relativePath
             if (fileExists(fullPath)) {
                 return fullPath
             }
