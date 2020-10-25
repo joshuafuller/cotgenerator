@@ -16,7 +16,6 @@ interface VariantInjector {
     val platform: String
     val isDebug: Boolean
     val settingsXmlId: Int
-    val iconColourId: Int
     val accentColourId: Int
     val mainActivityLayoutId: Int
     val navHostFragmentId: Int

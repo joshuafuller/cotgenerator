@@ -96,7 +96,7 @@ class ListPresetsFragment : Fragment(), PresetClickListener {
     private fun initialiseFab() {
         /* Add the two items */
         val speedDial = requireView().findViewById<SpeedDialView>(R.id.fab)
-        speedDial.mainFabClosedIconColor = ContextCompat.getColor(requireContext(), Variant.getIconColourId())
+        speedDial.mainFabClosedIconColor = ContextCompat.getColor(requireContext(), R.color.black)
         speedDial.buildAndAddAction(R.id.new_preset_create, R.drawable.edit, R.string.fab_create_new_preset)
         speedDial.buildAndAddAction(R.id.new_preset_import, R.drawable.import_file, R.string.fab_import_new_preset)
 
@@ -158,7 +158,7 @@ class ListPresetsFragment : Fragment(), PresetClickListener {
 
 private fun SpeedDialView.buildAndAddAction(@IdRes idRes: Int, @DrawableRes drawableRes: Int, @StringRes stringRes: Int) {
     val accent = ContextCompat.getColor(context, Variant.getAccentColourId())
-    val textColour = ContextCompat.getColor(context, Variant.getIconColourId())
+    val textColour = ContextCompat.getColor(context, R.color.black)
     addActionItem(
             SpeedDialActionItem.Builder(idRes, drawableRes)
                     .setLabel(stringRes)

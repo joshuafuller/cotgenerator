@@ -7,7 +7,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.jon.common.R
 import com.jon.common.presets.OutputPreset
-import com.jon.common.variants.Variant
 
 internal class PresetViewHolder(
         itemView: View,
@@ -25,7 +24,7 @@ internal class PresetViewHolder(
     private fun setImageButtonTint(button: ImageButton) {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
             val icon = button.drawable.apply {
-                val colour = itemView.context.getColor(Variant.getIconColourId())
+                val colour = itemView.context.getColor(R.color.black)
                 setTint(colour)
             }
             button.setImageDrawable(icon)

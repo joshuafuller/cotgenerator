@@ -20,7 +20,6 @@ class GeneratorInjector : VariantInjector {
     override val platform = CotApplication.context.getString(R.string.app_name_all_caps)
     override val isDebug = BuildConfig.DEBUG
     override val settingsXmlId = R.xml.settings
-    override val iconColourId = R.color.white
     override val accentColourId = R.color.colorAccent
     override val mainActivityLayoutId = R.layout.generator_activity
     override val navHostFragmentId = R.id.nav_host_fragment

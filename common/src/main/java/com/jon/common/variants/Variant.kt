@@ -24,7 +24,6 @@ object Variant {
     fun getPlatform() = injector.platform
     fun isDebug() = injector.isDebug
     @XmlRes fun getSettingsXmlId() = injector.settingsXmlId
-    @ColorRes fun getIconColourId() = injector.iconColourId
     @ColorRes fun getAccentColourId() = injector.accentColourId
     @LayoutRes fun getMainActivityLayoutId() = injector.mainActivityLayoutId
     @IdRes fun getNavHostFragmentId() = injector.navHostFragmentId

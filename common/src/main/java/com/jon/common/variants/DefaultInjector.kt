@@ -19,7 +19,6 @@ internal class DefaultInjector : VariantInjector {
     override val platform: String = ""
     override val isDebug: Boolean = true
     override val settingsXmlId: Int = 0
-    override val iconColourId: Int = 0
     override val accentColourId: Int = 0
     override val mainActivityLayoutId: Int = 0
     override val navHostFragmentId: Int = 0

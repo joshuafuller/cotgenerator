@@ -9,6 +9,7 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import com.jon.common.R
@@ -71,28 +72,38 @@ class MainFragment : Fragment() {
     }
 
     private fun showStopButton() {
-        setButtonState(R.string.stop, R.color.stop, R.drawable.stop, stopServiceOnClickListener)
+        setButtonState(
+                textId = R.string.stop,
+                backgroundColourId = R.color.stop_button,
+                iconId = R.drawable.stop,
+                onClickListener = stopServiceOnClickListener
+        )
     }
 
     private fun showStartButton() {
-        setButtonState(R.string.start, R.color.start, R.drawable.start, startServiceOnClickListener)
+        setButtonState(
+                textId = R.string.start,
+                backgroundColourId = Variant.getAccentColourId(),
+                iconId = R.drawable.start,
+                onClickListener = startServiceOnClickListener
+        )
     }
 
     private fun setButtonState(
             @StringRes textId: Int,
-            @ColorRes colourId: Int,
+            @ColorRes backgroundColourId: Int,
             @DrawableRes iconId: Int,
             onClickListener: View.OnClickListener
     ) {
+        val context = requireContext()
         startStopButton.text = getString(textId)
-        startStopButton.setBackgroundColor(ContextCompat.getColor(requireContext(), colourId))
-        startStopButton.setCompoundDrawablesWithIntrinsicBounds(
-                ContextCompat.getDrawable(requireContext(), iconId), // icon on the left hand side of the button
-                null,
-                null,
-                null
-        )
+        startStopButton.setBackgroundColor(ContextCompat.getColor(context, backgroundColourId))
+        startStopButton.setTextColor(ContextCompat.getColor(context, R.color.black))
         startStopButton.setOnClickListener(onClickListener)
+
+        val tintedIcon = DrawableCompat.wrap(ContextCompat.getDrawable(context, iconId)!!)
+        DrawableCompat.setTint(tintedIcon, ContextCompat.getColor(context, R.color.black))
+        startStopButton.setCompoundDrawablesWithIntrinsicBounds(tintedIcon, null, null, null)
     }
 
     private fun presetIsSelected(): Boolean {
