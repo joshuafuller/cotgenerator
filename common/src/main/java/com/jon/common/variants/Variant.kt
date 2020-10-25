@@ -15,6 +15,7 @@ object Variant {
     }
 
     fun getCotFactory(prefs: SharedPreferences) = injector.getCotFactory(prefs)
+    fun getSettingsFragment() = injector.getSettingsFragment()
     fun getBuildDate() = injector.buildDate
     fun getAppId() = injector.appId
     fun getAppName() = injector.appName

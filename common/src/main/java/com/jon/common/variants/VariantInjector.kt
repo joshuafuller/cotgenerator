@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import androidx.navigation.NavDirections
 import com.jon.common.presets.OutputPreset
 import com.jon.common.service.CotFactory
+import com.jon.common.ui.main.SettingsFragment
 import java.util.*
 
 interface VariantInjector {
@@ -24,6 +25,7 @@ interface VariantInjector {
     val mainToListDirections: NavDirections
     val mainToAboutDirections: NavDirections
 
+    fun getSettingsFragment(): SettingsFragment
     fun getCotFactory(prefs: SharedPreferences): CotFactory
     fun listToEditDirections(preset: OutputPreset?): NavDirections
 }

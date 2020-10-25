@@ -4,8 +4,10 @@ import android.content.SharedPreferences
 import androidx.navigation.NavDirections
 import com.jon.common.presets.OutputPreset
 import com.jon.common.service.CotFactory
+import com.jon.common.ui.main.SettingsFragment
 import com.jon.common.variants.InjectorUtils.getBlankCotFactory
 import com.jon.common.variants.InjectorUtils.getBlankNavDirections
+import com.jon.common.variants.InjectorUtils.getBlankSettingsFragment
 import java.util.*
 
 internal class DefaultInjector : VariantInjector {
@@ -25,6 +27,7 @@ internal class DefaultInjector : VariantInjector {
     override val mainToListDirections: NavDirections = getBlankNavDirections()
     override val mainToAboutDirections: NavDirections = getBlankNavDirections()
 
+    override fun getSettingsFragment(): SettingsFragment = getBlankSettingsFragment()
     override fun getCotFactory(prefs: SharedPreferences): CotFactory = getBlankCotFactory(prefs)
     override fun listToEditDirections(preset: OutputPreset?): NavDirections = getBlankNavDirections()
 }

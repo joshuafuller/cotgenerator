@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.navigation.NavDirections
 import com.jon.common.cot.CursorOnTarget
 import com.jon.common.service.CotFactory
+import com.jon.common.ui.main.SettingsFragment
 
 object InjectorUtils {
     fun getBlankNavDirections(): NavDirections {
@@ -21,5 +22,9 @@ object InjectorUtils {
             override fun update(): MutableList<CursorOnTarget> { return mutableListOf() }
             override fun clear() { }
         }
+    }
+
+    fun getBlankSettingsFragment(): SettingsFragment {
+        return object : SettingsFragment() { }
     }
 }

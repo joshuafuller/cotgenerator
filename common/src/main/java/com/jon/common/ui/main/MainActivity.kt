@@ -1,36 +1,37 @@
 package com.jon.common.ui.main
 
 import android.Manifest
+import android.content.ComponentName
 import android.content.Intent
+import android.content.ServiceConnection
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.net.Uri
 import android.os.Bundle
+import android.os.IBinder
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Button
-import androidx.annotation.ColorRes
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.jon.common.CotApplication
 import com.jon.common.R
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getIntFromPair
-import com.jon.common.prefs.getStringFromPair
-import com.jon.common.presets.OutputPreset
+import com.jon.common.repositories.StatusRepository
+import com.jon.common.service.CotService
 import com.jon.common.service.ServiceState
-import com.jon.common.ui.ServiceBoundActivity
+import com.jon.common.ui.ServiceCommunicator
+import com.jon.common.ui.StateViewModel
 import com.jon.common.utils.GenerateInt
 import com.jon.common.utils.Notify
-import com.jon.common.utils.Protocol
 import com.jon.common.variants.Variant
 import com.jon.common.versioncheck.GithubRelease
 import com.jon.common.versioncheck.UpdateChecker
@@ -41,31 +42,21 @@ import pub.devrel.easypermissions.EasyPermissions
 import timber.log.Timber
 import java.io.IOException
 
-class MainActivity : ServiceBoundActivity(),
+class MainActivity : AppCompatActivity(),
         EasyPermissions.PermissionCallbacks,
-        OnSharedPreferenceChangeListener {
+        OnSharedPreferenceChangeListener,
+        ServiceConnection,
+        ServiceCommunicator {
+
+    private val statusRepository = StatusRepository.getInstance()
+    private var service: CotService? = null
+    private val viewModel: StateViewModel by viewModels()
 
     private val prefs: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
     private val updateChecker = UpdateChecker()
     private val compositeDisposable = CompositeDisposable()
 
     private val navController: NavController by lazy { findNavController(Variant.getNavHostFragmentId()) }
-
-    private val startStopButton: Button by lazy { findViewById(Variant.getStartStopButtonId()) }
-
-    private val startServiceOnClickListener = View.OnClickListener {
-        if (presetIsSelected()) {
-            service?.start()
-            showStopButton()
-        } else {
-            Notify.red(getRootView(), "Select an output destination first!")
-        }
-    }
-
-    private val stopServiceOnClickListener = View.OnClickListener {
-        service?.shutdown()
-        showStartButton()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,7 +75,6 @@ class MainActivity : ServiceBoundActivity(),
     private fun buildActivity() {
         setContentView(Variant.getMainActivityLayoutId())
         initialiseToolbar()
-        initialiseStartStopButton()
         compositeDisposable.add(
                 updateChecker.fetchReleases()
                         .subscribeOn(Schedulers.io())
@@ -113,43 +103,23 @@ class MainActivity : ServiceBoundActivity(),
         }
     }
 
-    private fun initialiseStartStopButton() {
-        Notify.setAnchor(startStopButton)
-        val isRunning = if (service == null) false else viewModel.currentState == ServiceState.RUNNING
-        if (isRunning) {
-            showStopButton()
-        } else {
-            showStartButton()
-        }
-    }
-
-    private fun showStopButton() {
-        setButtonState(R.string.stop, R.color.stop, R.drawable.stop, stopServiceOnClickListener)
-    }
-
-    private fun showStartButton() {
-        setButtonState(R.string.start, R.color.start, R.drawable.start, startServiceOnClickListener)
-    }
-
-    private fun setButtonState(
-            @StringRes textId: Int,
-            @ColorRes colourId: Int,
-            @DrawableRes iconId: Int,
-            onClickListener: View.OnClickListener
-    ) {
-        startStopButton.text = getString(textId)
-        startStopButton.setBackgroundColor(ContextCompat.getColor(this, colourId))
-        startStopButton.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(this, iconId), null, null, null)
-        startStopButton.setOnClickListener(onClickListener)
-    }
-
     override fun onResume() {
         super.onResume()
+        CotApplication.activityIsVisible = true
         prefs.registerOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        CotApplication.activityIsVisible = false
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        service?.let {
+            service = null
+            unbindService(this)
+        }
         prefs.unregisterOnSharedPreferenceChangeListener(this)
         compositeDisposable.clear()
     }
@@ -161,17 +131,14 @@ class MainActivity : ServiceBoundActivity(),
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+            R.id.location ->
+                navController.navigate(Variant.getMainToLocationDirections())
+            R.id.chat ->
+                navController.navigate(Variant.getMainToChatDirections())
             R.id.about ->
                 navController.navigate(Variant.getMainToAboutDirections())
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun presetIsSelected(): Boolean {
-        val presetPref = Protocol.fromPrefs(prefs).presetPref
-        return !prefs.getString(CommonPrefs.DEST_ADDRESS, "").isNullOrEmpty() &&
-                !prefs.getString(CommonPrefs.DEST_PORT, "").isNullOrEmpty() &&
-                prefs.getStringFromPair(presetPref).split(OutputPreset.SEPARATOR).toTypedArray().isNotEmpty()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -195,6 +162,57 @@ class MainActivity : ServiceBoundActivity(),
         if (CommonPrefs.TRANSMISSION_PERIOD.key == key) {
             service?.updateGpsPeriod(prefs.getIntFromPair(CommonPrefs.TRANSMISSION_PERIOD))
         }
+    }
+
+    override fun onServiceConnected(name: ComponentName, binder: IBinder) {
+        service = (binder as CotService.ServiceBinder).service
+        service?.initialiseFusedLocationClient()
+    }
+
+    override fun onServiceDisconnected(name: ComponentName) {
+        service = null
+    }
+
+    override fun startService() {
+        service?.start()
+    }
+
+    override fun stopService() {
+        service?.shutdown()
+    }
+
+    override fun isServiceNull(): Boolean {
+        return service == null
+    }
+
+    override fun isServiceRunning(): Boolean {
+        return viewModel.currentState == ServiceState.RUNNING
+    }
+
+    private fun getRootView(): View {
+        return findViewById(android.R.id.content)
+    }
+
+    private fun observeServiceStatus() {
+        statusRepository.getStatus().observe(this) {
+            viewModel.currentState = it
+            invalidateOptionsMenu()
+            when (it) {
+                ServiceState.RUNNING -> Notify.green(getRootView(), "Service is running")
+                ServiceState.STOPPED -> Notify.blue(getRootView(), "Service is not running")
+                ServiceState.ERROR -> Notify.red(getRootView(), "Error: ${ServiceState.errorMessage}")
+                else -> throw IllegalArgumentException("Unknown service state '$it'")
+            }
+        }
+    }
+
+    private fun startCotService() {
+        /* Start the service and bind to it */
+        val intent = Intent(this, CotService::class.java)
+        startService(intent)
+        bindService(intent, this, BIND_AUTO_CREATE)
+
+        observeServiceStatus()
     }
 
     private fun chastiseUserAndQuit() {

@@ -4,10 +4,10 @@ import android.content.SharedPreferences
 import androidx.preference.Preference
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getBooleanFromPair
-import com.jon.common.ui.main.MainFragment
+import com.jon.common.ui.main.SettingsFragment
 import com.jon.common.utils.InputValidator
 
-class GeneratorFragment : MainFragment() {
+class GeneratorSettingsFragment : SettingsFragment() {
 
     override fun getPhoneInputKeys() = super.getPhoneInputKeys().apply {
         add(GeneratorPrefs.ICON_COUNT.key)

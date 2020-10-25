@@ -16,7 +16,7 @@ object Notify {
 
     private var anchor: View? = null
 
-    fun setAnchor(view: View) {
+    fun setAnchor(view: View?) {
         this.anchor = view
     }
 
@@ -34,7 +34,7 @@ object Notify {
         text.setTextColor(textColour)
         text.maxLines = 20 // don't crop off any longer messages
 
-        anchor?.let { snackbar.anchorView = it }
+        snackbar.anchorView = anchor
 
         /* Add any onclick actions */
         if (action != null && actionMsg != null) {
