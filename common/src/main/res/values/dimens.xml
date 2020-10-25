@@ -2,8 +2,11 @@
 <resources>
     <dimen name="smallPadding">4dp</dimen>
     <dimen name="padding">16dp</dimen>
-    <dimen name="locationCardviewMargin">16dp</dimen>
+    <dimen name="cardviewMargin">16dp</dimen>
+    <dimen name="cardviewPadding">8dp</dimen>
     <dimen name="startStopButtonPadding">8dp</dimen>
     <dimen name="toggleButtonPadding">8dp</dimen>
     <dimen name="addNewPresetTitleSize">14sp</dimen>
+    <dimen name="locationCoordsFontSize">15sp</dimen>
+    <dimen name="locationTitleFontSize">16sp</dimen>
 </resources>

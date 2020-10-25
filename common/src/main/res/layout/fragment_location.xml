@@ -1,0 +1,181 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/layout_1_coords"
+        style="@style/CardViewStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:targetApi="lollipop">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="start"
+                android:paddingStart="@dimen/cardviewMargin"
+                android:paddingEnd="@dimen/cardviewMargin"
+                android:text="Coordinates"
+                android:textSize="@dimen/locationTitleFontSize"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/latitude_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="3"
+                    android:gravity="center_horizontal"
+                    android:paddingStart="@dimen/cardviewMargin"
+                    android:paddingEnd="@dimen/cardviewMargin"
+                    android:text="Latitude:" />
+
+                <TextView
+                    android:id="@+id/coords_lat_degrees"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="5"
+                    android:gravity="center_horizontal"
+                    android:paddingStart="@dimen/cardviewMargin"
+                    android:paddingEnd="@dimen/cardviewMargin"
+                    android:textSize="@dimen/locationCoordsFontSize"
+                    android:typeface="monospace"
+                    tools:text="51°42'19.808'" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/longitude_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="3"
+                    android:gravity="center_horizontal"
+                    android:paddingStart="@dimen/cardviewMargin"
+                    android:paddingEnd="@dimen/cardviewMargin"
+                    android:text="Longitude:" />
+
+                <TextView
+                    android:id="@+id/coords_lon_degrees"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="5"
+                    android:gravity="center_horizontal"
+                    android:paddingStart="@dimen/cardviewMargin"
+                    android:paddingEnd="@dimen/cardviewMargin"
+                    android:textSize="@dimen/locationCoordsFontSize"
+                    android:typeface="monospace"
+                    tools:text=" 0°59'24.719'" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/coords_mgrs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="5"
+                android:gravity="center_horizontal"
+                android:paddingStart="@dimen/cardviewMargin"
+                android:paddingEnd="@dimen/cardviewMargin"
+                android:textSize="@dimen/locationCoordsFontSize"
+                android:typeface="monospace"
+                android:visibility="gone"
+                tools:text="31U CR 56670 40547" />
+
+            <Button
+                android:id="@+id/coord_format_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                tools:text="DMS" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/layout_2_compass"
+        style="@style/CardViewStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/layout_1_coords"
+        tools:targetApi="lollipop">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="start"
+                android:paddingStart="@dimen/cardviewMargin"
+                android:paddingEnd="@dimen/cardviewMargin"
+                android:text="Compass (MN)"
+                android:textSize="@dimen/locationTitleFontSize"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/compass_degrees"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:paddingStart="@dimen/cardviewMargin"
+                    android:paddingEnd="@dimen/cardviewMargin"
+                    android:textSize="@dimen/locationCoordsFontSize"
+                    android:typeface="monospace"
+                    tools:text="302.5" />
+
+                <TextView
+                    android:id="@+id/compass_direction"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:gravity="start"
+                    android:paddingStart="@dimen/cardviewMargin"
+                    android:paddingEnd="@dimen/cardviewMargin"
+                    android:textSize="@dimen/locationCoordsFontSize"
+                    android:typeface="monospace"
+                    tools:text="WNW" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -22,6 +22,7 @@ interface VariantInjector {
     val startStopButtonId: Int
 
     val mainToListDirections: NavDirections
+    val mainToLocationDirections: NavDirections
     val mainToAboutDirections: NavDirections
 
     fun getSettingsFragment(): SettingsFragment

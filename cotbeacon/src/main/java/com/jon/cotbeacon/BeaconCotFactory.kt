@@ -62,7 +62,8 @@ internal class BeaconCotFactory(prefs: SharedPreferences) : CotFactory(prefs) {
         cot.speed = gpsRepository.speed()
         cot.ce = gpsRepository.circularError90()
         cot.le = gpsRepository.linearError90()
-        cot.altsrc = gpsRepository.gpsSource()
-        cot.geosrc = gpsRepository.gpsSource()
+        val gpsSrc = if (gpsRepository.hasGpsFix()) "GPS" else "NO-GPS-FIX"
+        cot.altsrc = gpsSrc
+        cot.geosrc = gpsSrc
     }
 }

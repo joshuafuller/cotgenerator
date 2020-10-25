@@ -4,4 +4,14 @@
     </style>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.DayNight" />
+
+    <style name="CardViewStyle" parent="CardView">
+        <item name="android:layout_margin">@dimen/cardviewMargin</item>
+        <item name="android:minHeight">?android:attr/listPreferredItemHeight</item>
+        <item name="android:padding">@dimen/cardviewPadding</item>
+        <item name="cardCornerRadius">6dp</item>
+        <item name="cardElevation">6dp</item>
+        <item name="cardUseCompatPadding">true</item>
+        <item name="contentPadding">@dimen/cardviewMargin</item>
+    </style>
 </resources>

@@ -4,6 +4,13 @@
     tools:context=".CotActivity">
 
     <item
+        android:id="@+id/location"
+        android:icon="@drawable/location"
+        android:orderInCategory="1"
+        android:title="@string/menu_location"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/about"
         android:icon="@drawable/info"
         android:orderInCategory="1"

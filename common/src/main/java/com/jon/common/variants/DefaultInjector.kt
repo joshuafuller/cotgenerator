@@ -24,6 +24,7 @@ internal class DefaultInjector : VariantInjector {
     override val navHostFragmentId: Int = 0
     override val startStopButtonId: Int = 0
     override val mainToListDirections: NavDirections = getBlankNavDirections()
+    override val mainToLocationDirections: NavDirections = getBlankNavDirections()
     override val mainToAboutDirections: NavDirections = getBlankNavDirections()
 
     override fun getSettingsFragment(): SettingsFragment = getBlankSettingsFragment()

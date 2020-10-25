@@ -5,6 +5,7 @@
     <string name="stop">STOP SERVICE</string>
     <string name="start">START SERVICE</string>
 
+    <string name="menu_location">My Location</string>
     <string name="menu_about">About</string>
     <string name="menu_save">Save</string>
     <string name="menu_delete_all">Delete All</string>
@@ -47,6 +48,8 @@
     <string name="no_presets_found">No custom presets found!</string>
     <string name="fab_create_new_preset">CREATE NEW</string>
     <string name="fab_import_new_preset">IMPORT</string>
+
+    <string name="location_format_button_placeholder">Format = %1$s</string>
 
     <string name="unknown">UNKNOWN</string>
     <string name="blank" />

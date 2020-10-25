@@ -10,6 +10,8 @@ import com.jon.common.utils.ResourceUtils
  * from the local data store. */
 data class PrefPair<T>(val key: String, val default: T) {
     companion object {
+        fun string(key: String, value: String) = PrefPair(key, value)
+
         fun string(@StringRes keyId: Int, @StringRes valueId: Int) = PrefPair(
                 ResourceUtils.getString(keyId), ResourceUtils.getString(valueId)
         )

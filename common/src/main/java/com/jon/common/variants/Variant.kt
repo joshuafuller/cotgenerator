@@ -30,6 +30,7 @@ object Variant {
     @IdRes fun getStartStopButtonId() = injector.startStopButtonId
 
     fun getMainToListDirections() = injector.mainToListDirections
+    fun getMainToLocationDirections() = injector.mainToLocationDirections
     fun getMainToAboutDirections() = injector.mainToAboutDirections
     fun getListToEditDirections(preset: OutputPreset?) = injector.listToEditDirections(preset)
 }

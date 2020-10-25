@@ -1,6 +1,7 @@
 package com.jon.common.prefs
 
 import com.jon.common.R
+import com.jon.common.ui.location.CoordinateFormat
 import com.jon.common.utils.ResourceUtils
 
 object CommonPrefs {
@@ -36,4 +37,7 @@ object CommonPrefs {
 
     /* Update Checking. This doesn't reference a resource string because it's not used in any XML files */
     val IGNORED_UPDATE_VERSIONS = "ignored_update_versions"
+
+    /* Coordinate display format in LocationFragment */
+    val LOCATION_COORDINATE_FORMAT = PrefPair.string("location_coordinate_display", CoordinateFormat.DD.name)
 }

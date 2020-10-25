@@ -25,6 +25,7 @@ class GeneratorInjector : VariantInjector {
     override val navHostFragmentId = R.id.nav_host_fragment
     override val startStopButtonId = R.id.start_stop_button
     override val mainToListDirections = MainFragmentDirections.actionMainToListPresets()
+    override val mainToLocationDirections = MainFragmentDirections.actionMainToLocation()
     override val mainToAboutDirections = MainFragmentDirections.actionMainToAbout()
 
     override fun getSettingsFragment(): SettingsFragment = GeneratorSettingsFragment()

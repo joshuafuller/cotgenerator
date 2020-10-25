@@ -19,6 +19,7 @@ ext.versions = [
         colorpicker             : '1.1.0',
         commons_io              : '2.8.0',
         constraintlayout        : '2.0.2',
+        coordinate_conversion   : '2.0.1',
         easypermissions         : '3.0.0',
         eventlivedata           : '1.0',
         lifecycle               : '2.2.0',
