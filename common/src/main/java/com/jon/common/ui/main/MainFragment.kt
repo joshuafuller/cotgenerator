@@ -75,6 +75,7 @@ class MainFragment : Fragment() {
         setButtonState(
                 textId = R.string.stop,
                 backgroundColourId = R.color.stop_button,
+                foregroundColourId = R.color.white,
                 iconId = R.drawable.stop,
                 onClickListener = stopServiceOnClickListener
         )
@@ -84,6 +85,7 @@ class MainFragment : Fragment() {
         setButtonState(
                 textId = R.string.start,
                 backgroundColourId = Variant.getAccentColourId(),
+                foregroundColourId = R.color.black,
                 iconId = R.drawable.start,
                 onClickListener = startServiceOnClickListener
         )
@@ -92,17 +94,18 @@ class MainFragment : Fragment() {
     private fun setButtonState(
             @StringRes textId: Int,
             @ColorRes backgroundColourId: Int,
+            @ColorRes foregroundColourId: Int,
             @DrawableRes iconId: Int,
             onClickListener: View.OnClickListener
     ) {
         val context = requireContext()
         startStopButton.text = getString(textId)
         startStopButton.setBackgroundColor(ContextCompat.getColor(context, backgroundColourId))
-        startStopButton.setTextColor(ContextCompat.getColor(context, R.color.black))
+        startStopButton.setTextColor(ContextCompat.getColor(context, foregroundColourId))
         startStopButton.setOnClickListener(onClickListener)
 
         val tintedIcon = DrawableCompat.wrap(ContextCompat.getDrawable(context, iconId)!!)
-        DrawableCompat.setTint(tintedIcon, ContextCompat.getColor(context, R.color.black))
+        DrawableCompat.setTint(tintedIcon, ContextCompat.getColor(context, foregroundColourId))
         startStopButton.setCompoundDrawablesWithIntrinsicBounds(tintedIcon, null, null, null)
     }
 
