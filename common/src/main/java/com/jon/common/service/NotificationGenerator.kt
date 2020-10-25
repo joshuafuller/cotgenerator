@@ -40,7 +40,7 @@ internal class NotificationGenerator(
                 .setSmallIcon(R.drawable.target)
                 .setContentTitle(Variant.getAppName())
                 .setContentText(getPresetInfoString(prefs))
-                .addAction(R.drawable.stop, context.getString(R.string.stop), stopPendingIntent)
+                .addAction(R.drawable.stop, context.getString(R.string.notification_stop), stopPendingIntent)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             foregroundNotificationBuilder.setCategory(Notification.CATEGORY_SERVICE)

@@ -73,7 +73,7 @@ class MainFragment : Fragment() {
 
     private fun showStopButton() {
         setButtonState(
-                textId = R.string.stop,
+                textId = R.string.button_stop,
                 backgroundColourId = R.color.stop_button,
                 foregroundColourId = R.color.white,
                 iconId = R.drawable.stop,
@@ -83,7 +83,7 @@ class MainFragment : Fragment() {
 
     private fun showStartButton() {
         setButtonState(
-                textId = R.string.start,
+                textId = R.string.button_start,
                 backgroundColourId = Variant.getAccentColourId(),
                 foregroundColourId = R.color.black,
                 iconId = R.drawable.start,

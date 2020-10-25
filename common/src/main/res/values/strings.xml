@@ -2,8 +2,9 @@
     <string name="toolbar_header_edit_preset">Edit Preset</string>
     <string name="toolbar_header_list_presets">Custom Presets</string>
 
-    <string name="stop">STOP SERVICE</string>
-    <string name="start">START SERVICE</string>
+    <string name="notification_stop">STOP</string>
+    <string name="button_stop">STOP SERVICE</string>
+    <string name="button_start">START SERVICE</string>
 
     <string name="menu_location">My Location</string>
     <string name="menu_about">About</string>
