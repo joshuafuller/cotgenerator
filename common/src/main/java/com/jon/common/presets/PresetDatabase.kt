@@ -6,7 +6,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.jon.common.CotApplication
 
-@Database(entities = [OutputPreset::class], version = 3)
+@Database(entities = [OutputPreset::class], version = 4)
 @TypeConverters(ProtocolConverter::class)
 abstract class PresetDatabase : RoomDatabase() {
     abstract fun presetDao(): PresetDao
@@ -17,6 +17,7 @@ abstract class PresetDatabase : RoomDatabase() {
         fun build(): PresetDatabase {
             return Room.databaseBuilder(CotApplication.context, PresetDatabase::class.java, FILENAME)
                     .addMigrations(*DatabaseMigrations.allMigrations)
+                    .fallbackToDestructiveMigration()
                     .build()
         }
     }

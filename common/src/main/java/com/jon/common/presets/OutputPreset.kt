@@ -3,7 +3,7 @@ package com.jon.common.presets
 import androidx.room.*
 import com.jon.common.utils.Protocol
 
-@Entity(tableName = "Presets", indices = [Index(value = ["Address", "Port", "Protocol"], unique = true)])
+@Entity(tableName = "Presets", indices = [Index(value = ["id"], unique = true)])
 class OutputPreset {
     /* Basic output fields */
     @PrimaryKey(autoGenerate = true)

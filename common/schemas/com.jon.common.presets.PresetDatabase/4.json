@@ -1,0 +1,91 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 4,
+    "identityHash": "c521c0cd0dad6e28d9958b54c5bc0c79",
+    "entities": [
+      {
+        "tableName": "Presets",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `Protocol` TEXT NOT NULL, `Alias` TEXT NOT NULL, `Address` TEXT NOT NULL, `Port` INTEGER NOT NULL, `ClientCert` BLOB, `ClientCertPassword` TEXT, `TrustStore` BLOB, `TrustStorePassword` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "protocol",
+            "columnName": "Protocol",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "alias",
+            "columnName": "Alias",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "address",
+            "columnName": "Address",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "port",
+            "columnName": "Port",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "clientCert",
+            "columnName": "ClientCert",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "clientCertPassword",
+            "columnName": "ClientCertPassword",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "trustStore",
+            "columnName": "TrustStore",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "trustStorePassword",
+            "columnName": "TrustStorePassword",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_Presets_id",
+            "unique": true,
+            "columnNames": [
+              "id"
+            ],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Presets_id` ON `${TABLE_NAME}` (`id`)"
+          }
+        ],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c521c0cd0dad6e28d9958b54c5bc0c79')"
+    ]
+  }
+}
