@@ -196,12 +196,8 @@ class MainActivity : AppCompatActivity(),
     private fun observeServiceStatus() {
         statusRepository.getStatus().observe(this) {
             viewModel.currentState = it
-            invalidateOptionsMenu()
-            when (it) {
-                ServiceState.RUNNING -> Notify.green(getRootView(), "Service is running")
-                ServiceState.STOPPED -> Notify.blue(getRootView(), "Service is not running")
-                ServiceState.ERROR -> Notify.red(getRootView(), "Error: ${ServiceState.errorMessage}")
-                else -> throw IllegalArgumentException("Unknown service state '$it'")
+            if (it == ServiceState.ERROR) {
+                Notify.red(getRootView(), "Error: ${ServiceState.errorMessage}")
             }
         }
     }
