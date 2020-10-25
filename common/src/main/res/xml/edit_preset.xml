@@ -35,7 +35,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:key="sslOptionsCategory"
+        android:key="ssl_options_category"
         app:iconSpaceReserved="false"
         app:isPreferenceVisible="false"
         app:title="@string/pref_category_new_preset_ssl">
