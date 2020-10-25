@@ -11,9 +11,9 @@ class GpsRepository private constructor() {
     fun setLocation(location: Location?) {
         synchronized(lock) {
             if (location != null) {
-                Timber.i("Updating GPS to %f %f", location.latitude, location.longitude)
+                Timber.d("Updating GPS to %f %f", location.latitude, location.longitude)
             } else {
-                Timber.i("Null location")
+                Timber.d("Null location")
             }
             lastLocation = location
         }

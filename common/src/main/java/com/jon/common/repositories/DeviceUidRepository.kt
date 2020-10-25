@@ -18,16 +18,16 @@ class DeviceUidRepository {
             if (file.exists()) {
                 Timber.i("Reading UID from file...")
                 generatedUid = readPreviousUid(context)
-                Timber.i("Successfully read UID %s", uid)
+                Timber.i("Successfully read UID %s", generatedUid)
             } else {
                 Timber.i("Writing new UID to file...")
                 generatedUid = createAndWriteNewUid(context)
-                Timber.i("Successfully written UID %s", uid)
+                Timber.i("Successfully written UID %s", generatedUid)
             }
         } catch (e: IOException) {
             generatedUid = UUID.randomUUID().toString()
             Timber.e(e)
-            Timber.e("Failed to read/write UID from/to file. Using a temporary one instead: %s", uid)
+            Timber.e("Failed to read/write UID from/to file. Using a temporary one instead: %s", generatedUid)
         }
         return generatedUid
     }

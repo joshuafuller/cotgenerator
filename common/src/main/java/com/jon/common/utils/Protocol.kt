@@ -1,5 +1,6 @@
 package com.jon.common.utils
 
+import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.PrefPair
@@ -32,8 +33,9 @@ enum class Protocol(
             return fromString(protocolString)
         }
 
+        @SuppressLint("DefaultLocale")
         fun fromString(protocolString: String): Protocol {
-            return values().firstOrNull { it.toString() == protocolString }
+            return values().firstOrNull { it.toString().toLowerCase() == protocolString.toLowerCase() }
                     ?: throw IllegalArgumentException("Unknown protocol: $protocolString")
         }
     }

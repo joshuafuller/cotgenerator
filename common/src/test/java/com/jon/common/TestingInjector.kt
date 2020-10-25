@@ -3,18 +3,12 @@ package com.jon.common
 import android.content.SharedPreferences
 import com.jon.common.cot.CursorOnTarget
 import com.jon.common.service.CotFactory
-import com.jon.common.service.CotService
-import com.jon.common.ui.listpresets.ListPresetsActivity
-import com.jon.common.ui.main.MainActivity
-import com.jon.common.ui.main.MainFragment
 import com.jon.common.variants.VariantInjector
 import java.util.*
 
 /* App-specific repo used for unit testing, since we don't have an Application class to set this value */
 class TestingInjector : VariantInjector {
-    override val mainFragment: MainFragment = object : MainFragment() {}
     override val buildDate: Date = Date()
-    override val buildVersionCode: Int = 0
     override val appId: String = ""
     override val appName: String = ""
     override val permissionRationale: String = ""
