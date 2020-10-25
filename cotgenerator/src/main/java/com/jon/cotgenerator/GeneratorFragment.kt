@@ -50,6 +50,7 @@ class GeneratorFragment : MainFragment() {
     private fun toggleCallsignSettingVisibility() {
         val randomCallsignEnabled = prefs.getBooleanFromPair(GeneratorPrefs.RANDOM_CALLSIGNS)
         setPrefVisibleIfCondition(CommonPrefs.CALLSIGN, !randomCallsignEnabled)
+        setPrefVisibleIfCondition(GeneratorPrefs.INDEXED_CALLSIGNS, !randomCallsignEnabled)
     }
 
     private fun toggleColourPickerVisibility() {

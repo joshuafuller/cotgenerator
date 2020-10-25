@@ -20,6 +20,14 @@
             app:useSimpleSummaryProvider="true" />
 
         <SwitchPreference
+            android:defaultValue="@bool/def_indexed_callsigns"
+            android:key="@string/key_indexed_callsigns"
+            app:iconSpaceReserved="false"
+            app:title="@string/desc_indexed_callsigns"
+            android:summary="@string/summary_indexed_callsigns"
+            app:useSimpleSummaryProvider="true" />
+
+        <SwitchPreference
             android:defaultValue="@bool/def_random_colour"
             android:key="@string/key_random_colour"
             app:iconSpaceReserved="false"

@@ -1,5 +1,7 @@
 <resources>
     <string name="desc_random_callsigns">Use Random Icon Callsigns?</string>
+    <string name="desc_indexed_callsigns">Use Indexed Callsigns?</string>
+    <string name="summary_indexed_callsigns">When enabled, icons will be given callsigns like "GENERATED-1". When disabled, all icons will have the same callsign.</string>
     <string name="desc_random_colour">Use Random Team Colours?</string>
     <string name="desc_random_role">Use Random Team Roles?</string>
     <string name="desc_icon_count">Icon Count</string>

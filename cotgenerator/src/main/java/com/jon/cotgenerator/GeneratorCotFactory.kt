@@ -28,6 +28,7 @@ internal class GeneratorCotFactory(prefs: SharedPreferences) : CotFactory(prefs)
     private val random = Random(System.currentTimeMillis())
 
     private val useRandomCallsigns = prefs.getBooleanFromPair(GeneratorPrefs.RANDOM_CALLSIGNS)
+    private val useIndexedCallsigns = prefs.getBooleanFromPair(GeneratorPrefs.INDEXED_CALLSIGNS)
     private val useRandomTeams = prefs.getBooleanFromPair(GeneratorPrefs.RANDOM_COLOUR)
     private val useRandomRoles = prefs.getBooleanFromPair(GeneratorPrefs.RANDOM_ROLE)
     private val iconCount = prefs.parseIntFromPair(GeneratorPrefs.ICON_COUNT)
@@ -126,7 +127,8 @@ internal class GeneratorCotFactory(prefs: SharedPreferences) : CotFactory(prefs)
             /* Use custom callsign as entered in the settings */
             val baseCallsign = prefs.getStringFromPair(CommonPrefs.CALLSIGN)
             for (i in 0 until iconCount) {
-                callsigns.add(String.format(Locale.ENGLISH, "%s-%d", baseCallsign, i))
+                val callsign = if (useIndexedCallsigns) "${baseCallsign}-${i}" else baseCallsign
+                callsigns.add(callsign)
             }
         }
         return callsigns

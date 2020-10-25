@@ -1,6 +1,7 @@
 <resources>
     <!-- CoT settings -->
     <bool name="def_random_callsigns">true</bool>
+    <bool name="def_indexed_callsigns">true</bool>
     <bool name="def_random_role">true</bool>
     <bool name="def_random_colour">true</bool>
     <string name="def_icon_count">10</string>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="key_random_callsigns">random_callsigns</string>
+    <string name="key_indexed_callsigns">indexed_callsigns</string>
     <string name="key_random_colour">random_colour</string>
     <string name="key_random_role">random_role</string>
     <string name="key_follow_my_gps_location">follow_my_gps_location</string>
