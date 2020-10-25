@@ -2,6 +2,8 @@
 <resources>
     <dimen name="smallPadding">4dp</dimen>
     <dimen name="padding">16dp</dimen>
+    <dimen name="locationCardviewMargin">16dp</dimen>
+    <dimen name="startStopButtonPadding">8dp</dimen>
     <dimen name="toggleButtonPadding">8dp</dimen>
     <dimen name="addNewPresetTitleSize">14sp</dimen>
 </resources>

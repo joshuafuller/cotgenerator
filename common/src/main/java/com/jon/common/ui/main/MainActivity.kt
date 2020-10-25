@@ -8,6 +8,17 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.Button
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jon.common.R
@@ -16,7 +27,6 @@ import com.jon.common.prefs.getIntFromPair
 import com.jon.common.prefs.getStringFromPair
 import com.jon.common.presets.OutputPreset
 import com.jon.common.service.ServiceState
-import com.jon.common.ui.AboutDialogBuilder
 import com.jon.common.ui.ServiceBoundActivity
 import com.jon.common.utils.GenerateInt
 import com.jon.common.utils.Notify
@@ -28,17 +38,34 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import pub.devrel.easypermissions.EasyPermissions
-import pub.devrel.easypermissions.EasyPermissions.PermissionCallbacks
 import timber.log.Timber
 import java.io.IOException
 
-open class MainActivity : ServiceBoundActivity(),
-        PermissionCallbacks,
+class MainActivity : ServiceBoundActivity(),
+        EasyPermissions.PermissionCallbacks,
         OnSharedPreferenceChangeListener {
 
     private val prefs: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
     private val updateChecker = UpdateChecker()
     private val compositeDisposable = CompositeDisposable()
+
+    private val navController: NavController by lazy { findNavController(Variant.getNavHostFragmentId()) }
+
+    private val startStopButton: Button by lazy { findViewById(Variant.getStartStopButtonId()) }
+
+    private val startServiceOnClickListener = View.OnClickListener {
+        if (presetIsSelected()) {
+            service?.start()
+            showStopButton()
+        } else {
+            Notify.red(getRootView(), "Select an output destination first!")
+        }
+    }
+
+    private val stopServiceOnClickListener = View.OnClickListener {
+        service?.shutdown()
+        showStartButton()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,17 +82,9 @@ open class MainActivity : ServiceBoundActivity(),
     }
 
     private fun buildActivity() {
-        setContentView(R.layout.activity)
-        setSupportActionBar(findViewById(R.id.toolbar))
-        supportActionBar?.apply {
-            title = Variant.getAppName()
-            setDisplayHomeAsUpEnabled(false)
-            setDisplayHomeAsUpEnabled(false)
-        }
-        supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment, Variant.getMainFragment())
-                .commitNow()
-
+        setContentView(Variant.getMainActivityLayoutId())
+        initialiseToolbar()
+        initialiseStartStopButton()
         compositeDisposable.add(
                 updateChecker.fetchReleases()
                         .subscribeOn(Schedulers.io())
@@ -76,6 +95,52 @@ open class MainActivity : ServiceBoundActivity(),
                         )
         )
         startCotService()
+    }
+
+    private fun initialiseToolbar() {
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.apply {
+            title = Variant.getAppName()
+            setDisplayHomeAsUpEnabled(false)
+            setDisplayHomeAsUpEnabled(false)
+        }
+
+        val appBarConfiguration = AppBarConfiguration(navController.graph)
+        toolbar.setupWithNavController(navController, appBarConfiguration)
+        toolbar.setNavigationOnClickListener {
+            navController.navigateUp() || super.onSupportNavigateUp()
+        }
+    }
+
+    private fun initialiseStartStopButton() {
+        Notify.setAnchor(startStopButton)
+        val isRunning = if (service == null) false else viewModel.currentState == ServiceState.RUNNING
+        if (isRunning) {
+            showStopButton()
+        } else {
+            showStartButton()
+        }
+    }
+
+    private fun showStopButton() {
+        setButtonState(R.string.stop, R.color.stop, R.drawable.stop, stopServiceOnClickListener)
+    }
+
+    private fun showStartButton() {
+        setButtonState(R.string.start, R.color.start, R.drawable.start, startServiceOnClickListener)
+    }
+
+    private fun setButtonState(
+            @StringRes textId: Int,
+            @ColorRes colourId: Int,
+            @DrawableRes iconId: Int,
+            onClickListener: View.OnClickListener
+    ) {
+        startStopButton.text = getString(textId)
+        startStopButton.setBackgroundColor(ContextCompat.getColor(this, colourId))
+        startStopButton.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(this, iconId), null, null, null)
+        startStopButton.setOnClickListener(onClickListener)
     }
 
     override fun onResume() {
@@ -91,35 +156,13 @@ open class MainActivity : ServiceBoundActivity(),
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
-        val start = menu.findItem(R.id.start)
-        val stop = menu.findItem(R.id.stop)
-        if (service != null) {
-            start.isVisible = viewModel.currentState == ServiceState.STOPPED
-            stop.isVisible = viewModel.currentState == ServiceState.RUNNING
-        } else {
-            start.isVisible = true
-            stop.isVisible = false
-        }
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.start -> {
-                if (presetIsSelected()) {
-                    service?.start()
-                    invalidateOptionsMenu()
-                } else {
-                    Notify.red(getRootView(), "Select an output destination first!")
-                }
-            }
-            R.id.stop -> {
-                service?.shutdown()
-                invalidateOptionsMenu()
-            }
-            R.id.about -> {
-                AboutDialogBuilder(this).show()
-            }
+            R.id.about ->
+                navController.navigate(Variant.getMainToAboutDirections())
         }
         return super.onOptionsItemSelected(item)
     }

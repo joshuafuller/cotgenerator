@@ -1,10 +1,12 @@
 package com.jon.common.presets
 
+import android.os.Parcel
+import android.os.Parcelable
 import androidx.room.*
 import com.jon.common.utils.Protocol
 
 @Entity(tableName = "Presets", indices = [Index(value = ["id"], unique = true)])
-class OutputPreset {
+class OutputPreset() : Parcelable {
     /* Basic output fields */
     @PrimaryKey(autoGenerate = true)
     var id = 0
@@ -34,6 +36,18 @@ class OutputPreset {
     @ColumnInfo(name = "TrustStorePassword")
     var trustStorePassword: String? = null
 
+    @Ignore
+    constructor(parcel: Parcel) : this() {
+        id = parcel.readInt()
+        alias = parcel.readString() ?: ""
+        address = parcel.readString() ?: ""
+        port = parcel.readInt()
+        clientCert = parcel.createByteArray()
+        clientCertPassword = parcel.readString()
+        trustStore = parcel.createByteArray()
+        trustStorePassword = parcel.readString()
+    }
+
     @Ignore // Don't use this constructor for database initialisation
     constructor(protocol: Protocol, alias: String, address: String, port: Int)
             : this(protocol, alias, address, port, null, null, null, null)
@@ -46,7 +60,7 @@ class OutputPreset {
             clientCert: ByteArray? = null,
             clientCertPassword: String? = null,
             trustStore: ByteArray? = null,
-            trustStorePassword: String? = null) {
+            trustStorePassword: String? = null) : this() {
         this.protocol = protocol
         this.alias = alias
         this.address = address
@@ -57,19 +71,35 @@ class OutputPreset {
         this.trustStorePassword = trustStorePassword
     }
 
-    private constructor() { /* blank */
-    }
-
     override fun toString(): String {
         return protocol.toString() + SEPARATOR + alias + SEPARATOR + address + SEPARATOR + port
     }
 
-    companion object {
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeInt(id)
+        parcel.writeString(alias)
+        parcel.writeString(address)
+        parcel.writeInt(port)
+        parcel.writeByteArray(clientCert)
+        parcel.writeString(clientCertPassword)
+        parcel.writeByteArray(trustStore)
+        parcel.writeString(trustStorePassword)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<OutputPreset> {
+        override fun createFromParcel(parcel: Parcel): OutputPreset {
+            return OutputPreset(parcel)
+        }
+
+        override fun newArray(size: Int): Array<OutputPreset?> {
+            return arrayOfNulls(size)
+        }
+
         const val SEPARATOR = "¶" // pilcrow
-
-        fun blank() = OutputPreset()
-
-        fun getAliases(presets: List<OutputPreset>) = presets.map { it.alias }
 
         fun fromString(str: String?): OutputPreset? {
             if (str == null) return null

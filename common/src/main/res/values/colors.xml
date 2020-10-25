@@ -8,4 +8,7 @@
     <color name="colorPrimaryLight">#4A4949</color>
     <color name="colorPrimary">#323131</color>
     <color name="colorPrimaryDark">#121212</color>
+
+    <color name="start">#008500</color>
+    <color name="stop">#850000</color>
 </resources>

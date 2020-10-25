@@ -14,6 +14,12 @@ object Notify {
     private const val DEFAULT_TEXT = "OK"
     private val DEFAULT_ACTION = View.OnClickListener { /* do nothing */ }
 
+    private var anchor: View? = null
+
+    fun setAnchor(view: View) {
+        this.anchor = view
+    }
+
     private fun snackbar(
             root: View,
             message: String,
@@ -28,6 +34,8 @@ object Notify {
         text.setTextColor(textColour)
         text.maxLines = 20 // don't crop off any longer messages
 
+        anchor?.let { snackbar.anchorView = it }
+
         /* Add any onclick actions */
         if (action != null && actionMsg != null) {
             snackbar.setAction(actionMsg, action)
@@ -36,25 +44,55 @@ object Notify {
         snackbar.show()
     }
 
-    fun red(root: View, message: String, action: View.OnClickListener = DEFAULT_ACTION, actionMsg: String = DEFAULT_TEXT) {
+    fun red(
+            root: View,
+            message: String,
+            action: View.OnClickListener = DEFAULT_ACTION,
+            actionMsg: String = DEFAULT_TEXT
+    ) {
         Timber.e(message)
         snackbar(root, message, Color.RED, Color.BLACK, action, actionMsg)
     }
 
-    fun green(root: View, message: String, action: View.OnClickListener = DEFAULT_ACTION, actionMsg: String = DEFAULT_TEXT) {
+    fun green(
+            root: View,
+            message: String,
+            action: View.OnClickListener = DEFAULT_ACTION,
+            actionMsg: String = DEFAULT_TEXT
+    ) {
         Timber.i(message)
         snackbar(root, message, Color.GREEN, Color.BLACK, action, actionMsg)
     }
 
-    fun orange(root: View, message: String, action: View.OnClickListener = DEFAULT_ACTION, actionMsg: String = DEFAULT_TEXT) {
+    fun orange(
+            root: View,
+            message: String,
+            action: View.OnClickListener = DEFAULT_ACTION,
+            actionMsg: String = DEFAULT_TEXT
+    ) {
         Timber.w(message)
         val orange = Color.parseColor("#FFA600")
         snackbar(root, message, orange, Color.BLACK, action, actionMsg)
     }
 
-    fun blue(root: View, message: String, action: View.OnClickListener = DEFAULT_ACTION, actionMsg: String = DEFAULT_TEXT) {
+    fun blue(
+            root: View,
+            message: String,
+            action: View.OnClickListener = DEFAULT_ACTION,
+            actionMsg: String = DEFAULT_TEXT
+    ) {
         Timber.i(message)
         snackbar(root, message, Color.BLUE, Color.WHITE, action, actionMsg)
+    }
+
+    fun yellow(
+            root: View,
+            message: String,
+            action: View.OnClickListener = DEFAULT_ACTION,
+            actionMsg: String = DEFAULT_TEXT
+    ) {
+        Timber.i(message)
+        snackbar(root, message, Color.YELLOW, Color.BLACK, action, actionMsg)
     }
 
     fun toast(context: Context, message: String) {

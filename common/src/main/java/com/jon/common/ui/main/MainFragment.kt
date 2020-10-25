@@ -1,10 +1,13 @@
 package com.jon.common.ui.main
 
-import android.content.Intent
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Bundle
 import android.text.InputType
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import androidx.preference.*
 import androidx.preference.EditTextPreference.OnBindEditTextListener
 import com.jon.common.prefs.CommonPrefs
@@ -15,18 +18,15 @@ import com.jon.common.utils.InputValidator
 import com.jon.common.utils.Notify
 import com.jon.common.utils.Protocol
 import com.jon.common.variants.Variant
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
-import timber.log.Timber
 import java.util.*
+import kotlin.collections.ArrayList
 
 abstract class MainFragment : PreferenceFragmentCompat(),
         OnSharedPreferenceChangeListener,
         Preference.OnPreferenceChangeListener {
 
+    private val navController by lazy { findNavController() }
     protected val prefs: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(requireActivity()) }
-    private val compositeDisposable = CompositeDisposable()
     private val presetRepository = PresetRepository.getInstance()
 
     protected open fun getPhoneInputKeys() = mutableListOf<String>(
@@ -45,6 +45,11 @@ abstract class MainFragment : PreferenceFragmentCompat(),
             CommonPrefs.STALE_TIMER.key,
             CommonPrefs.TRANSMISSION_PERIOD.key
     )
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        setHasOptionsMenu(false)
+        return super.onCreateView(inflater, container, savedInstanceState)
+    }
 
     override fun onCreatePreferences(savedState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(Variant.getSettingsXmlId(), rootKey)
@@ -68,7 +73,7 @@ abstract class MainFragment : PreferenceFragmentCompat(),
         /* Launch a new activity when clicking "Edit Presets" */
         findPreference<Preference>(CommonPrefs.EDIT_PRESETS)?.let {
             it.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                startActivity(Intent(activity, Variant.getListActivityClass()))
+                navController.navigate(Variant.getMainToListDirections())
                 true
             }
         }
@@ -89,7 +94,6 @@ abstract class MainFragment : PreferenceFragmentCompat(),
         for ((key, value) in getSuffixes()) {
             setPreferenceSuffix(prefs, key, value)
         }
-        updatePreferences()
     }
 
     protected open fun updatePreferences() {
@@ -101,7 +105,6 @@ abstract class MainFragment : PreferenceFragmentCompat(),
 
     override fun onDestroy() {
         prefs.unregisterOnSharedPreferenceChangeListener(this)
-        compositeDisposable.dispose()
         super.onDestroy()
     }
 
@@ -185,24 +188,25 @@ abstract class MainFragment : PreferenceFragmentCompat(),
     }
 
     private fun updatePresetPreferences() {
-        compositeDisposable.add(presetRepository.getByProtocol(Protocol.SSL)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ updatePresetEntries(it, CommonPrefs.SSL_PRESETS) }) { notifyError(it) })
-        compositeDisposable.add(presetRepository.getByProtocol(Protocol.TCP)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ updatePresetEntries(it, CommonPrefs.TCP_PRESETS) }) { notifyError(it) })
-        compositeDisposable.add(presetRepository.getByProtocol(Protocol.UDP)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ updatePresetEntries(it, CommonPrefs.UDP_PRESETS) }) { notifyError(it) })
+        mapOf(
+                Protocol.SSL to CommonPrefs.SSL_PRESETS.key,
+                Protocol.TCP to CommonPrefs.TCP_PRESETS.key,
+                Protocol.UDP to CommonPrefs.UDP_PRESETS.key,
+        ).forEach { (protocol, key) ->
+            presetRepository.getCustomByProtocol(protocol).observe(viewLifecycleOwner) { customPresets ->
+                val allPresets = ArrayList<OutputPreset>().apply {
+                    addAll(presetRepository.defaultsByProtocol(protocol))
+                    addAll(customPresets)
+                }
+                updatePresetEntries(allPresets, key)
+            }
+        }
     }
 
-    private fun updatePresetEntries(presets: List<OutputPreset>, pref: PrefPair<String>) {
-        val entries = OutputPreset.getAliases(presets).toTypedArray()
+    private fun updatePresetEntries(presets: List<OutputPreset>, key: String) {
+        val entries = presets.map { it.alias }.toTypedArray()
         val entryValues = presets.map { it.toString() }.toTypedArray()
-        findPreference<ListPreference>(pref.key)?.let {
+        findPreference<ListPreference>(key)?.let {
             val previousValue = it.value
             it.entries = entries
             it.entryValues = entryValues
@@ -212,11 +216,6 @@ abstract class MainFragment : PreferenceFragmentCompat(),
                 it.setValueIndex(0)
             }
         }
-    }
-
-    private fun notifyError(throwable: Throwable) {
-        Notify.red(requireView(), "Error: " + throwable.message)
-        Timber.e(throwable)
     }
 
 }

@@ -7,6 +7,7 @@
         android:id="@+id/delete_all"
         android:orderInCategory="1"
         android:title="@string/menu_delete_all"
-        app:showAsAction="always" />
+        android:icon="@drawable/delete"
+        app:showAsAction="ifRoom" />
 
 </menu>

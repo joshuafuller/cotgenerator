@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Used to identify items under the SpeedDialView FAB on the List Presets screen, created dynamically using these IDs as references -->
+    <item name="new_preset_create" type="id" />
+    <item name="new_preset_import" type="id" />
+</resources>

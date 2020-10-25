@@ -1,13 +1,14 @@
 package com.jon.common.repositories
 
 import androidx.annotation.StringRes
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.jon.common.CotApplication
 import com.jon.common.R
 import com.jon.common.presets.OutputPreset
 import com.jon.common.presets.PresetDatabase
 import com.jon.common.utils.FileUtils
 import com.jon.common.utils.Protocol
-import io.reactivex.Observable
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
@@ -24,45 +25,12 @@ class PresetRepository private constructor() {
         executor.execute { database.presetDao().delete(preset) }
     }
 
-    fun updatePreset(original: OutputPreset, updated: OutputPreset) {
-        executor.execute {
-            database.presetDao().update(
-                    original.protocol.toString(),
-                    original.address,
-                    original.port,
-                    updated.protocol.toString(),
-                    updated.address,
-                    updated.port,
-                    updated.alias,
-                    updated.clientCert,
-                    updated.clientCertPassword,
-                    updated.trustStore,
-                    updated.trustStorePassword
-            )
-        }
-    }
-
     fun getPreset(protocol: Protocol, address: String, port: Int): OutputPreset? {
         return database.presetDao().getPreset(protocol.toString(), address, port)
     }
 
-    /* Returns a list of all presets; meaning custom presets and defaults. */
-    fun getByProtocol(protocol: Protocol): Observable<List<OutputPreset>> {
-        /* First get a list of known default presets, which aren't stored in the database */
-        val defaults = Observable.just(defaultsByProtocol(protocol))
-        /* Then query the database to grab any user-entered presets */
-        return getCustomByProtocol(protocol)
-                /* Merge the two observables together to return a single observable containing a list of OutputPresets */
-                .zipWith(defaults) { fetchedList: List<OutputPreset>, defaultList: List<OutputPreset> ->
-                    ArrayList<OutputPreset>().apply {
-                        addAll(defaultList)
-                        addAll(fetchedList)
-                    }
-                }
-    }
-
     /* Returns a list of only those presets entered by the user */
-    fun getCustomByProtocol(protocol: Protocol): Observable<List<OutputPreset>> {
+    fun getCustomByProtocol(protocol: Protocol): LiveData<List<OutputPreset>> {
         return database.presetDao().getByProtocol(protocol.toString())
     }
 

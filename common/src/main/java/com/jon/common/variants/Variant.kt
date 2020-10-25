@@ -2,7 +2,10 @@ package com.jon.common.variants
 
 import android.content.SharedPreferences
 import androidx.annotation.ColorRes
+import androidx.annotation.IdRes
+import androidx.annotation.LayoutRes
 import androidx.annotation.XmlRes
+import com.jon.common.presets.OutputPreset
 
 object Variant {
     private var injector: VariantInjector = DefaultInjector()
@@ -11,17 +14,22 @@ object Variant {
         injector = variantInjector
     }
 
-    fun getMainFragment() = injector.mainFragment
     fun getCotFactory(prefs: SharedPreferences) = injector.getCotFactory(prefs)
     fun getBuildDate() = injector.buildDate
-    fun getBuildVersionCode() = injector.buildVersionCode
     fun getAppId() = injector.appId
     fun getAppName() = injector.appName
     fun getPermissionRationale() = injector.permissionRationale
     fun getVersionName() = injector.versionName
     fun getPlatform() = injector.platform
     fun isDebug() = injector.isDebug
-    fun getListActivityClass() = injector.listActivityClass
     @XmlRes fun getSettingsXmlId() = injector.settingsXmlId
     @ColorRes fun getIconColourId() = injector.iconColourId
+    @ColorRes fun getAccentColourId() = injector.accentColourId
+    @LayoutRes fun getMainActivityLayoutId() = injector.mainActivityLayoutId
+    @IdRes fun getNavHostFragmentId() = injector.navHostFragmentId
+    @IdRes fun getStartStopButtonId() = injector.startStopButtonId
+
+    fun getMainToListDirections() = injector.mainToListDirections
+    fun getMainToAboutDirections() = injector.mainToAboutDirections
+    fun getListToEditDirections(preset: OutputPreset?) = injector.listToEditDirections(preset)
 }

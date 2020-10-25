@@ -3,6 +3,7 @@ package com.jon.cotbeacon
 import com.jon.common.CotApplication
 import com.jon.common.variants.Variant
 
+@Suppress("unused")
 class BeaconApplication : CotApplication() {
     override fun onCreate() {
         super.onCreate()

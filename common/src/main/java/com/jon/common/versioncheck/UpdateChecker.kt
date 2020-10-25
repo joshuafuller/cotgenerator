@@ -43,19 +43,19 @@ class UpdateChecker {
     }
 
     fun releaseIsNotIgnored(release: GithubRelease, prefs: SharedPreferences): Boolean {
-        val ignored = ignoredVersions(prefs)
+        val ignored = getPreviouslyIgnoredVersions(prefs)
         return ignored == null || !ignored.contains(release.name)
     }
 
     fun ignoreRelease(release: GithubRelease, prefs: SharedPreferences) {
         val allIgnoredVersions = mutableSetOf(release.name)
-        ignoredVersions(prefs)?.let { allIgnoredVersions.addAll(it) }
+        getPreviouslyIgnoredVersions(prefs)?.let { allIgnoredVersions.addAll(it) }
         prefs.edit()
                 .putStringSet(CommonPrefs.IGNORED_UPDATE_VERSIONS, allIgnoredVersions)
                 .apply()
     }
 
-    private fun ignoredVersions(prefs: SharedPreferences): Set<String>? {
+    private fun getPreviouslyIgnoredVersions(prefs: SharedPreferences): Set<String>? {
         return prefs.getStringSet(CommonPrefs.IGNORED_UPDATE_VERSIONS, null)
     }
 }

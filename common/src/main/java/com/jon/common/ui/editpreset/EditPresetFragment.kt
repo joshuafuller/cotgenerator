@@ -7,32 +7,61 @@ import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Bundle
 import android.text.InputType
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavArgs
+import androidx.navigation.fragment.findNavController
 import androidx.preference.*
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jon.common.R
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getStringFromPair
 import com.jon.common.presets.OutputPreset
-import com.jon.common.ui.IntentIds
+import com.jon.common.repositories.PresetRepository
 import com.jon.common.utils.*
 import com.nbsp.materialfilepicker.MaterialFilePicker
 import com.nbsp.materialfilepicker.ui.FilePickerActivity
 import timber.log.Timber
 import java.util.regex.Pattern
 
-class EditPresetFragment : PreferenceFragmentCompat(),
+
+abstract class EditPresetFragment : PreferenceFragmentCompat(),
         OnSharedPreferenceChangeListener,
         Preference.OnPreferenceChangeListener {
 
+    private val navController by lazy { findNavController() }
+
     private val prefs: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(requireContext()) }
+    private val presetRepository = PresetRepository.getInstance()
+
     private val inputValidator = InputValidator()
-    private lateinit var bundle: Bundle
+
+    protected abstract val args: NavArgs
+    protected abstract fun getFragmentArgumentPreset(): OutputPreset?
+    private var currentPresetId: Int = 0
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+        requireActivity().onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                onBackPressed()
+            }
+        })
+        setHasOptionsMenu(true)
+    }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.edit_preset, rootKey)
 
         /* Tell these two "bytes" preferences to launch a file browser when clicked */
-        findPreference<Preference>(CommonPrefs.PRESET_SSL_CLIENTCERT_BYTES.key)?.onPreferenceClickListener = fileBrowserOnClickListener(CLIENT_CERT_FILE_REQUEST_CODE, "Client")
-        findPreference<Preference>(CommonPrefs.PRESET_SSL_TRUSTSTORE_BYTES.key)?.onPreferenceClickListener = fileBrowserOnClickListener(TRUST_STORE_FILE_REQUEST_CODE, "Trust Store")
+        val clientBytesPref = findPreference<Preference>(CommonPrefs.PRESET_SSL_CLIENTCERT_BYTES.key)
+        val trustBytesPref = findPreference<Preference>(CommonPrefs.PRESET_SSL_TRUSTSTORE_BYTES.key)
+        clientBytesPref?.onPreferenceClickListener = fileBrowserOnClickListener(CLIENT_CERT_FILE_REQUEST_CODE, "Client")
+        trustBytesPref?.onPreferenceClickListener = fileBrowserOnClickListener(TRUST_STORE_FILE_REQUEST_CODE, "Trust Store")
 
         findPreference<EditTextPreference>(CommonPrefs.PRESET_DESTINATION_ADDRESS.key)?.setOnBindEditTextListener { it.inputType = InputType.TYPE_TEXT_VARIATION_URI }
         findPreference<EditTextPreference>(CommonPrefs.PRESET_DESTINATION_PORT.key)?.setOnBindEditTextListener { it.inputType = InputType.TYPE_CLASS_PHONE }
@@ -48,53 +77,35 @@ class EditPresetFragment : PreferenceFragmentCompat(),
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        (requireActivity() as AppCompatActivity).supportActionBar?.let {
+            it.setDisplayHomeAsUpEnabled(true)
+            it.setHomeAsUpIndicator(R.drawable.close)
+        }
+        inflater.inflate(R.menu.edit_preset_menu, menu)
+    }
+
     private fun prepopulateSpecifiedFields() {
-        bundle = arguments ?: return
-        initialPresetValues = OutputPreset.blank().apply {
-            /* Protocol */
-            bundle.getString(IntentIds.EXTRA_EDIT_PRESET_PROTOCOL)?.let {
-                findPreference<ListPreference>(CommonPrefs.PRESET_PROTOCOL.key)?.value = it
-                this.protocol = Protocol.fromString(it)
-            }
-            /* Alias */
-            bundle.getString(IntentIds.EXTRA_EDIT_PRESET_ALIAS)?.let {
-                findPreference<EditTextPreference>(CommonPrefs.PRESET_ALIAS.key)?.text = it
-                this.alias = it
-            }
-            /* Address */
-            bundle.getString(IntentIds.EXTRA_EDIT_PRESET_ADDRESS)?.let {
-                findPreference<EditTextPreference>(CommonPrefs.PRESET_DESTINATION_ADDRESS.key)?.text = it
-                this.address = it
-            }
-            /* Port */
-            bundle.getInt(IntentIds.EXTRA_EDIT_PRESET_PORT).let {
-                findPreference<EditTextPreference>(CommonPrefs.PRESET_DESTINATION_PORT.key)?.text = it.toString()
-                this.port = it
-            }
-            /* Client cert bytes */
-            bundle.getString(IntentIds.EXTRA_EDIT_PRESET_CLIENT_BYTES)?.let {
-                val length = if (inputValidator.validateString(it)) it.length else 0
-                findPreference<Preference>(CommonPrefs.PRESET_SSL_CLIENTCERT_BYTES.key)?.summary = "Loaded: $length bytes"
-                prefs.edit().putString(CommonPrefs.PRESET_SSL_CLIENTCERT_BYTES.key, it).apply()
-                this.clientCert = it.toByteArray()
-            }
-            /* Client cert password */
-            bundle.getString(IntentIds.EXTRA_EDIT_PRESET_CLIENT_PASSWORD)?.let {
-                findPreference<EditTextPreference>(CommonPrefs.PRESET_SSL_CLIENTCERT_PASSWORD.key)?.text = it
-                this.clientCertPassword = it
-            }
-            /* Trust store bytes */
-            bundle.getString(IntentIds.EXTRA_EDIT_PRESET_TRUST_BYTES)?.let {
-                val length = if (inputValidator.validateString(it)) it.length else 0
-                findPreference<Preference>(CommonPrefs.PRESET_SSL_TRUSTSTORE_BYTES.key)?.summary = "Loaded: $length bytes"
-                prefs.edit().putString(CommonPrefs.PRESET_SSL_TRUSTSTORE_BYTES.key, it).apply()
-                this.trustStore = it.toByteArray()
-            }
-            /* Trust store password */
-            bundle.getString(IntentIds.EXTRA_EDIT_PRESET_TRUST_PASSWORD)?.let {
-                findPreference<EditTextPreference>(CommonPrefs.PRESET_SSL_TRUSTSTORE_PASSWORD.key)?.text = it
-                this.trustStorePassword = it
-            }
+        getFragmentArgumentPreset()?.let { preset ->
+            currentPresetId = preset.id
+            findPreference<ListPreference>(CommonPrefs.PRESET_PROTOCOL.key)?.value = preset.protocol.toString()
+            findPreference<EditTextPreference>(CommonPrefs.PRESET_ALIAS.key)?.text = preset.alias
+            findPreference<EditTextPreference>(CommonPrefs.PRESET_DESTINATION_ADDRESS.key)?.text = preset.address
+            findPreference<EditTextPreference>(CommonPrefs.PRESET_DESTINATION_PORT.key)?.text = preset.port.toString()
+            populateBytesField(CommonPrefs.PRESET_SSL_CLIENTCERT_BYTES.key, preset.clientCert)
+            populateBytesField(CommonPrefs.PRESET_SSL_TRUSTSTORE_BYTES.key, preset.trustStore)
+            findPreference<EditTextPreference>(CommonPrefs.PRESET_SSL_CLIENTCERT_PASSWORD.key)?.text = preset.clientCertPassword
+            findPreference<EditTextPreference>(CommonPrefs.PRESET_SSL_TRUSTSTORE_PASSWORD.key)?.text = preset.trustStorePassword
+        }
+    }
+
+    private fun populateBytesField(key: String, bytes: ByteArray?) {
+        bytes?.let {
+            val str = String(it)
+            val length = if (inputValidator.validateString(str)) str.length else 0
+            findPreference<Preference>(key)?.summary = "Loaded: $length bytes"
+            prefs.edit().putString(key, str).apply()
         }
     }
 
@@ -102,7 +113,7 @@ class EditPresetFragment : PreferenceFragmentCompat(),
         MaterialFilePicker()
                 .withSupportFragment(this)
                 .withCloseMenu(true)
-                .withPath(Paths.ATAK_DIRECTORY.absolutePath)
+                .withPath(Paths.EXTERNAL_DIRECTORY.absolutePath)
                 .withRootPath(Paths.EXTERNAL_DIRECTORY.absolutePath)
                 .withFilter(Pattern.compile(".*\\.p12$"))
                 .withFilterDirectories(false)
@@ -232,6 +243,102 @@ class EditPresetFragment : PreferenceFragmentCompat(),
         editor.commit()
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val resId = item.itemId
+        if (resId == android.R.id.home) {
+            onBackPressed()
+        } else if (resId == R.id.save && settingsAreValid()) {
+            storePresetInDatabase()
+            Notify.green(requireView(), "Preset saved!")
+            navController.navigateUp()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun onBackPressed() {
+        MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.go_back)
+                .setMessage(R.string.go_back_message)
+                .setPositiveButton(android.R.string.ok) { _, _ -> navController.navigateUp() }
+                .setNegativeButton(android.R.string.cancel, null)
+                .show()
+    }
+
+    private fun settingsAreValid(): Boolean {
+        val inputValidator = InputValidator()
+        try {
+            /* Regular options */
+            val protocolStr: String = prefs.getStringFromPair(CommonPrefs.PRESET_PROTOCOL)
+            val alias: String = prefs.getStringFromPair(CommonPrefs.PRESET_ALIAS)
+            val address: String = prefs.getStringFromPair(CommonPrefs.PRESET_DESTINATION_ADDRESS)
+            val portStr: String = prefs.getStringFromPair(CommonPrefs.PRESET_DESTINATION_PORT)
+            if (!inputValidator.validateString(protocolStr, ".*?")) {
+                Notify.orange(requireView(), "No protocol chosen!")
+                return false
+            } else if (!inputValidator.validateString(alias, ".*?")) {
+                Notify.orange(requireView(), "Enter an alias to describe the preset!")
+                return false
+            } else if (!inputValidator.validateString(address, ".*?")) {
+                Notify.orange(requireView(), "No destination address has been entered!")
+                return false
+            } else if (!inputValidator.validateInt(portStr, 1, 65535)) {
+                Notify.orange(requireView(), "Invalid port number!")
+                return false
+            }
+            if (getInputProtocol() == Protocol.SSL) {
+                /* SSL-only options */
+                val clientBytes: String = prefs.getStringFromPair(CommonPrefs.PRESET_SSL_CLIENTCERT_BYTES)
+                val clientPass: String = prefs.getStringFromPair(CommonPrefs.PRESET_SSL_CLIENTCERT_PASSWORD)
+                val trustBytes: String = prefs.getStringFromPair(CommonPrefs.PRESET_SSL_TRUSTSTORE_BYTES)
+                val trustPass: String = prefs.getStringFromPair(CommonPrefs.PRESET_SSL_TRUSTSTORE_PASSWORD)
+                if (!inputValidator.validateString(clientBytes)) {
+                    Notify.orange(requireView(), "No client certificate chosen!")
+                    return false
+                } else if (!inputValidator.validateString(clientPass)) {
+                    Notify.orange(requireView(), "No client certificate password entered!")
+                    return false
+                } else if (!inputValidator.validateString(trustBytes)) {
+                    Notify.orange(requireView(), "No trust store chosen!")
+                    return false
+                } else if (!inputValidator.validateString(trustPass)) {
+                    Notify.orange(requireView(), "No trust store password entered!")
+                    return false
+                }
+            }
+        } catch (e: Exception) {
+            Notify.orange(requireView(), "Unknown error when validating preset: ${e.message}")
+            return false
+        }
+        return true
+    }
+
+    private fun getEnteredPresetValues(): OutputPreset {
+        val protocol = getInputProtocol()
+        val preset = OutputPreset(
+                protocol,
+                prefs.getStringFromPair(CommonPrefs.PRESET_ALIAS),
+                prefs.getStringFromPair(CommonPrefs.PRESET_DESTINATION_ADDRESS),
+                prefs.getStringFromPair(CommonPrefs.PRESET_DESTINATION_PORT).toInt()
+        )
+        if (protocol == Protocol.SSL) {
+            preset.clientCert = prefs.getStringFromPair(CommonPrefs.PRESET_SSL_CLIENTCERT_BYTES).toByteArray()
+            preset.trustStore = prefs.getStringFromPair(CommonPrefs.PRESET_SSL_TRUSTSTORE_BYTES).toByteArray()
+            preset.clientCertPassword = prefs.getStringFromPair(CommonPrefs.PRESET_SSL_CLIENTCERT_PASSWORD)
+            preset.trustStorePassword = prefs.getStringFromPair(CommonPrefs.PRESET_SSL_TRUSTSTORE_PASSWORD)
+        }
+        if (currentPresetId != 0) {
+            /* If this is an edit of an existing preset, attach its unique ID number */
+            preset.id = currentPresetId
+        }
+        return preset
+    }
+
+    private fun storePresetInDatabase() {
+        presetRepository.insertPreset(getEnteredPresetValues())
+    }
+
+    private fun getInputProtocol() = Protocol.fromString(prefs.getStringFromPair(CommonPrefs.PRESET_PROTOCOL))
+
     companion object {
         private val CLIENT_CERT_FILE_REQUEST_CODE = GenerateInt.next()
         private val TRUST_STORE_FILE_REQUEST_CODE = GenerateInt.next()
@@ -261,7 +368,5 @@ class EditPresetFragment : PreferenceFragmentCompat(),
                 CommonPrefs.PRESET_DESTINATION_ADDRESS.key to "Should be a valid network address",
                 CommonPrefs.PRESET_DESTINATION_PORT.key to "Should be an integer from 1-65355 inclusive"
         )
-
-        var initialPresetValues: OutputPreset? = null
     }
 }

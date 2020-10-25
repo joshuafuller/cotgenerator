@@ -9,10 +9,10 @@ import com.jon.common.presets.OutputPreset
 
 internal class ListPresetsAdapter(
         context: Context,
-        private val presets: MutableList<OutputPreset>,
         private val clickListener: PresetClickListener)
     : RecyclerView.Adapter<PresetViewHolder>() {
 
+    private val presets = ArrayList<OutputPreset>()
     private val inflater: LayoutInflater = LayoutInflater.from(context)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PresetViewHolder {

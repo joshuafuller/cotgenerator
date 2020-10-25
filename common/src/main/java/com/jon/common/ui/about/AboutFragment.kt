@@ -1,19 +1,12 @@
-package com.jon.common.ui
+package com.jon.common.ui.about
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.ImageView
+import android.os.Bundle
+import android.view.*
 import android.widget.ListView
-import android.widget.TextView
-import androidx.annotation.DrawableRes
-import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import androidx.fragment.app.Fragment
 import com.jon.common.R
 import com.jon.common.variants.Variant
 import com.jon.common.versioncheck.GithubRelease
@@ -23,55 +16,52 @@ import io.reactivex.schedulers.Schedulers
 import java.text.SimpleDateFormat
 import java.util.*
 
-internal class AboutDialogBuilder(context: Context) : MaterialAlertDialogBuilder(context) {
-    private data class Row(val title: String, var subtitle: String, @DrawableRes var iconId: Int? = null)
 
+class AboutFragment : Fragment() {
     private val updateChecker = UpdateChecker()
 
-    private val rows: List<Row> = listOf(
-            Row("Version", Variant.getVersionName()),
-            Row("Build Type", BUILD_TYPE),
-            Row("Build Time", BUILD_DATE),
-            Row("Latest Github Release", LOADING, R.drawable.refresh),
-            Row("Github Repository", "https://github.com/jonapoul/cotgenerator", R.drawable.go_to)
+    private val rows: List<AboutRow> = listOf(
+            AboutRow("Version", Variant.getVersionName()),
+            AboutRow("Build Type", BUILD_TYPE),
+            AboutRow("Build Time", BUILD_DATE),
+            AboutRow("Latest Github Release", LOADING, R.drawable.refresh),
+            AboutRow("Github Repository", "https://github.com/jonapoul/cotgenerator", R.drawable.go_to)
     )
 
-    private val adapter = object : ArrayAdapter<Row>(context, R.layout.about_listview_item, R.id.aboutItemTextTitle, rows) {
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-            val view = super.getView(position, null, parent)
-            val row = rows[position]
-            view.findViewById<TextView>(R.id.aboutItemTextTitle).text = row.title
-            view.findViewById<TextView>(R.id.aboutItemTextSubtitle).text = row.subtitle
-            row.iconId?.let {
-                val drawable = ContextCompat.getDrawable(context, it)
-                view.findViewById<ImageView>(R.id.aboutItemIcon)?.setImageDrawable(drawable)
-            }
-            return view
-        }
+    private val adapter by lazy { AboutArrayAdapter(requireContext(), rows) }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
     }
 
-    init {
-        val listView = View.inflate(context, R.layout.about_listview, null) as ListView
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val listView = View.inflate(context, R.layout.fragment_about_listview, null) as ListView
         listView.adapter = adapter
         listView.setOnItemClickListener { _, _, position: Int, _ ->
             if (position == GITHUB_INDEX) {
+                /* Open a web browser to the Github page */
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.data = Uri.parse(rows[position].subtitle)
-                context.startActivity(intent)
+                requireContext().startActivity(intent)
             } else if (position == LATEST_INDEX) {
+                /* Check for any new versions */
                 rows[LATEST_INDEX].subtitle = LOADING
                 adapter.notifyDataSetChanged()
                 fetchLatestVersion()
             }
         }
-        this.setTitle(R.string.menu_about)
-                .setView(listView)
-                .setPositiveButton(android.R.string.ok, null)
+        return listView
     }
 
-    override fun show(): AlertDialog {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         fetchLatestVersion()
-        return super.show()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        menu.clear()
     }
 
     @SuppressLint("CheckResult")

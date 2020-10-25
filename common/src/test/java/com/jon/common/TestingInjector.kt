@@ -21,9 +21,11 @@ class TestingInjector : VariantInjector {
     override val versionName: String = "VERSION-NAME"
     override val platform: String = "PLATFORM"
     override val isDebug: Boolean = true
-    override val listActivityClass: Class<out ListPresetsActivity> = ListPresetsActivity::class.java
     override val settingsXmlId: Int = 0
     override val iconColourId: Int = 0
+    override val accentColourId: Int = 0
+    override val mainActivityLayoutId = 0
+    override val navHostFragmentId = 0
 
     override fun getCotFactory(prefs: SharedPreferences): CotFactory = object : CotFactory(prefs) {
         override fun generate(): MutableList<CursorOnTarget> { return mutableListOf() }

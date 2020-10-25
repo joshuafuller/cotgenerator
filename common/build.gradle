@@ -70,16 +70,23 @@ dependencies {
 
     /* Desugaring */
     implementation "androidx.multidex:multidex:2.0.1"
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:1.0.10"
 
     /* UI */
     api "androidx.activity:activity-ktx:$versions.activity_ktx"
     api "androidx.constraintlayout:constraintlayout:$versions.constraintlayout"
     api "com.google.android.material:material:$versions.material"
-    api "androidx.preference:preference:$versions.preference"
+    api "androidx.preference:preference-ktx:$versions.preference"
     api "com.jaredrummler:colorpicker:$versions.colorpicker"
+    api "com.leinardi.android:speed-dial:$versions.android_speed_dial"
     api "com.nbsp:materialfilepicker:$versions.materialfilepicker"
     api "pub.devrel:easypermissions:$versions.easypermissions"
+    api "androidx.recyclerview:recyclerview:$versions.recyclerview"
+
+    /* Lifecycle */
+    api "androidx.lifecycle:lifecycle-extensions:$versions.lifecycle"
+    kapt "androidx.lifecycle:lifecycle-compiler:$versions.lifecycle"
 
     /* Room Database */
     implementation "androidx.room:room-runtime:$versions.room"
@@ -93,6 +100,10 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:$versions.retrofit"
     implementation "com.squareup.retrofit2:converter-gson:$versions.retrofit"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$versions.retrofit"
+
+    /* Navigation */
+    api "androidx.navigation:navigation-fragment-ktx:$versions.navigation"
+    api "androidx.navigation:navigation-ui-ktx:$versions.navigation"
 
     /* Utils */
     api "com.jakewharton.timber:timber:$versions.timber"
