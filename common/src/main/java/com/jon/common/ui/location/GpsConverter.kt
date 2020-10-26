@@ -36,6 +36,17 @@ internal class GpsConverter {
         }
     }
 
+    fun coordinatesToCopyableString(location: Location?, coordinateFormat: CoordinateFormat): String {
+        if (location == null) {
+            return UNKNOWN
+        }
+        val coords = convertCoordinates(location, coordinateFormat)
+        return when (coordinateFormat) {
+            CoordinateFormat.MGRS -> coords.mgrs
+            else -> "${coords.latitude},${coords.longitude}"
+        }
+    }
+
     private fun dd(latitude: Latitude, longitude: Longitude): Converted {
         return Converted(
                 latitude = "%3.6f".format(latitude.inDegrees()),

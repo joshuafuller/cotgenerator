@@ -1,6 +1,9 @@
 package com.jon.common.ui.location
 
 import android.annotation.SuppressLint
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -10,13 +13,16 @@ import android.view.*
 import android.widget.Button
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import com.jon.common.R
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getStringFromPair
 import com.jon.common.repositories.GpsRepository
+import com.jon.common.utils.Notify
 import com.jon.common.variants.Variant
+
 
 class LocationFragment : Fragment(),
         SensorEventListener {
@@ -33,6 +39,7 @@ class LocationFragment : Fragment(),
     private lateinit var lonLayout: View
     private lateinit var mgrs: TextView
     private lateinit var coordinateFormatButton: Button
+    private lateinit var coordinateCopyButton: Button
 
     private val compass by lazy { Compass(requireContext()) }
     private lateinit var compassDegrees: TextView
@@ -55,7 +62,7 @@ class LocationFragment : Fragment(),
         latLayout = view.findViewById(R.id.latitude_layout)
         lonLayout = view.findViewById(R.id.longitude_layout)
         initialiseCoordinateFormat()
-        initialiseCoordinateFormatButton(view)
+        initialiseCoordinateButtons(view)
         observeGpsData()
 
         /* Other views */
@@ -102,9 +109,10 @@ class LocationFragment : Fragment(),
         showCorrectCoordinateViews()
     }
 
-    private fun initialiseCoordinateFormatButton(view: View) {
+    private fun initialiseCoordinateButtons(view: View) {
+        val accent = ContextCompat.getColor(requireContext(), Variant.getAccentColourId())
         coordinateFormatButton = view.findViewById(R.id.coord_format_button)
-        coordinateFormatButton.setBackgroundColor(ContextCompat.getColor(requireContext(), Variant.getAccentColourId()))
+        coordinateFormatButton.setBackgroundColor(accent)
         coordinateFormatButton.text = coordinateFormat.name
         coordinateFormatButton.setOnClickListener {
             coordinateFormat = CoordinateFormat.getNext(coordinateFormat)
@@ -114,6 +122,20 @@ class LocationFragment : Fragment(),
             prefs.edit()
                     .putString(CommonPrefs.LOCATION_COORDINATE_FORMAT.key, coordinateFormat.name)
                     .apply()
+        }
+
+        coordinateCopyButton = view.findViewById(R.id.coord_copy_button)
+        coordinateCopyButton.setBackgroundColor(accent)
+        val tintedIcon = DrawableCompat.wrap(ContextCompat.getDrawable(requireContext(), R.drawable.copy)!!)
+        DrawableCompat.setTint(tintedIcon, ContextCompat.getColor(requireContext(), R.color.black))
+        coordinateCopyButton.setCompoundDrawablesWithIntrinsicBounds(tintedIcon, null, null, null)
+        coordinateCopyButton.setOnClickListener {
+            /* Convert the displayed coordinates to a string and place it in the clipboard */
+            val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val coordsString = gpsConverter.coordinatesToCopyableString(mostRecentLocation, coordinateFormat)
+            val clip = ClipData.newPlainText("Copied ${coordinateFormat.name} coordinates", coordsString)
+            clipboard.setPrimaryClip(clip)
+            Notify.green(requireView(), "Copied \"${coordsString}\" to the clipboard")
         }
     }
 

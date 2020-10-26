@@ -54,6 +54,7 @@
     <string name="blank" />
 
     <string name="location_coordinates">Coordinates</string>
+    <string name="location_copy">COPY</string>
     <string name="location_latitude">Latitude:</string>
     <string name="location_longitude">Longitude:</string>
     <string name="location_compass">Compass (MN)</string>

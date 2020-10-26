@@ -105,12 +105,32 @@
                 android:visibility="gone"
                 tools:text="31U CR 56670 40547" />
 
-            <Button
-                android:id="@+id/coord_format_button"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                tools:text="DMS" />
+                android:orientation="horizontal"
+                tools:ignore="ButtonStyle">
+
+                <Button
+                    android:id="@+id/coord_format_button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginEnd="@dimen/buttonBarMargin"
+                    android:layout_weight="1"
+                    tools:text="DMS" />
+
+                <Button
+                    android:id="@+id/coord_copy_button"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginStart="@dimen/buttonBarMargin"
+                    android:layout_weight="1"
+                    android:text="@string/location_copy" />
+
+            </LinearLayout>
+
 
         </LinearLayout>
 
