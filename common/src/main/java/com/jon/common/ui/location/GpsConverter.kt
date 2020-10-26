@@ -56,14 +56,14 @@ internal class GpsConverter {
     private fun degreesToDm(decimalDegrees: Double): String {
         val degrees = decimalDegrees.toInt()
         val minutes = abs(decimalDegrees - degrees) * 60
-        return "%3d° %2.6f'".format(degrees, minutes)
+        return "%3d° %2.4f'".format(degrees, minutes)
     }
 
     private fun degreesToDms(decimalDegrees: Double): String {
         val degrees = decimalDegrees.toInt()
         val minutes = (abs(decimalDegrees - degrees) * 60).toInt()
         val seconds = abs(decimalDegrees - degrees) * 60 - minutes
-        return "%3d° %2d' %2.6f\"".format(degrees, minutes, seconds)
+        return "%3d° %2d' %2.2f\"".format(degrees, minutes, seconds)
     }
 
     private fun latLonToMgrs(latitude: Latitude, longitude: Longitude): String {
