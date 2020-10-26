@@ -153,7 +153,7 @@ class LocationFragment : Fragment(),
             mgrs.text = it.mgrs
             altitude.text = it.altitudeMSL
             speed.text = it.speedMetresPerSec
-            bearing.text = it.bearing
+            bearing.text = if (it.speedMetresPerSec == GpsConverter.ZERO_SPEED) "N/A" else it.bearing
         }
     }
 

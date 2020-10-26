@@ -95,9 +95,10 @@ internal class GpsConverter {
         return "$zone $square $easting $northing"
     }
 
-    private companion object {
-        const val NO_FIX = "NO FIX"
-        const val UNKNOWN = "???"
+    companion object {
+        val ZERO_SPEED = formatSpeed(0.0f)
+        private const val NO_FIX = "NO FIX"
+        private const val UNKNOWN = "???"
 
         private fun formatSpeed(speedMs: Float): String {
             return "%.1f m/s".format(speedMs)
