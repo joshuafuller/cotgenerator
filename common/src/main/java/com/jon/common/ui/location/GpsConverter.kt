@@ -6,9 +6,12 @@ import kotlin.math.abs
 
 internal class GpsConverter {
     data class Converted(
-            val latitude: String? = null,
-            val longitude: String? = null,
-            val mgrs: String? = null,
+            val latitude: String,
+            val longitude: String,
+            val mgrs: String,
+            var altitudeMSL: String = UNKNOWN,
+            var speedMetresPerSec: String = UNKNOWN,
+            var bearing: String = UNKNOWN
     )
 
     fun convertCoordinates(location: Location?, format: CoordinateFormat): Converted {
@@ -26,6 +29,10 @@ internal class GpsConverter {
             CoordinateFormat.DM -> dm(latitude, longitude)
             CoordinateFormat.DMS -> dms(latitude, longitude)
             else -> dd(latitude, longitude)
+        }.also {
+            it.altitudeMSL = if (location.hasAltitude()) formatAltitude(location.altitude) else UNKNOWN
+            it.speedMetresPerSec = if (location.hasSpeed()) formatSpeed(location.speed) else UNKNOWN
+            it.bearing = if (location.hasBearing()) formatBearing(location.bearing) else UNKNOWN
         }
     }
 
@@ -67,7 +74,8 @@ internal class GpsConverter {
     }
 
     private fun latLonToMgrs(latitude: Latitude, longitude: Longitude): String {
-        /* This comes in the format '30U ' */
+        /* This comes in the format '30UAB1234567890', so we want to space it out into the various sections
+         * to make it more readable */
         val squished = MGRS(longitude, latitude).toString()
         val zone = squished.substring(0, 3)
         val square = squished.substring(3, 5)
@@ -78,5 +86,18 @@ internal class GpsConverter {
 
     private companion object {
         const val NO_FIX = "NO FIX"
+        const val UNKNOWN = "???"
+
+        private fun formatSpeed(speedMs: Float): String {
+            return "%.1f m/s".format(speedMs)
+        }
+
+        private fun formatAltitude(altitudeMSL: Double): String {
+            return "%.1fm WGS84".format(altitudeMSL)
+        }
+
+        private fun formatBearing(bearing: Float): String {
+            return "%.1f° %s".format(bearing, AngleUtils.getDirection(bearing.toDouble()))
+        }
     }
 }

@@ -49,7 +49,7 @@ internal class Compass(private val context: Context) {
             degrees %= 360.0
         }
 
-        val direction = getDirection(degrees)
+        val direction = AngleUtils.getDirection(degrees)
         lastUpdateTime = System.nanoTime()
         return Reading(degrees, direction)
     }
@@ -71,27 +71,6 @@ internal class Compass(private val context: Context) {
         sensorManager.unregisterListener(sensorEventListener)
     }
 
-    private fun getDirection(angle: Double): String {
-        return when {
-            angle < 11.25 -> "N"
-            angle < 33.75 -> "NNE"
-            angle < 56.25 -> "NE"
-            angle < 78.75 -> "ENE"
-            angle < 101.25 -> "E"
-            angle < 123.75 -> "SEE"
-            angle < 146.25 -> "SE"
-            angle < 168.75 -> "SSE"
-            angle < 191.25 -> "S"
-            angle < 213.75 -> "SSW"
-            angle < 236.25 -> "SW"
-            angle < 258.75 -> "WSW"
-            angle < 281.25 -> "W"
-            angle < 303.75 -> "WNW"
-            angle < 326.25 -> "NW"
-            angle < 348.75 -> "NNW"
-            else -> "N"
-        }
-    }
 
     companion object {
         private val SAMPLE_PERIOD_US = TimeUnit.MILLISECONDS.toMicros(100).toInt()

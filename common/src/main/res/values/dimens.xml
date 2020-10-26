@@ -2,7 +2,8 @@
 <resources>
     <dimen name="smallPadding">4dp</dimen>
     <dimen name="padding">16dp</dimen>
-    <dimen name="cardviewMargin">16dp</dimen>
+    <dimen name="cardviewLayoutMargin">4dp</dimen>
+    <dimen name="cardviewContentPadding">16dp</dimen>
     <dimen name="cardviewPadding">8dp</dimen>
     <dimen name="startStopButtonPadding">8dp</dimen>
     <dimen name="toggleButtonPadding">8dp</dimen>

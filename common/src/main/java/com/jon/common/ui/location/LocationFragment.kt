@@ -36,8 +36,10 @@ class LocationFragment : Fragment(),
 
     private val compass by lazy { Compass(requireContext()) }
     private lateinit var compassDegrees: TextView
-    private lateinit var compassDirection: TextView
 
+    private lateinit var altitude: TextView
+    private lateinit var speed: TextView
+    private lateinit var bearing: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +48,7 @@ class LocationFragment : Fragment(),
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = View.inflate(context, R.layout.fragment_location, null)
-        /* Lat/lon views */
+        /* Coordinate views */
         latitude = view.findViewById(R.id.coords_lat_degrees)
         longitude = view.findViewById(R.id.coords_lon_degrees)
         mgrs = view.findViewById(R.id.coords_mgrs)
@@ -56,9 +58,11 @@ class LocationFragment : Fragment(),
         initialiseCoordinateFormatButton(view)
         observeGpsData()
 
-        /* Compass views */
+        /* Other views */
         compassDegrees = view.findViewById(R.id.compass_degrees)
-        compassDirection = view.findViewById(R.id.compass_direction)
+        bearing = view.findViewById(R.id.bearing)
+        speed = view.findViewById(R.id.speed_m_per_s)
+        altitude = view.findViewById(R.id.altitude_metres)
         return view
     }
 
@@ -83,8 +87,7 @@ class LocationFragment : Fragment(),
             return
         }
         compass.getCompassReading(event).also {
-            compassDegrees.text = "%3.0f°".format(it.degrees)
-            compassDirection.text = it.direction
+            compassDegrees.text = "%3.0f° %s".format(it.degrees, it.direction)
         }
     }
 
@@ -102,10 +105,10 @@ class LocationFragment : Fragment(),
     private fun initialiseCoordinateFormatButton(view: View) {
         coordinateFormatButton = view.findViewById(R.id.coord_format_button)
         coordinateFormatButton.setBackgroundColor(ContextCompat.getColor(requireContext(), Variant.getAccentColourId()))
-        coordinateFormatButton.text = getString(R.string.location_format_button_placeholder, coordinateFormat.name)
+        coordinateFormatButton.text = coordinateFormat.name
         coordinateFormatButton.setOnClickListener {
             coordinateFormat = CoordinateFormat.getNext(coordinateFormat)
-            coordinateFormatButton.text = getString(R.string.location_format_button_placeholder, coordinateFormat.name)
+            coordinateFormatButton.text = coordinateFormat.name
             convertAndDisplayCoordinates(mostRecentLocation)
             showCorrectCoordinateViews()
             prefs.edit()
@@ -126,6 +129,9 @@ class LocationFragment : Fragment(),
             latitude.text = it.latitude
             longitude.text = it.longitude
             mgrs.text = it.mgrs
+            altitude.text = it.altitudeMSL
+            speed.text = it.speedMetresPerSec
+            bearing.text = it.bearing
         }
     }
 

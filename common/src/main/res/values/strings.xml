@@ -50,8 +50,14 @@
     <string name="fab_create_new_preset">CREATE NEW</string>
     <string name="fab_import_new_preset">IMPORT</string>
 
-    <string name="location_format_button_placeholder">Format = %1$s</string>
-
     <string name="unknown">UNKNOWN</string>
     <string name="blank" />
+
+    <string name="location_coordinates">Coordinates</string>
+    <string name="location_latitude">Latitude:</string>
+    <string name="location_longitude">Longitude:</string>
+    <string name="location_compass">Compass (MN)</string>
+    <string name="location_bearing">Bearing (TN)</string>
+    <string name="location_speed">Speed</string>
+    <string name="location_altitude">Altitude</string>
 </resources>
