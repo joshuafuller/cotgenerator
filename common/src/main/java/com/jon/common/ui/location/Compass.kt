@@ -1,13 +1,16 @@
 package com.jon.common.ui.location
 
 import android.content.Context
+import android.content.res.Configuration
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.view.Surface
+import android.view.WindowManager
 import java.util.concurrent.TimeUnit
 
-internal class Compass(context: Context) {
+internal class Compass(private val context: Context) {
     data class Reading(val degrees: Double, val direction: String)
 
     private var lastUpdateTime: Long = System.nanoTime()
@@ -22,7 +25,6 @@ internal class Compass(context: Context) {
         return System.nanoTime() - lastUpdateTime > SAMPLE_PERIOD_NS
     }
 
-
     fun getCompassReading(event: SensorEvent): Reading {
         when (event.sensor.type) {
             Sensor.TYPE_ACCELEROMETER ->
@@ -32,8 +34,21 @@ internal class Compass(context: Context) {
         }
 
         SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerReading, magnetometerReading)
-        val orientation = SensorManager.getOrientation(rotationMatrix, orientationAngles)
-        val degrees = (Math.toDegrees(orientation[0].toDouble()) + 360.0) % 360.0
+        val deviceOrientation = SensorManager.getOrientation(rotationMatrix, orientationAngles)
+        var degrees = (Math.toDegrees(deviceOrientation[0].toDouble()) + 360.0) % 360.0
+
+        /* Make any changes caused by device orientation. This is necessary because when in landscape, the 'degrees'
+         * value calculated above assumes the device is "looking" towards its top, but in landscape we want it to "look"
+         * to the side. */
+        val screenOrientation = context.resources.configuration.orientation
+        if (screenOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+            /* Landscape mode, so query which way we're oriented: either 90 or 270 degrees */
+            val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+            val screenRotation = windowManager.defaultDisplay.rotation
+            degrees += if (screenRotation == Surface.ROTATION_90) 90 else -90
+            degrees %= 360.0
+        }
+
         val direction = getDirection(degrees)
         lastUpdateTime = System.nanoTime()
         return Reading(degrees, direction)
