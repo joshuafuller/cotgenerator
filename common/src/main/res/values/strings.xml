@@ -48,7 +48,7 @@
 
     <string name="no_presets_found">No custom presets found!</string>
     <string name="fab_create_new_preset">CREATE NEW</string>
-    <string name="fab_import_new_preset">IMPORT</string>
+    <string name="fab_import_new_preset">IMPORT FROM FILE</string>
 
     <string name="unknown">UNKNOWN</string>
     <string name="blank" />

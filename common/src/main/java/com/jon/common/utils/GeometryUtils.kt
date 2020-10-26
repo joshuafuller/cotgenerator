@@ -7,9 +7,9 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 object GeometryUtils {
-    fun arcdistance(p1: Point, p2: Point?): Double {
+    fun arcdistance(p1: Point, p2: Point): Double {
         val lat1 = p1.lat
-        val lat2 = p2!!.lat
+        val lat2 = p2.lat
         val dlat = p2.lat - p1.lat
         val dlon = p2.lon - p1.lon
         /* I can feel myself getting sweaty just looking at this */
