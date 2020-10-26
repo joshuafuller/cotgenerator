@@ -7,7 +7,6 @@
 
         <EditTextPreference
             android:key="@string/key_callsign"
-            app:defaultValue="@string/def_callsign_beacon"
             app:iconSpaceReserved="false"
             app:title="@string/desc_callsign"
             app:useSimpleSummaryProvider="true" />
