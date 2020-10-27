@@ -11,14 +11,18 @@ CoT Beacon was originally spun off as [a separate repository](https://github.com
 1. Download the installer APK from [the GitHub releases page](https://github.com/jonapoul/cotgenerator/releases), then copy the file to your device and open it in a file browser to install.
 2. Open the app and grant permissions for GPS access and reading external storage. See [permissions section](#permissions).
 3. Configure as required. See [settings section](#settings).
-4. Tap the green "start" icon in the right hand side of the upper toolbar. This begins the configured packet transmissions.
-5. When finished, tap the red "stop" icon on the toolbar, or the "STOP" button on the service notification.
+4. Tap the green "START SERVICE" button at the bottom of the main screen. This begins the configured packet transmissions.
+5. When finished, tap the blue "STOP SERVICE" bottom at the bottom, or the "STOP" button on the service notification.
 
 ## Screenshots
 
-| Generator Main Screen | Custom Output Presets | Beacon Main Screen
-|:--:|:--:|:--:|
-![Main Screen](docs/screenshots/ui_generator.jpg) | ![Main Screen](docs/screenshots/ui_presets.jpg) | ![CoT Beacon](docs/screenshots/ui_beacon.jpg) |
+| Generator Main Screen | Beacon Main Screen
+|:--:|:--:|
+![CoT Generator](docs/screenshots/ui_generator.jpg) | ![CoT Beacon](docs/screenshots/ui_beacon.jpg) |
+
+| Custom Output Presets | Location Info
+|:--:|:--:|
+![Custom Output Presets](docs/screenshots/ui_presets.jpg) | ![Location Info](docs/screenshots/ui_location.jpg) |
 
 | 20 Icons |
 :--:|
@@ -96,3 +100,14 @@ Note that 100% of testing has been done on a OnePlus 6 running Android 10. If th
 
 ## Acknowledgements
 Thanks to the crew at the TAK Discord, most notably [Corvo](https://github.com/brothercorvo) and [Field Mapper](https://github.com/fieldmapper) for hosting their public [FreeTAKServer](https://github.com/FreeTAKTeam/FreeTakServer) and OG TAK Server respectively, used extensively for testing.
+
+## TODO
+- Change app launcher icons
+- Add a chat function, where the user can sent a message to All Chat Rooms in TAK - and receive, so long as the service is running.
+    - Probably only for Beacon, it makes more sense there
+- Add a toggleable option to encrypt the database of presets
+    - This would make SSL certificate passwords more secure, since they're currently stored in plaintext
+- Option to launch the service on device boot
+    - Again, probably only makes sense for Beacon
+- Deal with connection changes more securely
+    - e.g. losing WiFi and moving to 4G, we still want to keep sending Beacon packets
