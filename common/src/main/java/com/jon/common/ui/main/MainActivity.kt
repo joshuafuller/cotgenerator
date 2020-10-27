@@ -133,8 +133,6 @@ class MainActivity : AppCompatActivity(),
         when (item.itemId) {
             R.id.location ->
                 navController.navigate(Variant.getMainToLocationDirections())
-            R.id.chat ->
-                navController.navigate(Variant.getMainToChatDirections())
             R.id.about ->
                 navController.navigate(Variant.getMainToAboutDirections())
         }
