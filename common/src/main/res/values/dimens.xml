@@ -8,7 +8,7 @@
     <dimen name="startStopButtonPadding">8dp</dimen>
     <dimen name="toggleButtonPadding">8dp</dimen>
     <dimen name="addNewPresetTitleSize">14sp</dimen>
-    <dimen name="locationCoordsFontSize">15sp</dimen>
-    <dimen name="locationTitleFontSize">16sp</dimen>
+    <dimen name="locationCoordsFontSize">14sp</dimen>
+    <dimen name="locationTitleFontSize">14sp</dimen>
     <dimen name="buttonBarMargin">4dp</dimen>
 </resources>

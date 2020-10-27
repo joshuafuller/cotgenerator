@@ -1,7 +1,11 @@
 package com.jon.common.ui.location
 
 import android.location.Location
-import org.opensextant.geodesy.*
+import android.os.Build
+import org.opensextant.geodesy.Angle
+import org.opensextant.geodesy.Latitude
+import org.opensextant.geodesy.Longitude
+import org.opensextant.geodesy.MGRS
 import kotlin.math.abs
 
 internal class GpsConverter {
@@ -9,7 +13,8 @@ internal class GpsConverter {
             val latitude: String,
             val longitude: String,
             val mgrs: String,
-            var altitudeMSL: String = UNKNOWN,
+            var positionalError: String = UNKNOWN,
+            var altitudeWgs84: String = UNKNOWN,
             var speedMetresPerSec: String = UNKNOWN,
             var bearing: String = UNKNOWN
     )
@@ -17,9 +22,9 @@ internal class GpsConverter {
     fun convertCoordinates(location: Location?, format: CoordinateFormat): Converted {
         if (location == null) {
             return Converted(
-                    latitude = NO_FIX,
-                    longitude = NO_FIX,
-                    mgrs = NO_FIX,
+                    latitude = UNKNOWN,
+                    longitude = UNKNOWN,
+                    mgrs = UNKNOWN
             )
         }
         val latitude = Latitude(location.latitude, Angle.DEGREES)
@@ -30,9 +35,10 @@ internal class GpsConverter {
             CoordinateFormat.DMS -> dms(latitude, longitude)
             else -> dd(latitude, longitude)
         }.also {
-            it.altitudeMSL = if (location.hasAltitude()) formatAltitude(location.altitude) else UNKNOWN
-            it.speedMetresPerSec = if (location.hasSpeed()) formatSpeed(location.speed) else UNKNOWN
-            it.bearing = if (location.hasBearing()) formatBearing(location.bearing) else UNKNOWN
+            it.positionalError = formatPositionalError(location)
+            it.altitudeWgs84 = formatAltitude(location)
+            it.speedMetresPerSec = formatSpeed(location)
+            it.bearing = formatBearing(location)
         }
     }
 
@@ -43,7 +49,7 @@ internal class GpsConverter {
         val coords = convertCoordinates(location, coordinateFormat)
         return when (coordinateFormat) {
             CoordinateFormat.MGRS -> coords.mgrs
-            else -> "${coords.latitude},${coords.longitude}"
+            else -> "${coords.latitude.trim()}, ${coords.longitude.trim()}"
         }
     }
 
@@ -96,20 +102,56 @@ internal class GpsConverter {
     }
 
     companion object {
-        val ZERO_SPEED = formatSpeed(0.0f)
-        private const val NO_FIX = "NO FIX"
+        private const val NA = "N/A"
         private const val UNKNOWN = "???"
 
-        private fun formatSpeed(speedMs: Float): String {
-            return "%.1f m/s".format(speedMs)
+        private fun formatPositionalError(location: Location): String {
+            return if (location.hasAccuracy()) {
+                "± %.0f m".format(location.accuracy)
+            } else {
+                UNKNOWN
+            }
         }
 
-        private fun formatAltitude(altitudeMSL: Double): String {
-            return "%.1fm WGS84".format(altitudeMSL)
+        private fun formatSpeed(location: Location): String {
+            return if (location.hasSpeed()) {
+                val accuracy = if (sdkOver26() && location.hasSpeedAccuracy()) {
+                    " ± %.1f".format(abs(location.speedAccuracyMetersPerSecond))
+                } else ""
+                "%.1f%s".format(location.speed, accuracy)
+            } else {
+                UNKNOWN
+            }
         }
 
-        private fun formatBearing(bearing: Float): String {
-            return "%.1f° %s".format(bearing, AngleUtils.getDirection(bearing.toDouble()))
+        private fun formatAltitude(location: Location): String {
+            return if (location.hasAltitude()) {
+                val accuracy = if (sdkOver26() && location.hasVerticalAccuracy()) {
+                    " ± %.1fm".format(abs(location.verticalAccuracyMeters))
+                } else ""
+                return "%.1fm%s".format(location.altitude, accuracy)
+            } else {
+                UNKNOWN
+            }
+        }
+
+        private fun formatBearing(location: Location): String {
+            if (location.hasSpeed() && abs(location.speed) < 0.1) {
+                /* Not moving, so bearing has no meaning */
+                return NA
+            }
+            return if (location.hasBearing()) {
+                val accuracy = if (sdkOver26() && location.hasBearingAccuracy()) {
+                    " ± %.1f°".format(abs(location.bearingAccuracyDegrees))
+                } else ""
+                return "%.1f° %s%s".format(location.bearing, AngleUtils.getDirection(location.bearing.toDouble()), accuracy)
+            } else {
+                UNKNOWN
+            }
+        }
+
+        private fun sdkOver26(): Boolean {
+            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
         }
     }
 }

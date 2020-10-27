@@ -22,7 +22,6 @@
         android:padding="@dimen/padding"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:backgroundTint="@color/start"
         tools:drawableStart="@drawable/start"
         tools:targetApi="lollipop"
         tools:text="START" />

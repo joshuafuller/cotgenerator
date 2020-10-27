@@ -8,10 +8,13 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.location.Location
+import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.Button
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
@@ -25,11 +28,14 @@ import com.jon.common.variants.Variant
 
 
 class LocationFragment : Fragment(),
-        SensorEventListener {
+        SensorEventListener,
+        GnssCallback.Listener {
 
     private val prefs by lazy { PreferenceManager.getDefaultSharedPreferences(requireContext()) }
 
     private val gpsRepository = GpsRepository.getInstance()
+    private val locationManager by lazy { requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager }
+
     private val gpsConverter = GpsConverter()
     private var mostRecentLocation: Location? = null
     private lateinit var coordinateFormat: CoordinateFormat
@@ -37,6 +43,9 @@ class LocationFragment : Fragment(),
     private lateinit var longitude: TextView
     private lateinit var latLayout: View
     private lateinit var lonLayout: View
+    private lateinit var mgrsLayout: View
+    private lateinit var positionalError: TextView
+    private lateinit var numSatelliteFixes: TextView
     private lateinit var mgrs: TextView
     private lateinit var coordinateFormatButton: Button
     private lateinit var coordinateCopyButton: Button
@@ -47,6 +56,8 @@ class LocationFragment : Fragment(),
     private lateinit var altitude: TextView
     private lateinit var speed: TextView
     private lateinit var bearing: TextView
+
+    private var gnssCallback: GnssCallback? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,11 +70,17 @@ class LocationFragment : Fragment(),
         latitude = view.findViewById(R.id.coords_lat_degrees)
         longitude = view.findViewById(R.id.coords_lon_degrees)
         mgrs = view.findViewById(R.id.coords_mgrs)
+        positionalError = view.findViewById(R.id.coords_positional_error)
         latLayout = view.findViewById(R.id.latitude_layout)
         lonLayout = view.findViewById(R.id.longitude_layout)
+        mgrsLayout = view.findViewById(R.id.mgrs_layout)
         initialiseCoordinateFormat()
         initialiseCoordinateButtons(view)
         observeGpsData()
+        numSatelliteFixes = view.findViewById(R.id.gps_useful_satellites)
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            numSatelliteFixes.text = GPS_NOT_ENABLED
+        }
 
         /* Other views */
         compassDegrees = view.findViewById(R.id.compass_degrees)
@@ -76,6 +93,23 @@ class LocationFragment : Fragment(),
     override fun onResume() {
         super.onResume()
         compass.registerListener(this)
+    }
+
+    @SuppressLint("MissingPermission")
+    override fun onStart() {
+        super.onStart()
+        if (sdkOver24()) {
+            gnssCallback = GnssCallback(this).also {
+                locationManager.registerGnssStatusCallback(it)
+            }
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (sdkOver24()) {
+            gnssCallback?.let { locationManager.unregisterGnssStatusCallback(it) }
+        }
     }
 
     override fun onPause() {
@@ -100,6 +134,15 @@ class LocationFragment : Fragment(),
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
         /* No-op */
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    override fun onUsefulSatellitesReported(numUsefulSatellites: Int) {
+        numSatelliteFixes.text = if (numUsefulSatellites == GnssCallback.GNSS_STOPPED) {
+            GPS_NOT_ENABLED
+        } else {
+            numUsefulSatellites.toString()
+        }
     }
 
     private fun initialiseCoordinateFormat() {
@@ -151,9 +194,10 @@ class LocationFragment : Fragment(),
             latitude.text = it.latitude
             longitude.text = it.longitude
             mgrs.text = it.mgrs
-            altitude.text = it.altitudeMSL
+            positionalError.text = it.positionalError
+            altitude.text = it.altitudeWgs84
             speed.text = it.speedMetresPerSec
-            bearing.text = if (it.speedMetresPerSec == GpsConverter.ZERO_SPEED) "N/A" else it.bearing
+            bearing.text = it.bearing
         }
     }
 
@@ -161,13 +205,13 @@ class LocationFragment : Fragment(),
         when (coordinateFormat) {
             CoordinateFormat.MGRS ->
                 toggleViewVisibility(
-                        visible = listOf(mgrs),
+                        visible = listOf(mgrsLayout),
                         hidden = listOf(latLayout, lonLayout)
                 )
             else ->
                 toggleViewVisibility(
                         visible = listOf(latLayout, lonLayout),
-                        hidden = listOf(mgrs)
+                        hidden = listOf(mgrsLayout)
                 )
         }
     }
@@ -175,5 +219,13 @@ class LocationFragment : Fragment(),
     private fun toggleViewVisibility(visible: List<View>, hidden: List<View>) {
         visible.forEach { it.visibility = View.VISIBLE }
         hidden.forEach { it.visibility = View.GONE }
+    }
+
+    private companion object {
+        const val GPS_NOT_ENABLED = "GPS NOT ENABLED"
+
+        fun sdkOver24(): Boolean {
+            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+        }
     }
 }

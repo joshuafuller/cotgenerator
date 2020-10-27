@@ -1,15 +1,3 @@
-<!--
-  ~ Copyright (c) 2020.
-  ~ This is an unpublished work, the copyright in which vests in BAE SYSTEMS,
-  ~ All rights reserved.
-  ~
-  ~ The information contained in this file is proprietary to BAE SYSTEMS and is
-  ~ supplied without liability for errors or omissions. No part may be reproduced,
-  ~ disclosed or used except as authorised by contract or other written permission.
-  ~ The copyright and the foregoing restrictions on reproduction, disclosure and
-  ~ use extend to all media in which the information may be embodied.
-  -->
-
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
