@@ -55,9 +55,8 @@ class CotService : Service(),
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Timber.i("onStartCommand ${intent?.action}")
         when (intent?.action) {
-            STOP_SERVICE -> {
-                shutdown()
-            }
+            STOP_SERVICE -> shutdown()
+            START_SERVICE -> start()
         }
         return super.onStartCommand(intent, flags, startId)
     }
@@ -141,5 +140,6 @@ class CotService : Service(),
     companion object {
         private val BASE_INTENT_ID = "${Variant.getAppId()}.CotService."
         val STOP_SERVICE = "${BASE_INTENT_ID}.STOP"
+        val START_SERVICE = "${BASE_INTENT_ID}.START"
     }
 }

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_launch_from_boot">launch_from_boot</string>
+</resources>

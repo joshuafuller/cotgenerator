@@ -42,7 +42,7 @@ import pub.devrel.easypermissions.EasyPermissions
 import timber.log.Timber
 import java.io.IOException
 
-class MainActivity : AppCompatActivity(),
+open class MainActivity : AppCompatActivity(),
         EasyPermissions.PermissionCallbacks,
         OnSharedPreferenceChangeListener,
         ServiceConnection,
@@ -52,11 +52,13 @@ class MainActivity : AppCompatActivity(),
     private var service: CotService? = null
     private val viewModel: StateViewModel by viewModels()
 
-    private val prefs: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
+    protected val prefs: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
     private val updateChecker = UpdateChecker()
     private val compositeDisposable = CompositeDisposable()
 
-    private val navController: NavController by lazy { findNavController(Variant.getNavHostFragmentId()) }
+    protected val navController: NavController by lazy { findNavController(Variant.getNavHostFragmentId()) }
+
+    protected open val menuResourceId = R.menu.main_menu
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -125,7 +127,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main_menu, menu)
+        menuInflater.inflate(menuResourceId, menu)
         return true
     }
 
@@ -187,7 +189,7 @@ class MainActivity : AppCompatActivity(),
         return viewModel.currentState == ServiceState.RUNNING
     }
 
-    private fun getRootView(): View {
+    protected fun getRootView(): View {
         return findViewById(android.R.id.content)
     }
 

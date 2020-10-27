@@ -2,6 +2,8 @@
     <string name="app_name">CoT Beacon</string>
     <string name="app_name_all_caps">COT-BEACON</string>
 
+    <string name="menu_launch_from_boot">Start service from boot?</string>
+
     <string name="permission_rationale">Two permissions are required:
         1) GPS - to translate into CoT;
         2) Storage - to read certificate files for SSL authentication</string>

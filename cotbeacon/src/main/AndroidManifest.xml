@@ -20,19 +20,23 @@
         tools:ignore="AllowBackup,GoogleAppIndexingWarning"
         tools:targetApi="q">
 
-        <activity android:name="com.jon.common.ui.main.MainActivity">
+        <activity android:name=".BeaconActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.jon.common.ui.editpreset.EditPresetActivity" />
-        <activity android:name=".BeaconListPresetsActivity" />
 
         <service
             android:name="com.jon.common.service.CotService"
             android:enabled="true"
             android:exported="false" />
+
+        <receiver android:name=".BeaconBootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
     </application>
 
