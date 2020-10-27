@@ -18,7 +18,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
+import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jon.common.CotApplication
@@ -97,7 +97,7 @@ class MainActivity : AppCompatActivity(),
         }
 
         val appBarConfiguration = AppBarConfiguration(navController.graph)
-        toolbar.setupWithNavController(navController, appBarConfiguration)
+        setupActionBarWithNavController(navController, appBarConfiguration)
         toolbar.setNavigationOnClickListener {
             navController.navigateUp() || super.onSupportNavigateUp()
         }
