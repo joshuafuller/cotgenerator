@@ -18,20 +18,20 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jon.common.CotApplication
 import com.jon.common.R
+import com.jon.common.di.ActivityResources
+import com.jon.common.di.BuildResources
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getIntFromPair
-import com.jon.common.repositories.StatusRepository
+import com.jon.common.repositories.IStatusRepository
 import com.jon.common.service.CotService
 import com.jon.common.service.ServiceState
 import com.jon.common.ui.ServiceCommunicator
 import com.jon.common.ui.StateViewModel
 import com.jon.common.utils.GenerateInt
 import com.jon.common.utils.Notify
-import com.jon.common.variants.Variant
 import com.jon.common.versioncheck.GithubRelease
 import com.jon.common.versioncheck.UpdateChecker
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -40,6 +40,7 @@ import io.reactivex.schedulers.Schedulers
 import pub.devrel.easypermissions.EasyPermissions
 import timber.log.Timber
 import java.io.IOException
+import javax.inject.Inject
 
 abstract class MainActivity : AppCompatActivity(),
         EasyPermissions.PermissionCallbacks,
@@ -47,20 +48,25 @@ abstract class MainActivity : AppCompatActivity(),
         ServiceConnection,
         ServiceCommunicator {
 
-    private val statusRepository = StatusRepository.getInstance()
     private var service: CotService? = null
     private val viewModel: StateViewModel by viewModels()
 
-    protected val prefs: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
-    private val updateChecker = UpdateChecker()
+    private val updateChecker by lazy { UpdateChecker(buildResources) }
     private val compositeDisposable = CompositeDisposable()
 
-    abstract val activityLayoutId: Int
-    abstract val menuResourceId: Int
-    abstract val navHostFragmentId: Int
-    abstract val permissionRationaleId: Int
+    protected val navController: NavController by lazy { findNavController(activityResources.navHostFragmentId) }
 
-    protected val navController: NavController by lazy { findNavController(navHostFragmentId) }
+    @Inject
+    lateinit var statusRepository: IStatusRepository
+
+    @Inject
+    protected lateinit var prefs: SharedPreferences
+
+    @Inject
+    protected lateinit var activityResources: ActivityResources
+
+    @Inject
+    protected lateinit var buildResources: BuildResources
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,7 +75,7 @@ abstract class MainActivity : AppCompatActivity(),
         } else {
             EasyPermissions.requestPermissions(
                     this,
-                    getString(permissionRationaleId),
+                    getString(activityResources.permissionRationaleId),
                     PERMISSIONS_CODE,
                     *PERMISSIONS
             )
@@ -77,7 +83,7 @@ abstract class MainActivity : AppCompatActivity(),
     }
 
     private fun buildActivity() {
-        setContentView(activityLayoutId)
+        setContentView(activityResources.activityLayoutId)
         initialiseToolbar()
         compositeDisposable.add(
                 updateChecker.fetchReleases()
@@ -95,7 +101,6 @@ abstract class MainActivity : AppCompatActivity(),
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.apply {
-            title = Variant.getAppName()
             setDisplayHomeAsUpEnabled(false)
             setDisplayHomeAsUpEnabled(false)
         }
@@ -129,7 +134,7 @@ abstract class MainActivity : AppCompatActivity(),
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(menuResourceId, menu)
+        menuInflater.inflate(activityResources.mainMenuId, menu)
         return true
     }
 
@@ -213,7 +218,7 @@ abstract class MainActivity : AppCompatActivity(),
     private fun onReleasesFetched(releases: List<GithubRelease>) {
         val latest = updateChecker.getLatestRelease(releases)
         if (latest != null && updateChecker.isNewerVersion(latest) && updateChecker.releaseIsNotIgnored(latest, prefs)) {
-            val msg = "Installed = ${Variant.getVersionName()}\nLatest = ${latest.name}\n\n" +
+            val msg = "Installed = ${buildResources.versionName}\nLatest = ${latest.name}\n\n" +
                     "Would you like to visit the Github page to download it?\n\n"
             MaterialAlertDialogBuilder(this)
                     .setTitle("Update Available")

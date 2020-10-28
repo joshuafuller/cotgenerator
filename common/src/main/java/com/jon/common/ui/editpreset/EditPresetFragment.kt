@@ -20,27 +20,33 @@ import com.jon.common.R
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getStringFromPair
 import com.jon.common.presets.OutputPreset
-import com.jon.common.repositories.PresetRepository
+import com.jon.common.repositories.IPresetRepository
 import com.jon.common.utils.*
 import com.nbsp.materialfilepicker.MaterialFilePicker
 import com.nbsp.materialfilepicker.ui.FilePickerActivity
 import timber.log.Timber
 import java.util.regex.Pattern
+import javax.inject.Inject
 
 
 abstract class EditPresetFragment : PreferenceFragmentCompat(),
         OnSharedPreferenceChangeListener,
         Preference.OnPreferenceChangeListener {
 
-    private val navController by lazy { findNavController() }
+    @Inject
+    lateinit var presetRepository: IPresetRepository
 
-    private val prefs: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(requireContext()) }
-    private val presetRepository = PresetRepository.getInstance()
+    @Inject
+    lateinit var prefs: SharedPreferences
+
+    private val navController by lazy { findNavController() }
 
     private val inputValidator = InputValidator()
 
     protected abstract val args: NavArgs
+
     protected abstract fun getFragmentArgumentPreset(): OutputPreset?
+
     private var currentPresetId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {

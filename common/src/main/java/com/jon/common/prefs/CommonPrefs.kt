@@ -2,7 +2,6 @@ package com.jon.common.prefs
 
 import com.jon.common.R
 import com.jon.common.ui.location.CoordinateFormat
-import com.jon.common.utils.ResourceUtils
 
 object CommonPrefs {
     /* CoT settings */

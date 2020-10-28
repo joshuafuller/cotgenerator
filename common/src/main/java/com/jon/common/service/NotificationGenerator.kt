@@ -9,36 +9,42 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.jon.common.R
+import com.jon.common.di.BuildResources
 import com.jon.common.prefs.getStringFromPair
 import com.jon.common.presets.OutputPreset
 import com.jon.common.utils.GenerateInt
 import com.jon.common.utils.Protocol
-import com.jon.common.variants.Variant
+import javax.inject.Inject
 
-internal class NotificationGenerator(
+class NotificationGenerator @Inject constructor(
         private val context: Context,
-        private val prefs: SharedPreferences
-) {
+        private val prefs: SharedPreferences,
+        private val buildResources: BuildResources
+) : INotificationGenerator {
+
+    private val stopServicePendingIntentId = GenerateInt.next()
+    private val foregroundChannelId = "${buildResources.appId}.FOREGROUND"
+
     private lateinit var foregroundNotificationBuilder: NotificationCompat.Builder
 
-    fun getForegroundNotification(): Notification {
+    override fun getForegroundNotification(): Notification {
         /* Intent to stop the service when the notification button is tapped */
         val stopPendingIntent = PendingIntent.getService(
                 context,
-                STOP_SERVICE_PENDING_INTENT,
+                stopServicePendingIntentId,
                 Intent(context, CotService::class.java).setAction(CotService.STOP_SERVICE),
                 0
         )
         val channelId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel()
-            FOREGROUND_CHANNEL_ID
+            foregroundChannelId
         } else {
-            FOREGROUND_CHANNEL_NAME
+            buildResources.appName
         }
         foregroundNotificationBuilder = NotificationCompat.Builder(context, channelId)
                 .setOngoing(true)
                 .setSmallIcon(R.drawable.target)
-                .setContentTitle(Variant.getAppName())
+                .setContentTitle(buildResources.appName)
                 .setContentText(getPresetInfoString(prefs))
                 .addAction(R.drawable.stop, context.getString(R.string.notification_stop), stopPendingIntent)
 
@@ -56,8 +62,8 @@ internal class NotificationGenerator(
         val manager = context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
         manager.createNotificationChannel(
                 NotificationChannel(
-                        FOREGROUND_CHANNEL_ID,
-                        FOREGROUND_CHANNEL_NAME,
+                        foregroundChannelId,
+                        buildResources.appName,
                         NotificationManager.IMPORTANCE_HIGH
                 ).apply {
                     lightColor = Color.BLUE
@@ -76,9 +82,4 @@ internal class NotificationGenerator(
         return protocol.toString() + if (preset == null) ": Unknown" else ": " + preset.alias
     }
 
-    private companion object {
-        val STOP_SERVICE_PENDING_INTENT = GenerateInt.next()
-        val FOREGROUND_CHANNEL_ID = "${Variant.getAppId()}.FOREGROUND"
-        val FOREGROUND_CHANNEL_NAME = Variant.getAppName()
-    }
 }

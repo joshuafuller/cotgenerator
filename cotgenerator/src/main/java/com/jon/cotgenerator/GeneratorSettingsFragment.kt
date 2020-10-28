@@ -6,10 +6,11 @@ import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getBooleanFromPair
 import com.jon.common.ui.main.SettingsFragment
 import com.jon.common.utils.InputValidator
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-class GeneratorSettingsFragment : SettingsFragment() {
-
-    override val settingsXmlId = R.xml.settings
+@AndroidEntryPoint
+class GeneratorSettingsFragment @Inject constructor() : SettingsFragment() {
 
     override fun getPhoneInputKeys() = super.getPhoneInputKeys().apply {
         add(GeneratorPrefs.ICON_COUNT.key)

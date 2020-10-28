@@ -2,6 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.protobuf'
+apply plugin: 'dagger.hilt.android.plugin'
 
 android {
     compileSdkVersion versions.targetSdk
@@ -17,7 +18,7 @@ android {
         consumerProguardFiles "consumer-rules.pro"
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
             }
         }
         setProperty("archivesBaseName", "common-$versionName")
@@ -73,6 +74,10 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:1.0.10"
 
+    /* DI */
+    api "com.google.dagger:hilt-android:$versions.hilt"
+    kapt "com.google.dagger:hilt-android-compiler:$versions.hilt"
+
     /* UI */
     api "androidx.activity:activity-ktx:$versions.activity_ktx"
     api "androidx.constraintlayout:constraintlayout:$versions.constraintlayout"
@@ -89,7 +94,7 @@ dependencies {
     kapt "androidx.lifecycle:lifecycle-compiler:$versions.lifecycle"
 
     /* Room Database */
-    implementation "androidx.room:room-runtime:$versions.room"
+    api "androidx.room:room-runtime:$versions.room"
     implementation "androidx.room:room-rxjava2:$versions.room"
     kapt "androidx.room:room-compiler:$versions.room"
     testImplementation "androidx.room:room-testing:$versions.room"

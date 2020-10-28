@@ -10,15 +10,16 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import androidx.preference.*
 import androidx.preference.EditTextPreference.OnBindEditTextListener
+import com.jon.common.di.ActivityResources
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.PrefPair
 import com.jon.common.presets.OutputPreset
-import com.jon.common.repositories.PresetRepository
+import com.jon.common.repositories.IPresetRepository
 import com.jon.common.utils.InputValidator
 import com.jon.common.utils.Notify
 import com.jon.common.utils.Protocol
-import com.jon.common.variants.Variant
 import java.util.*
+import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 abstract class SettingsFragment : PreferenceFragmentCompat(),
@@ -26,10 +27,15 @@ abstract class SettingsFragment : PreferenceFragmentCompat(),
         Preference.OnPreferenceChangeListener {
 
     private val navController by lazy { findNavController() }
-    protected val prefs: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(requireActivity()) }
-    private val presetRepository = PresetRepository.getInstance()
 
-    abstract val settingsXmlId: Int
+    @Inject
+    lateinit var presetRepository: IPresetRepository
+
+    @Inject
+    protected lateinit var prefs: SharedPreferences
+
+    @Inject
+    protected lateinit var activityResources: ActivityResources
 
     protected open fun getPhoneInputKeys() = mutableListOf<String>(
             /* blank, all phone inputs are in Generator only */
@@ -54,7 +60,7 @@ abstract class SettingsFragment : PreferenceFragmentCompat(),
     }
 
     override fun onCreatePreferences(savedState: Bundle?, rootKey: String?) {
-        setPreferencesFromResource(settingsXmlId, rootKey)
+        setPreferencesFromResource(activityResources.settingsXmlId, rootKey)
 
         /* Set numeric input on numeric fields */
         val phoneInputType = OnBindEditTextListener { it.inputType = InputType.TYPE_CLASS_PHONE }
@@ -75,7 +81,7 @@ abstract class SettingsFragment : PreferenceFragmentCompat(),
         /* Launch a new activity when clicking "Edit Presets" */
         findPreference<Preference>(CommonPrefs.EDIT_PRESETS)?.let {
             it.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                navController.navigate(Variant.getMainToListDirections())
+                navController.navigate(activityResources.mainToListDirections)
                 true
             }
         }

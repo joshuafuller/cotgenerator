@@ -33,6 +33,8 @@
     <string name="ssl_takserver_ip">discordtakserver.mooo.com</string>
     <string name="ssl_takserver_port">58088</string>
 
+    <string name="default_ssl_password">atakatak</string>
+
     <string name="tcp_freetakserver_value">TCP¶Public FreeTakServer¶204.48.30.216¶8087</string>
     <string name="tcp_freetakserver_name">Public FreeTakServer</string>
     <string name="tcp_freetakserver_ip">204.48.30.216</string>

@@ -14,21 +14,25 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jon.common.R
+import com.jon.common.di.ActivityResources
 import com.jon.common.presets.OutputPreset
-import com.jon.common.repositories.PresetRepository
+import com.jon.common.repositories.IPresetRepository
 import com.jon.common.utils.GenerateInt
 import com.jon.common.utils.Notify
 import com.jon.common.utils.Paths
 import com.jon.common.utils.Protocol
-import com.jon.common.variants.Variant
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import com.leinardi.android.speeddial.SpeedDialView
 import com.nbsp.materialfilepicker.MaterialFilePicker
 import com.nbsp.materialfilepicker.ui.FilePickerActivity
+import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import java.util.regex.Pattern
+import javax.inject.Inject
 
-class ListPresetsFragment : Fragment(), PresetClickListener {
+@AndroidEntryPoint
+class ListPresetsFragment : Fragment(),
+        PresetClickListener {
     private data class PresetRecyclerInfo(@IdRes val recyclerViewId: Int, @IdRes val emptyMessageId: Int, var adapter: ListPresetsAdapter? = null)
 
     private val recyclerViewMap: Map<Protocol, PresetRecyclerInfo> = hashMapOf(
@@ -36,9 +40,14 @@ class ListPresetsFragment : Fragment(), PresetClickListener {
             Protocol.TCP to PresetRecyclerInfo(R.id.listPresetsTcpRecyclerView, R.id.tcpNoneFound),
             Protocol.UDP to PresetRecyclerInfo(R.id.listPresetsUdpRecyclerView, R.id.udpNoneFound)
     )
-    private val repository = PresetRepository.getInstance()
 
     private val navController by lazy { findNavController() }
+
+    @Inject
+    lateinit var presetRepository: IPresetRepository
+
+    @Inject
+    lateinit var activityResources: ActivityResources
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
@@ -54,7 +63,7 @@ class ListPresetsFragment : Fragment(), PresetClickListener {
             info.adapter = ListPresetsAdapter(requireContext(), this)
             recyclerView.adapter = info.adapter
             val emptyMessage = view.findViewById<View>(info.emptyMessageId).also { it.visibility = View.VISIBLE }
-            repository.getCustomByProtocol(protocol).observe(viewLifecycleOwner) { presets ->
+            presetRepository.getCustomByProtocol(protocol).observe(viewLifecycleOwner) { presets ->
                 Timber.i("getByProtocol(${protocol}) = ${presets.size}")
                 info.adapter?.updatePresets(presets)
                 emptyMessage.visibility = if (presets.isEmpty()) View.VISIBLE else View.GONE
@@ -73,7 +82,7 @@ class ListPresetsFragment : Fragment(), PresetClickListener {
             MaterialAlertDialogBuilder(requireContext())
                     .setTitle("Delete Presets")
                     .setMessage("Remove all custom presets? The built-in defaults will still remain.")
-                    .setPositiveButton(android.R.string.ok) { _, _ -> repository.deleteDatabase() }
+                    .setPositiveButton(android.R.string.ok) { _, _ -> presetRepository.deleteDatabase() }
                     .setNegativeButton(android.R.string.cancel, null)
                     .show()
         }
@@ -81,7 +90,7 @@ class ListPresetsFragment : Fragment(), PresetClickListener {
     }
 
     override fun onClickEditItem(preset: OutputPreset) {
-        navController.navigate(Variant.getListToEditDirections(preset))
+        navController.navigate(activityResources.listToEditDirections(preset))
     }
 
     override fun onClickDeleteItem(preset: OutputPreset) {
@@ -89,7 +98,7 @@ class ListPresetsFragment : Fragment(), PresetClickListener {
                 .setTitle("Delete Preset")
                 .setMessage("Are you sure you want to delete " + preset.alias + "?")
                 .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(android.R.string.ok) { _, _ -> repository.deletePreset(preset) }
+                .setPositiveButton(android.R.string.ok) { _, _ -> presetRepository.deletePreset(preset) }
                 .show()
     }
 
@@ -106,7 +115,7 @@ class ListPresetsFragment : Fragment(), PresetClickListener {
             return@setOnActionSelectedListener when (it.id) {
                 R.id.new_preset_create -> {
                     /* Create new preset, so launch the activity to enter the required values */
-                    navController.navigate(Variant.getListToEditDirections(null))
+                    navController.navigate(activityResources.listToEditDirections(null))
                     true
                 }
                 R.id.new_preset_import -> {
@@ -145,7 +154,7 @@ class ListPresetsFragment : Fragment(), PresetClickListener {
                 if (it == null) {
                     Notify.red(requireView(), "Failed importing from $path")
                 } else {
-                    navController.navigate(Variant.getListToEditDirections(it))
+                    navController.navigate(activityResources.listToEditDirections(it))
                 }
             }
         }
@@ -154,19 +163,19 @@ class ListPresetsFragment : Fragment(), PresetClickListener {
     private companion object {
         val IMPORT_FILE_REQUEST_CODE = GenerateInt.next()
     }
-}
 
-private fun SpeedDialView.buildAndAddAction(@IdRes idRes: Int, @DrawableRes drawableRes: Int, @StringRes stringRes: Int) {
-    val accent = ContextCompat.getColor(context, Variant.getAccentColourId())
-    val textColour = ContextCompat.getColor(context, R.color.black)
-    addActionItem(
-            SpeedDialActionItem.Builder(idRes, drawableRes)
-                    .setLabel(stringRes)
-                    .setFabBackgroundColor(textColour)
-                    .setFabImageTintColor(accent)
-                    .setLabelBackgroundColor(accent)
-                    .setLabelColor(textColour)
-                    .setLabelClickable(true)
-                    .create()
-    )
+    private fun SpeedDialView.buildAndAddAction(@IdRes idRes: Int, @DrawableRes drawableRes: Int, @StringRes stringRes: Int) {
+        val accent = ContextCompat.getColor(context, activityResources.accentColourId)
+        val textColour = ContextCompat.getColor(context, R.color.black)
+        addActionItem(
+                SpeedDialActionItem.Builder(idRes, drawableRes)
+                        .setLabel(stringRes)
+                        .setFabBackgroundColor(textColour)
+                        .setFabImageTintColor(accent)
+                        .setLabelBackgroundColor(accent)
+                        .setLabelColor(textColour)
+                        .setLabelClickable(true)
+                        .create()
+        )
+    }
 }

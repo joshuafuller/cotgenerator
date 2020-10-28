@@ -4,10 +4,11 @@ import android.os.Bundle
 import androidx.preference.EditTextPreference
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.ui.main.SettingsFragment
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-class BeaconSettingsFragment : SettingsFragment() {
-
-    override val settingsXmlId = R.xml.settings
+@AndroidEntryPoint
+class BeaconSettingsFragment @Inject constructor() : SettingsFragment() {
 
     override fun onCreatePreferences(savedState: Bundle?, rootKey: String?) {
         super.onCreatePreferences(savedState, rootKey)

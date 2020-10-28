@@ -2,15 +2,21 @@ package com.jon.common.service
 
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import com.jon.common.repositories.IPresetRepository
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
-internal class ThreadManager(private val prefs: SharedPreferences, private val errorListener: ThreadErrorListener) : OnSharedPreferenceChangeListener {
+internal class ThreadManager(
+        private val prefs: SharedPreferences,
+        private val cotFactory: CotFactory,
+        private val errorListener: ThreadErrorListener,
+        private val presetRepository: IPresetRepository
+) : OnSharedPreferenceChangeListener {
     private var thread: BaseThread? = null
 
     fun start() {
         prefs.registerOnSharedPreferenceChangeListener(this)
-        thread = BaseThread.fromPrefs(prefs).apply {
+        thread = BaseThread.fromPrefs(prefs, cotFactory, presetRepository).apply {
             setUncaughtExceptionHandler { _, t: Throwable -> errorListener.onThreadError(t) }
             start()
         }

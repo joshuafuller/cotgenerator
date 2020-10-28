@@ -1,5 +1,6 @@
 package com.jon.common.ui.main
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,25 +12,37 @@ import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
-import androidx.preference.PreferenceManager
 import com.jon.common.R
+import com.jon.common.di.ActivityResources
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getStringFromPair
 import com.jon.common.presets.OutputPreset
-import com.jon.common.repositories.StatusRepository
+import com.jon.common.repositories.IStatusRepository
 import com.jon.common.service.ServiceState
 import com.jon.common.ui.ServiceCommunicator
 import com.jon.common.utils.Notify
 import com.jon.common.utils.Protocol
-import com.jon.common.variants.Variant
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 /* Class to act as a wrapper to the SettingsFragment and the start/stop button view */
+@AndroidEntryPoint
 class MainFragment : Fragment() {
 
-    private val statusRepository = StatusRepository.getInstance()
-    private val prefs by lazy { PreferenceManager.getDefaultSharedPreferences(requireContext()) }
     private lateinit var startStopButton: Button
     private val serviceCommunicator by lazy { requireActivity() as ServiceCommunicator }
+
+    @Inject
+    lateinit var activityResources: ActivityResources
+
+    @Inject
+    lateinit var prefs: SharedPreferences
+
+    @Inject
+    lateinit var settingsFragment: SettingsFragment
+
+    @Inject
+    lateinit var statusRepository: IStatusRepository
 
     private val startServiceOnClickListener = View.OnClickListener {
         if (presetIsSelected()) {
@@ -46,7 +59,7 @@ class MainFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         childFragmentManager.beginTransaction()
-                .replace(R.id.settings_fragment, Variant.getSettingsFragment())
+                .replace(R.id.settings_fragment, settingsFragment)
                 .commit()
     }
 
@@ -73,7 +86,7 @@ class MainFragment : Fragment() {
     }
 
     private fun initialiseStartStopButton(view: View) {
-        startStopButton = view.findViewById(Variant.getStartStopButtonId())
+        startStopButton = view.findViewById(activityResources.startStopButtonId)
         Notify.setAnchor(startStopButton)
         val isRunning = if (serviceCommunicator.isServiceNull()) false else serviceCommunicator.isServiceRunning()
         if (isRunning) {
@@ -96,7 +109,7 @@ class MainFragment : Fragment() {
     private fun showStartButton() {
         setButtonState(
                 textId = R.string.button_start,
-                backgroundColourId = Variant.getAccentColourId(),
+                backgroundColourId = activityResources.accentColourId,
                 foregroundColourId = R.color.black,
                 iconId = R.drawable.start,
                 onClickListener = startServiceOnClickListener

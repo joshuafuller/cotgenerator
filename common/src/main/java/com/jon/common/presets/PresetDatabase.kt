@@ -12,13 +12,6 @@ abstract class PresetDatabase : RoomDatabase() {
     abstract fun presetDao(): PresetDao
 
     companion object {
-        private const val FILENAME = "presets.db"
-
-        fun build(): PresetDatabase {
-            return Room.databaseBuilder(CotApplication.context, PresetDatabase::class.java, FILENAME)
-                    .addMigrations(*DatabaseMigrations.allMigrations)
-                    .fallbackToDestructiveMigration()
-                    .build()
-        }
+        const val FILENAME = "presets.db"
     }
 }

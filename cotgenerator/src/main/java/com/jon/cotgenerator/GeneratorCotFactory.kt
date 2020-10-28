@@ -6,7 +6,11 @@ import com.jon.common.cot.CotRole
 import com.jon.common.cot.CotTeam
 import com.jon.common.cot.CursorOnTarget
 import com.jon.common.cot.UtcTimestamp
+import com.jon.common.di.BuildResources
 import com.jon.common.prefs.*
+import com.jon.common.repositories.IBatteryRepository
+import com.jon.common.repositories.IDeviceUidRepository
+import com.jon.common.repositories.IGpsRepository
 import com.jon.common.service.CotFactory
 import com.jon.common.service.Offset
 import com.jon.common.service.Point
@@ -19,10 +23,18 @@ import com.jon.cotgenerator.streams.RadialDistanceRandomStream
 import com.jon.cotgenerator.streams.RandomStream
 import java.util.*
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 import kotlin.math.max
 import kotlin.math.min
 
-internal class GeneratorCotFactory(prefs: SharedPreferences) : CotFactory(prefs) {
+internal class GeneratorCotFactory @Inject constructor(
+        prefs: SharedPreferences,
+        buildResources: BuildResources,
+        deviceUidRepository: IDeviceUidRepository,
+        gpsRepository: IGpsRepository,
+        batteryRepository: IBatteryRepository
+) : CotFactory(prefs, buildResources, deviceUidRepository, gpsRepository, batteryRepository) {
+
     private data class IconData(var cot: CursorOnTarget, var offset: Offset)
 
     private val random = Random(System.currentTimeMillis())
@@ -72,7 +84,7 @@ internal class GeneratorCotFactory(prefs: SharedPreferences) : CotFactory(prefs)
         val courseItr = doubleIterator(0.0, 360.0)
         val altitudeItr = doubleIterator(centreAlt - distributionRadius, centreAlt + distributionRadius)
         for (i in 0 until iconCount) {
-            val cot = CursorOnTarget()
+            val cot = CursorOnTarget(buildResources)
             cot.uid = "%s_%04d".format(deviceUidRepository.getUid(), i)
             cot.callsign = callsigns[i]
             cot.start = now

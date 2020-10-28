@@ -1,11 +1,11 @@
-package com.jon.common.utils
+package com.jon.common.prefs
 
 import androidx.annotation.BoolRes
 import androidx.annotation.IntegerRes
 import androidx.annotation.StringRes
 import com.jon.common.CotApplication
 
-object ResourceUtils {
+internal object ResourceUtils {
     private val resources = CotApplication.context.resources
 
     fun getString(@StringRes stringId: Int, vararg args: Any?): String {

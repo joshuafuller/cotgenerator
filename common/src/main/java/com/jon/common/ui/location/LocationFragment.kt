@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.SharedPreferences
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -18,22 +19,21 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
-import androidx.preference.PreferenceManager
 import com.jon.common.R
+import com.jon.common.di.ActivityResources
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getStringFromPair
-import com.jon.common.repositories.GpsRepository
+import com.jon.common.repositories.IGpsRepository
 import com.jon.common.utils.Notify
-import com.jon.common.variants.Variant
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
+@AndroidEntryPoint
 class LocationFragment : Fragment(),
         SensorEventListener,
         GnssCallback.Listener {
 
-    private val prefs by lazy { PreferenceManager.getDefaultSharedPreferences(requireContext()) }
-
-    private val gpsRepository = GpsRepository.getInstance()
     private val locationManager by lazy { requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager }
 
     private val gpsConverter = GpsConverter()
@@ -58,6 +58,15 @@ class LocationFragment : Fragment(),
     private lateinit var bearing: TextView
 
     private var gnssCallback: GnssCallback? = null
+
+    @Inject
+    lateinit var gpsRepository: IGpsRepository
+
+    @Inject
+    lateinit var prefs: SharedPreferences
+
+    @Inject
+    lateinit var activityResources: ActivityResources
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -153,7 +162,7 @@ class LocationFragment : Fragment(),
     }
 
     private fun initialiseCoordinateButtons(view: View) {
-        val accent = ContextCompat.getColor(requireContext(), Variant.getAccentColourId())
+        val accent = ContextCompat.getColor(requireContext(), activityResources.accentColourId)
         coordinateFormatButton = view.findViewById(R.id.coord_format_button)
         coordinateFormatButton.setBackgroundColor(accent)
         coordinateFormatButton.text = coordinateFormat.name

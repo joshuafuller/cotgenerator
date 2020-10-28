@@ -16,26 +16,20 @@ import java.util.*
 
 
 internal open class TcpThread(prefs: SharedPreferences) : BaseThread(prefs) {
-    protected var sockets: MutableList<Socket> = ArrayList()
-
     init {
         dataFormat = DataFormat.XML // regardless of what the preference is set as
     }
 
-    protected var socket: Socket? = null
-    protected var outputStream: OutputStream? = null
+    protected lateinit var socket: Socket
+    protected lateinit var outputStream: OutputStream
 
     override fun shutdown() {
         super.shutdown()
-        if (socket != null) {
-            try {
-                outputStream!!.close()
-                socket!!.close()
-            } catch (e: Exception) {
-                /* ignore, we're shutting down anyway */
-            }
-            outputStream = null
-            socket = null
+        try {
+            outputStream.close()
+            socket.close()
+        } catch (e: Exception) {
+            /* ignore, we're shutting down anyway */
         }
     }
 
@@ -63,7 +57,7 @@ internal open class TcpThread(prefs: SharedPreferences) : BaseThread(prefs) {
     @Throws(IOException::class)
     protected open fun sendToDestination(cot: CursorOnTarget) {
         try {
-            outputStream!!.write(cot.toBytes(dataFormat))
+            outputStream.write(cot.toBytes(dataFormat))
             Timber.i("Sent cot: %s", cot.callsign)
         } catch (e: NullPointerException) {
             /* Thrown when the thread is cancelled from another thread and we try to access the sockets */

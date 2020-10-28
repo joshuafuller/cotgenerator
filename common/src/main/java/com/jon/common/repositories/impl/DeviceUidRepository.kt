@@ -1,15 +1,19 @@
-package com.jon.common.repositories
+package com.jon.common.repositories.impl
 
 import android.content.Context
-import com.jon.common.CotApplication
+import com.jon.common.repositories.IDeviceUidRepository
 import timber.log.Timber
-import java.io.*
+import java.io.BufferedReader
+import java.io.File
+import java.io.IOException
+import java.io.InputStreamReader
 import java.util.*
+import javax.inject.Inject
 
-class DeviceUidRepository {
-    private val uid = generate(CotApplication.context)
+class DeviceUidRepository @Inject constructor(context: Context) : IDeviceUidRepository {
+    private val uid = generate(context)
 
-    fun getUid() = uid
+    override fun getUid() = uid
 
     private fun generate(context: Context): String {
         var generatedUid: String
@@ -51,9 +55,6 @@ class DeviceUidRepository {
     }
 
     companion object {
-        private val instance = DeviceUidRepository()
-        fun getInstance() = instance
-
         private const val FILENAME = "uuid.txt"
     }
 }

@@ -7,4 +7,7 @@
     <string name="permission_rationale">Two permissions are required:
         1) GPS - to translate into CoT;
         2) Storage - to read certificate files for SSL authentication</string>
+
+    <string name="start_from_boot">CoT Beacon will now start transmitting on device boot!</string>
+    <string name="dont_start_from_boot">CoT Beacon will no longer launch on device boot.</string>
 </resources>

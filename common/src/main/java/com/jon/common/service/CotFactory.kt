@@ -2,15 +2,18 @@ package com.jon.common.service
 
 import android.content.SharedPreferences
 import com.jon.common.cot.CursorOnTarget
-import com.jon.common.repositories.BatteryRepository
-import com.jon.common.repositories.DeviceUidRepository
-import com.jon.common.repositories.GpsRepository
+import com.jon.common.di.BuildResources
+import com.jon.common.repositories.IGpsRepository
+import com.jon.common.repositories.IBatteryRepository
+import com.jon.common.repositories.IDeviceUidRepository
 
-abstract class CotFactory(protected val prefs: SharedPreferences) {
-    protected val gpsRepository = GpsRepository.getInstance()
-    protected val batteryRepository = BatteryRepository.getInstance()
-    protected val deviceUidRepository = DeviceUidRepository.getInstance()
-
+abstract class CotFactory(
+        protected val prefs: SharedPreferences,
+        protected val buildResources: BuildResources,
+        protected val deviceUidRepository: IDeviceUidRepository,
+        protected val gpsRepository: IGpsRepository,
+        protected val batteryRepository: IBatteryRepository
+) {
     abstract fun generate(): List<CursorOnTarget>
     protected abstract fun initialise(): List<CursorOnTarget>
     protected abstract fun update(): List<CursorOnTarget>

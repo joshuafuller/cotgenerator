@@ -3,7 +3,6 @@ package com.jon.common.service
 import android.content.SharedPreferences
 import com.jon.common.cot.CursorOnTarget
 import com.jon.common.prefs.CommonPrefs
-import com.jon.common.prefs.getStringFromPair
 import com.jon.common.utils.NetworkHelper
 import timber.log.Timber
 import java.io.IOException

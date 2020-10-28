@@ -6,7 +6,7 @@ import com.jon.common.cot.CursorOnTarget
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getStringFromPair
 import com.jon.common.presets.OutputPreset
-import com.jon.common.repositories.PresetRepository
+import com.jon.common.repositories.IPresetRepository
 import com.jon.common.utils.Constants
 import timber.log.Timber
 import java.io.ByteArrayInputStream
@@ -18,20 +18,21 @@ import java.security.cert.CertificateException
 import java.util.concurrent.ExecutionException
 import javax.net.ssl.*
 
-internal class SslThread(prefs: SharedPreferences) : TcpThread(prefs) {
+internal class SslThread(
+        prefs: SharedPreferences,
+        private val presetRepository: IPresetRepository
+) : TcpThread(prefs) {
 
     override fun shutdown() {
         super.shutdown()
         closeFromMainThread(outputStream)
         closeFromMainThread(socket)
-        outputStream = null
-        socket = null
     }
 
     @Throws(IOException::class)
     override fun sendToDestination(cot: CursorOnTarget) {
         try {
-            outputStream!!.write(cot.toBytes(dataFormat))
+            outputStream.write(cot.toBytes(dataFormat))
             Timber.i("Sent cot: %s", cot.callsign)
         } catch (e: NullPointerException) {
             /* Thrown when the thread is cancelled from another thread and we try to access the sockets */
@@ -68,12 +69,11 @@ internal class SslThread(prefs: SharedPreferences) : TcpThread(prefs) {
         /* This contains only the basic values: protocol, alias, address and port. We now need to query the
          * database to grab SSL cert information, then return this upgraded OutputPreset object if successful. */
         val basicPreset = OutputPreset.fromString(prefs.getStringFromPair(CommonPrefs.SSL_PRESETS))
-        val repository = PresetRepository.getInstance()
-        val sslPreset = repository.getPreset(basicPreset!!.protocol, basicPreset.address, basicPreset.port)
+        val sslPreset = presetRepository.getPreset(basicPreset!!.protocol, basicPreset.address, basicPreset.port)
         return if (sslPreset == null) {
             /* If there is no database entry corresponding to the above protocol/address/port combo,
              * we treat this as a default. So grab the values from default certs */
-            val sslDefaults = repository.defaultsByProtocol(basicPreset.protocol)
+            val sslDefaults = presetRepository.defaultsByProtocol(basicPreset.protocol)
             if (sslDefaults.isNotEmpty()) {
                 sslDefaults[0] // Discord TAK Server
             } else {

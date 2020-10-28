@@ -2,12 +2,12 @@ package com.jon.common.versioncheck
 
 import android.content.SharedPreferences
 import com.jon.common.cot.UtcTimestamp
+import com.jon.common.di.BuildResources
 import com.jon.common.prefs.CommonPrefs
-import com.jon.common.variants.Variant
 import io.reactivex.Observable
 import kotlin.math.max
 
-class UpdateChecker {
+class UpdateChecker(private val buildResources: BuildResources) {
     fun fetchReleases(): Observable<List<GithubRelease>> {
         val githubApi = RetrofitClient.get().create(GithubApi::class.java)
         return githubApi.getAllReleases()
@@ -21,7 +21,7 @@ class UpdateChecker {
         return try {
             /* Split into arrays of major, minor version numbers */
             val discovered = latest.name.split(".").map { it.toInt() }.toMutableList()
-            val installed = Variant.getVersionName().split(".").map { it.toInt() }.toMutableList()
+            val installed = buildResources.versionName.split(".").map { it.toInt() }.toMutableList()
             val longest = max(discovered.size, installed.size)
 
             /* Make them both the same length, padded with trailing zeros. Accounts for comparisons between

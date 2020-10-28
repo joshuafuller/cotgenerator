@@ -1,16 +1,18 @@
-package com.jon.common.repositories
+package com.jon.common.repositories.impl
 
 import android.location.Location
 import android.os.Build
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.jon.common.repositories.IGpsRepository
 import timber.log.Timber
+import javax.inject.Inject
 
-class GpsRepository private constructor() {
+class GpsRepository @Inject constructor() : IGpsRepository {
     private val lock = Any()
     private val lastLocation = MutableLiveData<Location?>().also { it.value = null }
 
-    fun setLocation(location: Location?) {
+    override fun setLocation(location: Location?) {
         synchronized(lock) {
             if (location != null) {
                 Timber.d("Updating GPS to %f %f", location.latitude, location.longitude)
@@ -21,17 +23,17 @@ class GpsRepository private constructor() {
         }
     }
 
-    fun getLocation(): LiveData<Location?> {
+    override fun getLocation(): LiveData<Location?> {
         return lastLocation
     }
 
-    fun latitude() = lastLocation.value?.latitude ?: ZERO
+    override fun latitude() = lastLocation.value?.latitude ?: ZERO
 
-    fun longitude() = lastLocation.value?.longitude ?: ZERO
+    override fun longitude() = lastLocation.value?.longitude ?: ZERO
 
-    fun altitude() = lastLocation.value?.altitude ?: ZERO
+    override fun altitude() = lastLocation.value?.altitude ?: ZERO
 
-    fun bearing(): Double {
+    override fun bearing(): Double {
         return if (lastLocation.value?.hasBearing() == true) {
             lastLocation.value?.bearing?.toDouble() ?: ZERO
         } else {
@@ -39,7 +41,7 @@ class GpsRepository private constructor() {
         }
     }
 
-    fun speed(): Double {
+    override fun speed(): Double {
         return if (lastLocation.value?.hasSpeed() == true) {
             lastLocation.value?.speed?.toDouble() ?: ZERO
         } else {
@@ -47,7 +49,7 @@ class GpsRepository private constructor() {
         }
     }
 
-    fun circularError90(): Double {
+    override fun circularError90(): Double {
         return if (lastLocation.value?.hasAccuracy() == true) {
             lastLocation.value?.accuracy?.toDouble() ?: UNKNOWN
         } else {
@@ -55,7 +57,7 @@ class GpsRepository private constructor() {
         }
     }
 
-    fun linearError90(): Double {
+    override fun linearError90(): Double {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && lastLocation.value?.hasVerticalAccuracy() == true) {
             lastLocation.value?.verticalAccuracyMeters?.toDouble() ?: UNKNOWN
         } else {
@@ -63,14 +65,11 @@ class GpsRepository private constructor() {
         }
     }
 
-    fun hasGpsFix(): Boolean {
+    override fun hasGpsFix(): Boolean {
         return lastLocation.value != null
     }
 
     companion object {
-        private val instance = GpsRepository()
-        fun getInstance() = instance
-
         private const val UNKNOWN: Double = 99999999.0
         private const val ZERO: Double = 0.0
     }

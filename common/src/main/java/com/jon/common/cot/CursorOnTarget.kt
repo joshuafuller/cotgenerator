@@ -10,12 +10,12 @@ import com.jon.common.cot.proto.StatusOuterClass
 import com.jon.common.cot.proto.Takmessage.TakMessage
 import com.jon.common.cot.proto.TakvOuterClass.Takv
 import com.jon.common.cot.proto.TrackOuterClass
+import com.jon.common.di.BuildResources
 import com.jon.common.utils.DataFormat
-import com.jon.common.variants.Variant
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class CursorOnTarget {
+class CursorOnTarget(buildResources: BuildResources) {
     var how = "m-g"
     var type = "a-f-G-U-C"
 
@@ -50,9 +50,9 @@ class CursorOnTarget {
     // System info
     var battery = 100                                   // internal battery charge percentage, scale of 1-100
     val device = getDeviceName()                 // Android device model
-    val platform = Variant.getPlatform()         // application name
+    val platform = buildResources.platform       // application name
     val os = Build.VERSION.SDK_INT.toString()    // Android SDK version number
-    val version = Variant.getVersionName()       // application version number
+    val version = buildResources.versionName     // application version number
 
     fun toBytes(dataFormat: DataFormat): ByteArray {
         return when (dataFormat) {

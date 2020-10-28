@@ -3,7 +3,6 @@ package com.jon.common
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
-import com.jon.common.repositories.BatteryRepository
 import timber.log.Timber
 import timber.log.Timber.DebugTree
 
@@ -21,9 +20,6 @@ open class CotApplication : MultiDexApplication() {
                 return "(" + element.fileName + ":" + element.lineNumber + ")"
             }
         })
-
-        /* Register a sticky intent to allow fetching battery status during runtime */
-        BatteryRepository.getInstance().initialise(context)
     }
 
     companion object {

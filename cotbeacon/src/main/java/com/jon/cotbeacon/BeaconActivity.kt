@@ -6,13 +6,10 @@ import com.jon.common.prefs.getBooleanFromPair
 import com.jon.common.ui.main.MainActivity
 import com.jon.common.ui.main.MainFragmentDirections
 import com.jon.common.utils.Notify
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class BeaconActivity : MainActivity() {
-    override val activityLayoutId = R.layout.beacon_activity
-    override val menuResourceId = R.menu.beacon_main_menu
-    override val navHostFragmentId = R.id.nav_host_fragment
-    override val permissionRationaleId = R.string.permission_rationale
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val result = super.onCreateOptionsMenu(menu)
         menu.findItem(R.id.launch_from_boot).isChecked = prefs.getBooleanFromPair(BeaconPrefs.LAUNCH_FROM_BOOT)
@@ -36,9 +33,9 @@ class BeaconActivity : MainActivity() {
                         .putBoolean(BeaconPrefs.LAUNCH_FROM_BOOT.key, newValue)
                         .apply()
                 if (newValue) {
-                    Notify.yellow(getRootView(), "CoT Beacon will now start transmitting on device boot!")
+                    Notify.yellow(getRootView(), getString(R.string.start_from_boot))
                 } else {
-                    Notify.blue(getRootView(), "CoT Beacon will no longer launch on device boot.")
+                    Notify.blue(getRootView(), getString(R.string.dont_start_from_boot))
                 }
             }
         }

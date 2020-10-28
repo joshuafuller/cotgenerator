@@ -5,14 +5,26 @@ import com.jon.common.cot.CotRole
 import com.jon.common.cot.CotTeam
 import com.jon.common.cot.CursorOnTarget
 import com.jon.common.cot.UtcTimestamp
+import com.jon.common.di.BuildResources
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getIntFromPair
 import com.jon.common.prefs.getStringFromPair
+import com.jon.common.repositories.IBatteryRepository
+import com.jon.common.repositories.IDeviceUidRepository
+import com.jon.common.repositories.IGpsRepository
 import com.jon.common.service.CotFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
-internal class BeaconCotFactory(prefs: SharedPreferences) : CotFactory(prefs) {
-    private val cot = CursorOnTarget()
+internal class BeaconCotFactory @Inject constructor(
+        prefs: SharedPreferences,
+        buildResources: BuildResources,
+        deviceUidRepository: IDeviceUidRepository,
+        gpsRepository: IGpsRepository,
+        batteryRepository: IBatteryRepository
+) : CotFactory(prefs, buildResources, deviceUidRepository, gpsRepository, batteryRepository) {
+
+    private val cot = CursorOnTarget(buildResources)
 
     override fun generate(): List<CursorOnTarget> {
         return if (cot.uid == null) initialise() else update()

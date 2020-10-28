@@ -8,25 +8,30 @@ import android.view.*
 import android.widget.ListView
 import androidx.fragment.app.Fragment
 import com.jon.common.R
-import com.jon.common.variants.Variant
+import com.jon.common.di.BuildResources
 import com.jon.common.versioncheck.GithubRelease
 import com.jon.common.versioncheck.UpdateChecker
+import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import java.text.SimpleDateFormat
-import java.util.*
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class AboutFragment : Fragment() {
-    private val updateChecker = UpdateChecker()
+    @Inject
+    lateinit var buildResources: BuildResources
 
-    private val rows: List<AboutRow> = listOf(
-            AboutRow("Version", Variant.getVersionName()),
-            AboutRow("Build Type", BUILD_TYPE),
-            AboutRow("Build Time", BUILD_DATE),
-            AboutRow("Latest Github Release", LOADING, R.drawable.refresh),
-            AboutRow("Github Repository", "https://github.com/jonapoul/cotgenerator", R.drawable.go_to)
-    )
+    private val updateChecker by lazy { UpdateChecker(buildResources) }
+
+    private val rows: List<AboutRow> by lazy {
+        listOf(
+                AboutRow("Version", buildResources.versionName),
+                AboutRow("Build Type", if (buildResources.isDebug) "Debug" else "Release"),
+                AboutRow("Build Time", buildResources.buildTimestamp),
+                AboutRow("Latest Github Release", LOADING, R.drawable.refresh),
+                AboutRow("Github Repository", "https://github.com/jonapoul/cotgenerator", R.drawable.go_to)
+        )
+    }
 
     private val adapter by lazy { AboutArrayAdapter(requireContext(), rows) }
 
@@ -100,8 +105,5 @@ class AboutFragment : Fragment() {
         const val LOADING = "Loading..."
         const val LATEST_INDEX = 3
         const val GITHUB_INDEX = 4
-
-        private val BUILD_TYPE = if (Variant.isDebug()) "Debug" else "Release"
-        private val BUILD_DATE = SimpleDateFormat("HH:mm:ss dd MMM yyyy z", Locale.ENGLISH).format(Variant.getBuildDate())
     }
 }

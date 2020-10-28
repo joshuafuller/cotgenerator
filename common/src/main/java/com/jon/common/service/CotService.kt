@@ -1,46 +1,65 @@
 package com.jon.common.service
 
-import android.app.*
+import android.app.Service
 import android.content.Intent
 import android.content.SharedPreferences
-import android.os.*
-import androidx.preference.PreferenceManager
+import android.os.Binder
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.jon.common.CotApplication
-import com.jon.common.repositories.GpsRepository
-import com.jon.common.repositories.StatusRepository
+import com.jon.common.repositories.IGpsRepository
+import com.jon.common.repositories.IPresetRepository
+import com.jon.common.repositories.IStatusRepository
 import com.jon.common.utils.Notify
-import com.jon.common.variants.Variant
+import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class CotService : Service(),
         ThreadErrorListener {
-    /* Repositories */
-    private val gpsRepository = GpsRepository.getInstance()
-    private val statusRepository = StatusRepository.getInstance()
+    @Inject
+    lateinit var prefs: SharedPreferences
 
-    /* Service binding */
+    @Inject
+    lateinit var cotFactory: CotFactory
+
+    @Inject
+    lateinit var notificationGenerator: INotificationGenerator
+
+    @Inject
+    lateinit var gpsRepository: IGpsRepository
+
+    @Inject
+    lateinit var statusRepository: IStatusRepository
+
+    @Inject
+    lateinit var presetRepository: IPresetRepository
+
     inner class ServiceBinder : Binder() {
         val service = this@CotService
     }
+
     private val binder: IBinder = ServiceBinder()
 
-    /* GPS fetching */
     private var updateRateSeconds = 0
     private var fusedLocationClient: FusedLocationProviderClient? = null
     private var locationRequest: LocationRequest? = null
-    private val locationCallback = GpsLocationCallback(gpsRepository)
+    private val locationCallback by lazy { GpsLocationCallback(gpsRepository) }
 
-    /* Settings */
-    private val prefs: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
+    private val threadManager by lazy {
+        ThreadManager(
+                prefs = prefs,
+                cotFactory = cotFactory,
+                errorListener = this,
+                presetRepository = presetRepository
+        )
+    }
 
-    /* Thread management */
-    private val threadManager by lazy { ThreadManager(prefs, this) }
-
-    /* Notifications */
-    private val notificationGenerator: NotificationGenerator by lazy { NotificationGenerator(this, prefs) }
 
     override fun onBind(intent: Intent): IBinder? {
         return binder
@@ -138,7 +157,7 @@ class CotService : Service(),
     }
 
     companion object {
-        private val BASE_INTENT_ID = "${Variant.getAppId()}.CotService."
+        private val BASE_INTENT_ID = "com.jon.common.CotService."
         val STOP_SERVICE = "${BASE_INTENT_ID}.STOP"
         val START_SERVICE = "${BASE_INTENT_ID}.START"
     }
