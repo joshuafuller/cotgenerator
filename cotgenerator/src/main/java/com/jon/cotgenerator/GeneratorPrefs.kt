@@ -2,7 +2,7 @@ package com.jon.cotgenerator
 
 import com.jon.common.prefs.PrefPair
 
-object GeneratorPrefs {
+internal object GeneratorPrefs {
     val RANDOM_CALLSIGNS = PrefPair.bool(R.string.key_random_callsigns, R.bool.def_random_callsigns)
     val INDEXED_CALLSIGNS = PrefPair.bool(R.string.key_indexed_callsigns, R.bool.def_indexed_callsigns)
     val RANDOM_COLOUR = PrefPair.bool(R.string.key_random_colour, R.bool.def_random_colour)

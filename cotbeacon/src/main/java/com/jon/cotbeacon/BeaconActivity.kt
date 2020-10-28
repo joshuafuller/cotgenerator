@@ -4,11 +4,14 @@ import android.view.Menu
 import android.view.MenuItem
 import com.jon.common.prefs.getBooleanFromPair
 import com.jon.common.ui.main.MainActivity
+import com.jon.common.ui.main.MainFragmentDirections
 import com.jon.common.utils.Notify
-import com.jon.common.variants.Variant
 
 class BeaconActivity : MainActivity() {
+    override val activityLayoutId = R.layout.beacon_activity
     override val menuResourceId = R.menu.beacon_main_menu
+    override val navHostFragmentId = R.id.nav_host_fragment
+    override val permissionRationaleId = R.string.permission_rationale
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val result = super.onCreateOptionsMenu(menu)
@@ -18,9 +21,10 @@ class BeaconActivity : MainActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            /* Pseudo-overridden from superclass */
-            R.id.location -> navController.navigate(Variant.getMainToLocationDirections())
-            R.id.about -> navController.navigate(Variant.getMainToAboutDirections())
+            R.id.location ->
+                navController.navigate(MainFragmentDirections.actionMainToLocation())
+            R.id.about ->
+                navController.navigate(MainFragmentDirections.actionMainToAbout())
 
             /* Deal with checkbox pressing, since Android doesn't invert the "checked status" of a
              * menu checkbox when selecting it. So here we invert that status, then put the new
@@ -38,7 +42,7 @@ class BeaconActivity : MainActivity() {
                 }
             }
         }
-        return true
+        return super.onOptionsItemSelected(item)
     }
 }
 

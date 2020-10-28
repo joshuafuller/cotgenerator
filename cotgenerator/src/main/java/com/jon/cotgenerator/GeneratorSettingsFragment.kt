@@ -9,6 +9,8 @@ import com.jon.common.utils.InputValidator
 
 class GeneratorSettingsFragment : SettingsFragment() {
 
+    override val settingsXmlId = R.xml.settings
+
     override fun getPhoneInputKeys() = super.getPhoneInputKeys().apply {
         add(GeneratorPrefs.ICON_COUNT.key)
         add(GeneratorPrefs.MOVEMENT_SPEED.key)

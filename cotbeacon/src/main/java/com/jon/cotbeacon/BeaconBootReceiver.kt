@@ -9,7 +9,6 @@ import com.jon.common.prefs.getBooleanFromPair
 import com.jon.common.service.CotService
 import com.jon.common.utils.Notify
 import timber.log.Timber
-import java.lang.Exception
 
 
 class BeaconBootReceiver : BroadcastReceiver() {

@@ -29,6 +29,8 @@ abstract class SettingsFragment : PreferenceFragmentCompat(),
     protected val prefs: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(requireActivity()) }
     private val presetRepository = PresetRepository.getInstance()
 
+    abstract val settingsXmlId: Int
+
     protected open fun getPhoneInputKeys() = mutableListOf<String>(
             /* blank, all phone inputs are in Generator only */
     )
@@ -52,7 +54,7 @@ abstract class SettingsFragment : PreferenceFragmentCompat(),
     }
 
     override fun onCreatePreferences(savedState: Bundle?, rootKey: String?) {
-        setPreferencesFromResource(Variant.getSettingsXmlId(), rootKey)
+        setPreferencesFromResource(settingsXmlId, rootKey)
 
         /* Set numeric input on numeric fields */
         val phoneInputType = OnBindEditTextListener { it.inputType = InputType.TYPE_CLASS_PHONE }

@@ -10,7 +10,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.IBinder
 import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -42,7 +41,7 @@ import pub.devrel.easypermissions.EasyPermissions
 import timber.log.Timber
 import java.io.IOException
 
-open class MainActivity : AppCompatActivity(),
+abstract class MainActivity : AppCompatActivity(),
         EasyPermissions.PermissionCallbacks,
         OnSharedPreferenceChangeListener,
         ServiceConnection,
@@ -56,9 +55,12 @@ open class MainActivity : AppCompatActivity(),
     private val updateChecker = UpdateChecker()
     private val compositeDisposable = CompositeDisposable()
 
-    protected val navController: NavController by lazy { findNavController(Variant.getNavHostFragmentId()) }
+    abstract val activityLayoutId: Int
+    abstract val menuResourceId: Int
+    abstract val navHostFragmentId: Int
+    abstract val permissionRationaleId: Int
 
-    protected open val menuResourceId = R.menu.main_menu
+    protected val navController: NavController by lazy { findNavController(navHostFragmentId) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,7 +69,7 @@ open class MainActivity : AppCompatActivity(),
         } else {
             EasyPermissions.requestPermissions(
                     this,
-                    Variant.getPermissionRationale(),
+                    getString(permissionRationaleId),
                     PERMISSIONS_CODE,
                     *PERMISSIONS
             )
@@ -75,7 +77,7 @@ open class MainActivity : AppCompatActivity(),
     }
 
     private fun buildActivity() {
-        setContentView(Variant.getMainActivityLayoutId())
+        setContentView(activityLayoutId)
         initialiseToolbar()
         compositeDisposable.add(
                 updateChecker.fetchReleases()
@@ -129,16 +131,6 @@ open class MainActivity : AppCompatActivity(),
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(menuResourceId, menu)
         return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.location ->
-                navController.navigate(Variant.getMainToLocationDirections())
-            R.id.about ->
-                navController.navigate(Variant.getMainToAboutDirections())
-        }
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {

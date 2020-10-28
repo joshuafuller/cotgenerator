@@ -6,6 +6,9 @@ import com.jon.common.prefs.CommonPrefs
 import com.jon.common.ui.main.SettingsFragment
 
 class BeaconSettingsFragment : SettingsFragment() {
+
+    override val settingsXmlId = R.xml.settings
+
     override fun onCreatePreferences(savedState: Bundle?, rootKey: String?) {
         super.onCreatePreferences(savedState, rootKey)
 

@@ -25,6 +25,8 @@ object InjectorUtils {
     }
 
     fun getBlankSettingsFragment(): SettingsFragment {
-        return object : SettingsFragment() { }
+        return object : SettingsFragment() {
+            override val settingsXmlId = 0
+        }
     }
 }

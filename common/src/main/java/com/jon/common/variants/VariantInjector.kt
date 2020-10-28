@@ -11,19 +11,13 @@ interface VariantInjector {
     val buildDate: Date
     val appId: String
     val appName: String
-    val permissionRationale: String
     val versionName: String
     val platform: String
     val isDebug: Boolean
-    val settingsXmlId: Int
     val accentColourId: Int
-    val mainActivityLayoutId: Int
-    val navHostFragmentId: Int
     val startStopButtonId: Int
 
     val mainToListDirections: NavDirections
-    val mainToLocationDirections: NavDirections
-    val mainToAboutDirections: NavDirections
 
     fun getSettingsFragment(): SettingsFragment
     fun getCotFactory(prefs: SharedPreferences): CotFactory
