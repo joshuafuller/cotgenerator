@@ -16,6 +16,8 @@ import com.jon.common.R
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getStringFromPair
 import com.jon.common.presets.OutputPreset
+import com.jon.common.repositories.StatusRepository
+import com.jon.common.service.ServiceState
 import com.jon.common.ui.ServiceCommunicator
 import com.jon.common.utils.Notify
 import com.jon.common.utils.Protocol
@@ -24,6 +26,7 @@ import com.jon.common.variants.Variant
 /* Class to act as a wrapper to the SettingsFragment and the start/stop button view */
 class MainFragment : Fragment() {
 
+    private val statusRepository = StatusRepository.getInstance()
     private val prefs by lazy { PreferenceManager.getDefaultSharedPreferences(requireContext()) }
     private lateinit var startStopButton: Button
     private val serviceCommunicator by lazy { requireActivity() as ServiceCommunicator }
@@ -31,7 +34,6 @@ class MainFragment : Fragment() {
     private val startServiceOnClickListener = View.OnClickListener {
         if (presetIsSelected()) {
             serviceCommunicator.startService()
-            showStopButton()
         } else {
             Notify.red(requireView(), "Select an output destination first!")
         }
@@ -39,7 +41,6 @@ class MainFragment : Fragment() {
 
     private val stopServiceOnClickListener = View.OnClickListener {
         serviceCommunicator.stopService()
-        showStartButton()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +54,17 @@ class MainFragment : Fragment() {
         val view = View.inflate(context, R.layout.fragment_main, null)
         initialiseStartStopButton(view)
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        statusRepository.getStatus().observe(viewLifecycleOwner) {
+            if (it == ServiceState.RUNNING) {
+                showStopButton()
+            } else {
+                showStartButton()
+            }
+        }
     }
 
     override fun onPause() {
