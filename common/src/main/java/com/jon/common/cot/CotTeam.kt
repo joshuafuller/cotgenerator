@@ -16,12 +16,12 @@ enum class CotTeam(private val colourName: String, private val colourHex: String
     ORANGE("Orange", "FFFF8000"),
     YELLOW("Yellow", "FFFFFF00"),
     WHITE("White", "FFFFFFFF"),
-    GREEN("Green", "FF008009"),
-    DARK_GREEN("Dark Green", "FF00620B"),
+    GREEN("Green", "FF00FF00"),
+    DARK_GREEN("Dark Green", "FF006400"),
     CYAN("Cyan", "FF00FFFF"),
-    TEAL("Teal", "FF008784"),
-    BLUE("Blue", "FF0003FB"),
-    DARK_BLUE("Dark Blue", "FF0000A0");
+    TEAL("Teal", "FF008080"),
+    BLUE("Blue", "FF0000FF"),
+    DARK_BLUE("Dark Blue", "FF00008B");
 
     override fun toString() = colourName
 
