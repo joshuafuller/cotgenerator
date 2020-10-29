@@ -17,10 +17,7 @@ import com.jon.common.R
 import com.jon.common.di.ActivityResources
 import com.jon.common.presets.OutputPreset
 import com.jon.common.repositories.IPresetRepository
-import com.jon.common.utils.GenerateInt
-import com.jon.common.utils.Notify
-import com.jon.common.utils.Paths
-import com.jon.common.utils.Protocol
+import com.jon.common.utils.*
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import com.leinardi.android.speeddial.SpeedDialView
 import com.nbsp.materialfilepicker.MaterialFilePicker
@@ -90,7 +87,7 @@ class ListPresetsFragment : Fragment(),
     }
 
     override fun onClickEditItem(preset: OutputPreset) {
-        navController.navigate(activityResources.listToEditDirections(preset))
+        navController.safelyNavigate(activityResources.listToEditDirections(preset))
     }
 
     override fun onClickDeleteItem(preset: OutputPreset) {
@@ -115,7 +112,7 @@ class ListPresetsFragment : Fragment(),
             return@setOnActionSelectedListener when (it.id) {
                 R.id.new_preset_create -> {
                     /* Create new preset, so launch the activity to enter the required values */
-                    navController.navigate(activityResources.listToEditDirections(null))
+                    navController.safelyNavigate(activityResources.listToEditDirections(null))
                     true
                 }
                 R.id.new_preset_import -> {
@@ -154,7 +151,7 @@ class ListPresetsFragment : Fragment(),
                 if (it == null) {
                     Notify.red(requireView(), "Failed importing from $path")
                 } else {
-                    navController.navigate(activityResources.listToEditDirections(it))
+                    navController.safelyNavigate(activityResources.listToEditDirections(it))
                 }
             }
         }

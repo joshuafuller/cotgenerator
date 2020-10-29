@@ -19,9 +19,9 @@ class BeaconActivity : MainActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.location ->
-                navController.navigate(MainFragmentDirections.actionMainToLocation())
+                navController.safelyNavigate(activityResources.mainToLocationDirections)
             R.id.about ->
-                navController.navigate(MainFragmentDirections.actionMainToAbout())
+                navController.safelyNavigate(activityResources.mainToAboutDirections)
 
             /* Deal with checkbox pressing, since Android doesn't invert the "checked status" of a
              * menu checkbox when selecting it. So here we invert that status, then put the new

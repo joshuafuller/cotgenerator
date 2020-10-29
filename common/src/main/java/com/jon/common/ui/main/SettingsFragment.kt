@@ -18,6 +18,7 @@ import com.jon.common.repositories.IPresetRepository
 import com.jon.common.utils.InputValidator
 import com.jon.common.utils.Notify
 import com.jon.common.utils.Protocol
+import com.jon.common.utils.safelyNavigate
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
@@ -81,7 +82,7 @@ abstract class SettingsFragment : PreferenceFragmentCompat(),
         /* Launch a new activity when clicking "Edit Presets" */
         findPreference<Preference>(CommonPrefs.EDIT_PRESETS)?.let {
             it.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                navController.navigate(activityResources.mainToListDirections)
+                navController.safelyNavigate(activityResources.mainToListDirections)
                 true
             }
         }
