@@ -16,10 +16,10 @@ class GpsRepository @Inject constructor() : IGpsRepository {
         synchronized(lock) {
             if (location != null) {
                 Timber.d("Updating GPS to %f %f", location.latitude, location.longitude)
+                lastLocation.value = location
             } else {
                 Timber.d("Null location")
             }
-            lastLocation.value = location
         }
     }
 
