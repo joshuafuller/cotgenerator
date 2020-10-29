@@ -118,7 +118,7 @@ internal class GpsConverter {
                 val accuracy = if (sdkOver26() && location.hasSpeedAccuracy()) {
                     " ± %.1f".format(abs(location.speedAccuracyMetersPerSecond))
                 } else ""
-                "%.1f%s".format(location.speed, accuracy)
+                "%.1f%s m/s".format(location.speed, accuracy)
             } else {
                 UNKNOWN
             }
@@ -127,9 +127,9 @@ internal class GpsConverter {
         private fun formatAltitude(location: Location): String {
             return if (location.hasAltitude()) {
                 val accuracy = if (sdkOver26() && location.hasVerticalAccuracy()) {
-                    " ± %.1fm".format(abs(location.verticalAccuracyMeters))
+                    " ± %.1f".format(abs(location.verticalAccuracyMeters))
                 } else ""
-                return "%.1fm%s".format(location.altitude, accuracy)
+                return "%.1f%sm".format(location.altitude, accuracy)
             } else {
                 UNKNOWN
             }
@@ -142,9 +142,9 @@ internal class GpsConverter {
             }
             return if (location.hasBearing()) {
                 val accuracy = if (sdkOver26() && location.hasBearingAccuracy()) {
-                    " ± %.1f°".format(abs(location.bearingAccuracyDegrees))
+                    " ± %.1f".format(abs(location.bearingAccuracyDegrees))
                 } else ""
-                return "%.1f° %s%s".format(location.bearing, AngleUtils.getDirection(location.bearing.toDouble()), accuracy)
+                return "%.1f%s° %s".format(location.bearing, accuracy, AngleUtils.getDirection(location.bearing.toDouble()))
             } else {
                 UNKNOWN
             }

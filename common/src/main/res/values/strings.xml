@@ -7,6 +7,7 @@
     <string name="button_start">START SERVICE</string>
 
     <string name="menu_location">My Location</string>
+    <string name="menu_chat">Chat</string>
     <string name="menu_about">About</string>
     <string name="menu_save">Save</string>
     <string name="menu_delete_all">Delete All</string>
@@ -64,7 +65,7 @@
     <string name="location_gps_fixes">GPS Satellites:</string>
     <string name="location_compass">Compass (MN)</string>
     <string name="location_bearing">Bearing (TN)</string>
-    <string name="location_speed">Speed (m/s)</string>
+    <string name="location_speed">Speed</string>
     <string name="location_altitude">Altitude (WGS84)</string>
     <string name="location_gps_status">GPS Status</string>
 </resources>
