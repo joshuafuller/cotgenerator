@@ -5,5 +5,5 @@ import com.jon.common.service.ServiceState
 
 interface IStatusRepository {
     fun getStatus(): LiveData<ServiceState>
-    fun setStatus(state: ServiceState)
+    fun postStatus(state: ServiceState)
 }

@@ -16,7 +16,7 @@ class StatusRepository @Inject constructor() : IStatusRepository {
         }
     }
 
-    override fun setStatus(state: ServiceState) {
+    override fun postStatus(state: ServiceState) {
         synchronized(lock) {
             currentStatus.postValue(state)
         }

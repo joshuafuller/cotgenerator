@@ -13,7 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import com.jon.common.R
-import com.jon.common.di.ActivityResources
+import com.jon.common.di.UiResources
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getStringFromPair
 import com.jon.common.presets.OutputPreset
@@ -33,7 +33,7 @@ class MainFragment : Fragment() {
     private val serviceCommunicator by lazy { requireActivity() as ServiceCommunicator }
 
     @Inject
-    lateinit var activityResources: ActivityResources
+    lateinit var uiResources: UiResources
 
     @Inject
     lateinit var prefs: SharedPreferences
@@ -86,7 +86,7 @@ class MainFragment : Fragment() {
     }
 
     private fun initialiseStartStopButton(view: View) {
-        startStopButton = view.findViewById(activityResources.startStopButtonId)
+        startStopButton = view.findViewById(uiResources.startStopButtonId)
         Notify.setAnchor(startStopButton)
         val isRunning = if (serviceCommunicator.isServiceNull()) false else serviceCommunicator.isServiceRunning()
         if (isRunning) {
@@ -109,7 +109,7 @@ class MainFragment : Fragment() {
     private fun showStartButton() {
         setButtonState(
                 textId = R.string.button_start,
-                backgroundColourId = activityResources.accentColourId,
+                backgroundColourId = uiResources.accentColourId,
                 foregroundColourId = R.color.black,
                 iconId = R.drawable.start,
                 onClickListener = startServiceOnClickListener

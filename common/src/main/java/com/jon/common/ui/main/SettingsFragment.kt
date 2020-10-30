@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import androidx.preference.*
 import androidx.preference.EditTextPreference.OnBindEditTextListener
-import com.jon.common.di.ActivityResources
+import com.jon.common.di.UiResources
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.PrefPair
 import com.jon.common.presets.OutputPreset
@@ -36,7 +36,7 @@ abstract class SettingsFragment : PreferenceFragmentCompat(),
     protected lateinit var prefs: SharedPreferences
 
     @Inject
-    protected lateinit var activityResources: ActivityResources
+    protected lateinit var uiResources: UiResources
 
     protected open fun getPhoneInputKeys() = mutableListOf<String>(
             /* blank, all phone inputs are in Generator only */
@@ -61,7 +61,7 @@ abstract class SettingsFragment : PreferenceFragmentCompat(),
     }
 
     override fun onCreatePreferences(savedState: Bundle?, rootKey: String?) {
-        setPreferencesFromResource(activityResources.settingsXmlId, rootKey)
+        setPreferencesFromResource(uiResources.settingsXmlId, rootKey)
 
         /* Set numeric input on numeric fields */
         val phoneInputType = OnBindEditTextListener { it.inputType = InputType.TYPE_CLASS_PHONE }
@@ -82,7 +82,7 @@ abstract class SettingsFragment : PreferenceFragmentCompat(),
         /* Launch a new activity when clicking "Edit Presets" */
         findPreference<Preference>(CommonPrefs.EDIT_PRESETS)?.let {
             it.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                navController.safelyNavigate(activityResources.mainToListDirections)
+                navController.safelyNavigate(uiResources.mainToListDirections)
                 true
             }
         }

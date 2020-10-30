@@ -3,7 +3,7 @@ package com.jon.common.di
 import androidx.navigation.NavDirections
 import com.jon.common.presets.OutputPreset
 
-interface ActivityResources {
+interface UiResources {
     /* Layout IDs */
     val activityLayoutId: Int
 

@@ -20,7 +20,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import com.jon.common.R
-import com.jon.common.di.ActivityResources
+import com.jon.common.di.UiResources
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getStringFromPair
 import com.jon.common.repositories.IGpsRepository
@@ -66,7 +66,7 @@ class LocationFragment : Fragment(),
     lateinit var prefs: SharedPreferences
 
     @Inject
-    lateinit var activityResources: ActivityResources
+    lateinit var uiResources: UiResources
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -162,7 +162,7 @@ class LocationFragment : Fragment(),
     }
 
     private fun initialiseCoordinateButtons(view: View) {
-        val accent = ContextCompat.getColor(requireContext(), activityResources.accentColourId)
+        val accent = ContextCompat.getColor(requireContext(), uiResources.accentColourId)
         coordinateFormatButton = view.findViewById(R.id.coord_format_button)
         coordinateFormatButton.setBackgroundColor(accent)
         coordinateFormatButton.text = coordinateFormat.name

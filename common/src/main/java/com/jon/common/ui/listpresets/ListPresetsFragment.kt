@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jon.common.R
-import com.jon.common.di.ActivityResources
+import com.jon.common.di.UiResources
 import com.jon.common.presets.OutputPreset
 import com.jon.common.repositories.IPresetRepository
 import com.jon.common.utils.*
@@ -44,7 +44,7 @@ class ListPresetsFragment : Fragment(),
     lateinit var presetRepository: IPresetRepository
 
     @Inject
-    lateinit var activityResources: ActivityResources
+    lateinit var uiResources: UiResources
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
@@ -87,7 +87,7 @@ class ListPresetsFragment : Fragment(),
     }
 
     override fun onClickEditItem(preset: OutputPreset) {
-        navController.safelyNavigate(activityResources.listToEditDirections(preset))
+        navController.safelyNavigate(uiResources.listToEditDirections(preset))
     }
 
     override fun onClickDeleteItem(preset: OutputPreset) {
@@ -112,7 +112,7 @@ class ListPresetsFragment : Fragment(),
             return@setOnActionSelectedListener when (it.id) {
                 R.id.new_preset_create -> {
                     /* Create new preset, so launch the activity to enter the required values */
-                    navController.safelyNavigate(activityResources.listToEditDirections(null))
+                    navController.safelyNavigate(uiResources.listToEditDirections(null))
                     true
                 }
                 R.id.new_preset_import -> {
@@ -151,7 +151,7 @@ class ListPresetsFragment : Fragment(),
                 if (it == null) {
                     Notify.red(requireView(), "Failed importing from $path")
                 } else {
-                    navController.safelyNavigate(activityResources.listToEditDirections(it))
+                    navController.safelyNavigate(uiResources.listToEditDirections(it))
                 }
             }
         }
@@ -162,7 +162,7 @@ class ListPresetsFragment : Fragment(),
     }
 
     private fun SpeedDialView.buildAndAddAction(@IdRes idRes: Int, @DrawableRes drawableRes: Int, @StringRes stringRes: Int) {
-        val accent = ContextCompat.getColor(context, activityResources.accentColourId)
+        val accent = ContextCompat.getColor(context, uiResources.accentColourId)
         val textColour = ContextCompat.getColor(context, R.color.black)
         addActionItem(
                 SpeedDialActionItem.Builder(idRes, drawableRes)

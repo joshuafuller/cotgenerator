@@ -21,7 +21,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jon.common.CotApplication
 import com.jon.common.R
-import com.jon.common.di.ActivityResources
+import com.jon.common.di.UiResources
 import com.jon.common.di.BuildResources
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getIntFromPair
@@ -54,7 +54,7 @@ abstract class MainActivity : AppCompatActivity(),
     private val updateChecker by lazy { UpdateChecker(buildResources) }
     private val compositeDisposable = CompositeDisposable()
 
-    protected val navController: NavController by lazy { findNavController(activityResources.navHostFragmentId) }
+    protected val navController: NavController by lazy { findNavController(uiResources.navHostFragmentId) }
 
     @Inject
     lateinit var statusRepository: IStatusRepository
@@ -63,7 +63,7 @@ abstract class MainActivity : AppCompatActivity(),
     protected lateinit var prefs: SharedPreferences
 
     @Inject
-    protected lateinit var activityResources: ActivityResources
+    protected lateinit var uiResources: UiResources
 
     @Inject
     protected lateinit var buildResources: BuildResources
@@ -75,7 +75,7 @@ abstract class MainActivity : AppCompatActivity(),
         } else {
             EasyPermissions.requestPermissions(
                     this,
-                    getString(activityResources.permissionRationaleId),
+                    getString(uiResources.permissionRationaleId),
                     PERMISSIONS_CODE,
                     *PERMISSIONS
             )
@@ -83,7 +83,7 @@ abstract class MainActivity : AppCompatActivity(),
     }
 
     private fun buildActivity() {
-        setContentView(activityResources.activityLayoutId)
+        setContentView(uiResources.activityLayoutId)
         initialiseToolbar()
         compositeDisposable.add(
                 updateChecker.fetchReleases()
@@ -134,7 +134,7 @@ abstract class MainActivity : AppCompatActivity(),
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(activityResources.mainMenuId, menu)
+        menuInflater.inflate(uiResources.mainMenuId, menu)
         return true
     }
 

@@ -93,13 +93,13 @@ class CotService : Service(),
 
     fun start() {
         Timber.i("Starting service")
-        statusRepository.setStatus(ServiceState.RUNNING)
+        statusRepository.postStatus(ServiceState.RUNNING)
         threadManager.start()
         startForegroundService()
     }
 
     fun shutdown() {
-        statusRepository.setStatus(ServiceState.STOPPED)
+        statusRepository.postStatus(ServiceState.STOPPED)
         Timber.i("Stopping service")
         threadManager.shutdown()
         stopForegroundService()
@@ -114,7 +114,7 @@ class CotService : Service(),
         }
         shutdown()
         ServiceState.errorMessage = throwable.message
-        statusRepository.setStatus(ServiceState.ERROR)
+        statusRepository.postStatus(ServiceState.ERROR)
     }
 
     fun updateGpsPeriod(newPeriodSeconds: Int) {
