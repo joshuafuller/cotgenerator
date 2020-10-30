@@ -23,6 +23,13 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/launch_from_open"
+        android:checkable="true"
+        android:icon="@drawable/start"
+        android:title="@string/menu_launch_from_open"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/about"
         android:icon="@drawable/info"
         android:title="@string/menu_about"

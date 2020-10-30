@@ -2,7 +2,8 @@
     <string name="app_name">CoT Beacon</string>
     <string name="app_name_all_caps">COT-BEACON</string>
 
-    <string name="menu_launch_from_boot">Start service from boot?</string>
+    <string name="menu_launch_from_boot">Start service from device boot?</string>
+    <string name="menu_launch_from_open">Start service from app launch?</string>
 
     <string name="permission_rationale">Two permissions are required:
         1) GPS - to translate into CoT;
@@ -10,4 +11,7 @@
 
     <string name="start_from_boot">CoT Beacon will now start transmitting on device boot!</string>
     <string name="dont_start_from_boot">CoT Beacon will no longer launch on device boot.</string>
+
+    <string name="start_from_open">CoT Beacon will now start transmitting as soon as you open the app!</string>
+    <string name="dont_start_from_open">CoT Beacon will no longer launch its service when opening the app.</string>
 </resources>
