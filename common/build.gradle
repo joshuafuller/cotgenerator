@@ -31,9 +31,9 @@ android {
         }
     }
     compileOptions {
+        coreLibraryDesugaringEnabled true
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
-        coreLibraryDesugaringEnabled true
     }
 
     kotlinOptions {
@@ -70,9 +70,9 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
 
     /* Desugaring */
-    implementation "androidx.multidex:multidex:2.0.1"
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:1.0.10"
+    api "androidx.multidex:multidex:$versions.multidex"
+    api "androidx.legacy:legacy-support-v4:$versions.legacy_support"
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:$versions.desugar"
 
     /* DI */
     api "com.google.dagger:hilt-android:$versions.hilt"
