@@ -44,6 +44,14 @@ Both apps support SSL, TCP and UDP traffic, and will give you notifications of a
 
 Also included is a handy "My Location" screen - accessed from the toolbar on the home screen - which shows your current GPS position, compass orientation and some other useful values.
 
+## Chat
+
+As of version 1.7.0, a chat function has been added to allow text communication between CoT Beacon and anyone else on the TAK network. This supports UDP, TCP and SSL protocols, but only sends/receives messages through the "All Chat Rooms" group in TAK. A screenshot of the window is shown below. Note that these messages are not saved between app restarts, and messages can only be sent/received when the service is running.
+
+| Beacon Chat |
+:--:|
+![20 Icons Elevated](docs/screenshots/ui_chat.jpg)|
+
 ## Presets
 The app is based around the idea of "output presets", which are connection configurations that specify a protocol, alias, address and port to which the app will send your generated data. These are stored in a database on the device for future use in case you swap between multiple servers.
 
@@ -103,11 +111,13 @@ Thanks to the crew at the TAK Discord, most notably [Corvo](https://github.com/b
 
 ## TODO
 - Change app launcher icons
-- Add a chat function, where the user can sent a message to All Chat Rooms in TAK - and receive, so long as the service is running.
-    - Probably only for Beacon, it makes more sense there
 - Add a toggleable option to encrypt the database of presets
     - This would make SSL certificate passwords more secure, since they're currently stored in plaintext
-- Option to launch the service on device boot
-    - Again, probably only makes sense for Beacon
+    - www.outline.com/rnpyG6
 - Deal with connection changes more securely
     - e.g. losing WiFi and moving to 4G, we still want to keep sending Beacon packets
+- Add the option to post REST API messages to FTS instances
+    - Would require me to identify whether a given server is an FTS
+    - As an alternative to XML/Protobuf
+- Dump error stack traces to a log file
+    - Would help error identification
