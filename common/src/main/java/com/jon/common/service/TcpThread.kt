@@ -3,13 +3,11 @@ package com.jon.common.service
 import android.content.SharedPreferences
 import com.jon.common.cot.CursorOnTarget
 import com.jon.common.prefs.CommonPrefs
-import com.jon.common.utils.Constants
 import com.jon.common.utils.DataFormat
 import timber.log.Timber
 import java.io.IOException
 import java.io.OutputStream
 import java.net.InetAddress
-import java.net.InetSocketAddress
 import java.net.Socket
 import java.net.UnknownHostException
 
@@ -25,7 +23,6 @@ internal open class TcpThread(prefs: SharedPreferences) : BaseThread(prefs) {
     override fun shutdown() {
         super.shutdown()
         try {
-            outputStream.close()
             socket.close()
         } catch (e: Exception) {
             /* ignore, we're shutting down anyway */
@@ -45,6 +42,7 @@ internal open class TcpThread(prefs: SharedPreferences) : BaseThread(prefs) {
                     bufferSleep(bufferTimeMs.toLong())
                 }
                 cotIcons = cotFactory.generate()
+                outputStream.flush()
             }
         } catch (t: Throwable) {
             throw RuntimeException(t.message)
@@ -57,7 +55,7 @@ internal open class TcpThread(prefs: SharedPreferences) : BaseThread(prefs) {
     protected open fun sendToDestination(cot: CursorOnTarget) {
         try {
             outputStream.write(cot.toBytes(dataFormat))
-            Timber.i("Sent cot: %s", cot.callsign)
+            Timber.i("Sent cot: %s to %d from %d", cot.callsign, socket.port, socket.localPort)
         } catch (e: NullPointerException) {
             /* Thrown when the thread is cancelled from another thread and we try to access the sockets */
             shutdown()
@@ -72,12 +70,7 @@ internal open class TcpThread(prefs: SharedPreferences) : BaseThread(prefs) {
 
     @Throws(Exception::class)
     override fun openSockets() {
-        socket = Socket().also {
-            it.connect(
-                    InetSocketAddress(destIp, destPort),
-                    Constants.TCP_SOCKET_TIMEOUT_MS
-            )
-            outputStream = it.getOutputStream()
-        }
+        socket = socketRepository.getTcpSocket()
+        outputStream = socketRepository.getOutputStream(socket)
     }
 }

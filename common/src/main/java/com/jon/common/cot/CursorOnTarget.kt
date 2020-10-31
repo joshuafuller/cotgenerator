@@ -129,7 +129,7 @@ open class CursorOnTarget(buildResources: BuildResources?) {
         }
     }
 
-    protected companion object {
+    companion object {
         const val MAGIC_BYTE = 0xbf.toByte()
 
         // Prepended to every protobuf packet

@@ -1,62 +1,51 @@
 package com.jon.cotbeacon.chat.runnables
 
+import android.content.SharedPreferences
 import com.jon.common.cot.ChatCursorOnTarget
 import com.jon.common.cot.CotTeam
 import com.jon.common.repositories.IDeviceUidRepository
+import com.jon.common.repositories.ISocketRepository
 import com.jon.cotbeacon.chat.IChatRepository
 import timber.log.Timber
 import java.io.Closeable
-import java.net.DatagramPacket
-import java.net.InetAddress
-import java.net.MulticastSocket
-import java.net.SocketException
-import java.util.*
 import kotlin.math.abs
 
-class ChatListenRunnable(
-        private val chatRepository: IChatRepository,
-        deviceUidRepository: IDeviceUidRepository
-) : Runnable, Closeable {
+abstract class ChatListenRunnable(
+        prefs: SharedPreferences,
+        socketRepository: ISocketRepository,
+        chatRepository: IChatRepository,
+        protected val deviceUidRepository: IDeviceUidRepository,
+) : ChatRunnable(prefs, socketRepository, chatRepository), Closeable {
 
-    private val socket = MulticastSocket(ChatConstants.UDP_PORT)
-    private val deviceUid = deviceUidRepository.getUid()
+    protected val deviceUid = deviceUidRepository.getUid()
 
-    override fun run() {
-        socket.joinGroup(InetAddress.getByName(ChatConstants.UDP_ALL_CHAT_ADDRESS))
-        socket.loopbackMode = true
-
-        while (true) {
-            try {
-                Timber.i("Listening for chat...")
-                val bytes = ByteArray(BUFFER_SIZE)
-                val packet = DatagramPacket(bytes, BUFFER_SIZE)
-                socket.receive(packet)
-                val receivedBytes = Arrays.copyOf(packet.data, packet.length)
-                val chat = ChatCursorOnTarget.fromBytes(receivedBytes)
-                if (chat == null) {
-                    Timber.i("Null chat from ${String(receivedBytes)}")
-                    chatRepository.postError("Invalid packet in port ${ChatConstants.UDP_PORT}")
-                } else if (chat.uid == deviceUid) {
-                    /* If this is a loopback message, ignore it */
-                    continue
-                } else {
-                    chat.team = getCotTeam(chat.uid)
-                    chatRepository.postChat(chat)
-                    Timber.i("Received chat from ${chat.callsign}: ${chat.message}")
-                }
-            } catch (e: SocketException) {
-                /* Thrown when the socket is closed externally whilst listening, i.e. when
-                 * the user tells the service to shutdown. No-op, just back out and finish the runnable */
-                Timber.w(e)
-                break
-            } catch (e: Exception) {
-                Timber.e(e)
-                chatRepository.postError(e.message ?: "Unknown exception")
-                break
-            }
+    /* Only difference to the superclass is the close() call in the catch block */
+    override fun safeInitialise(initialisation: () -> Unit): Any? {
+        return try {
+            initialisation()
+            Any()
+        } catch (t: Throwable) {
+            Timber.e(t)
+            close()
+            chatRepository.postError(t.message ?: "Unknown exception")
+            null
         }
-        Timber.i("Finishing ChatListenRunnable")
-        close()
+    }
+
+    protected fun safeClose(closeable: Closeable?) {
+        try {
+            closeable?.close()
+        } catch (t: Throwable) {
+            /* No-op */
+        }
+    }
+
+    protected fun dealWithChat(chat: ChatCursorOnTarget?) {
+        if (chat != null) {
+            chat.team = getCotTeam(chat.uid)
+            chatRepository.postChat(chat)
+            Timber.i("Received valid chat from ${chat.callsign}: ${chat.message}")
+        }
     }
 
     private fun getCotTeam(uid: String?): CotTeam {
@@ -68,11 +57,7 @@ class ChatListenRunnable(
         }
     }
 
-    override fun close() {
-        socket.close()
-    }
-
-    private companion object {
-        const val BUFFER_SIZE = 2048 // bytes
+    protected companion object {
+        const val PACKET_BUFFER_SIZE = 2048 // bytes
     }
 }

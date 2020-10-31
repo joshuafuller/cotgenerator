@@ -20,7 +20,7 @@ internal class ChatViewHolder(
 
     fun initialise() {
         val chat = chats[adapterPosition]
-        timestamp.text = chat.start.shortTimestamp()
+        timestamp.text = chat.start.shortLocalTimestamp()
         callsign.text = chat.callsign
         message.text = chat.message
         setTextViewColour(timestamp)

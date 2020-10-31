@@ -14,9 +14,9 @@ class UtcTimestamp(private var milliseconds: Long) {
 
     fun isoTimestamp(): String = longToString(milliseconds)
 
-    fun shortTimestamp(): String {
+    fun shortLocalTimestamp(): String {
         /* For an ISO string of "1970-01-02Z03:04:56.111", returns "03:04:56" */
-        return SHORT_FORMATTER.format(Instant.ofEpochMilli(milliseconds))
+        return LOCAL_TIME_FORMATTER.format(Instant.ofEpochMilli(milliseconds))
     }
 
     fun add(differenceMilliseconds: Long): UtcTimestamp = UtcTimestamp(milliseconds + differenceMilliseconds)
@@ -24,9 +24,9 @@ class UtcTimestamp(private var milliseconds: Long) {
     fun add(dt: Long, timeUnit: TimeUnit): UtcTimestamp = add(timeUnit.toMillis(dt))
 
     companion object {
-        val SHORT_FORMATTER = DateTimeFormatter
+        private val LOCAL_TIME_FORMATTER = DateTimeFormatter
                 .ofPattern("HH:mm:ss")
-                .withZone(ZoneOffset.UTC)
+                .withZone(ZoneOffset.systemDefault())
 
         fun now(): UtcTimestamp = UtcTimestamp(System.currentTimeMillis())
 

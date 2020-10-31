@@ -2,35 +2,14 @@ package com.jon.common.service
 
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import com.jon.common.repositories.IPresetRepository
-import java.util.concurrent.Executor
-import java.util.concurrent.Executors
 
-internal class ThreadManager(
-        private val prefs: SharedPreferences,
-        private val cotFactory: CotFactory,
-        private val errorListener: ThreadErrorListener,
-        private val presetRepository: IPresetRepository
-) : OnSharedPreferenceChangeListener {
-    private var thread: BaseThread? = null
+abstract class ThreadManager : OnSharedPreferenceChangeListener {
 
-    fun start() {
-        prefs.registerOnSharedPreferenceChangeListener(this)
-        thread = BaseThread.fromPrefs(prefs, cotFactory, presetRepository).apply {
-            setUncaughtExceptionHandler { _, t: Throwable -> errorListener.onThreadError(t) }
-            start()
-        }
-    }
+    abstract fun start()
 
-    fun shutdown() {
-        thread?.let {
-            val executor: Executor = Executors.newSingleThreadExecutor()
-            executor.execute {
-                it.shutdown()
-                thread = null
-            }
-        }
-    }
+    abstract fun shutdown()
+
+    abstract fun isRunning(): Boolean
 
     override fun onSharedPreferenceChanged(prefs: SharedPreferences, key: String) {
         /* If any preferences are changed, kill the thread and instantly reload with the new settings */
@@ -38,9 +17,5 @@ internal class ThreadManager(
             shutdown()
             start()
         }
-    }
-
-    private fun isRunning(): Boolean {
-        return thread?.isRunning() ?: false
     }
 }

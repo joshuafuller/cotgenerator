@@ -5,7 +5,7 @@ import androidx.annotation.CallSuper
 import com.jon.common.cot.CursorOnTarget
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getIntFromPair
-import com.jon.common.repositories.IPresetRepository
+import com.jon.common.repositories.ISocketRepository
 import com.jon.common.utils.DataFormat
 import com.jon.common.utils.Protocol
 import java.net.InetAddress
@@ -17,6 +17,7 @@ abstract class BaseThread(protected val prefs: SharedPreferences) : Thread() {
 
     protected var dataFormat = DataFormat.fromPrefs(prefs)
     protected lateinit var cotFactory: CotFactory
+    protected lateinit var socketRepository: ISocketRepository
     protected lateinit var cotIcons: List<CursorOnTarget>
 
     protected lateinit var destIp: InetAddress
@@ -62,15 +63,16 @@ abstract class BaseThread(protected val prefs: SharedPreferences) : Thread() {
     companion object {
         fun fromPrefs(
                 prefs: SharedPreferences,
+                socketRepository: ISocketRepository,
                 cotFactory: CotFactory,
-                presetRepository: IPresetRepository
         ): BaseThread {
             return when (Protocol.fromPrefs(prefs)) {
                 Protocol.UDP -> UdpThread(prefs)
                 Protocol.TCP -> TcpThread(prefs)
-                Protocol.SSL -> SslThread(prefs, presetRepository)
+                Protocol.SSL -> SslThread(prefs)
             }.also {
                 it.cotFactory = cotFactory
+                it.socketRepository = socketRepository
             }
         }
     }

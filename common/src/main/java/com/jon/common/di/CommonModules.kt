@@ -11,6 +11,7 @@ import com.jon.common.repositories.*
 import com.jon.common.repositories.impl.*
 import com.jon.common.service.INotificationGenerator
 import com.jon.common.service.NotificationGenerator
+import com.jon.common.service.SocketFactory
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -70,6 +71,18 @@ class ProvidesApplicationModule {
     @Provides
     fun providePreset(@ApplicationContext context: Context, presetDao: PresetDao): IPresetRepository {
         return PresetRepository(context, presetDao)
+    }
+
+    @Singleton
+    @Provides
+    fun provideSocketFactory(prefs: SharedPreferences, presetRepository: IPresetRepository): SocketFactory {
+        return SocketFactory(prefs, presetRepository)
+    }
+
+    @Singleton
+    @Provides
+    fun provideSocketRepository(socketFactory: SocketFactory): ISocketRepository {
+        return SocketRepository(socketFactory)
     }
 
     @Provides

@@ -12,7 +12,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.jon.common.CotApplication
 import com.jon.common.repositories.IGpsRepository
-import com.jon.common.repositories.IPresetRepository
+import com.jon.common.repositories.ISocketRepository
 import com.jon.common.repositories.IStatusRepository
 import com.jon.common.utils.Notify
 import timber.log.Timber
@@ -36,7 +36,7 @@ abstract class CotService : Service(),
     lateinit var statusRepository: IStatusRepository
 
     @Inject
-    lateinit var presetRepository: IPresetRepository
+    lateinit var socketRepository: ISocketRepository
 
     inner class ServiceBinder : Binder() {
         val service = this@CotService
@@ -50,11 +50,11 @@ abstract class CotService : Service(),
     private val locationCallback by lazy { GpsLocationCallback(gpsRepository) }
 
     private val threadManager by lazy {
-        ThreadManager(
+        CotThreadManager(
                 prefs = prefs,
                 cotFactory = cotFactory,
                 errorListener = this,
-                presetRepository = presetRepository
+                socketRepository = socketRepository
         )
     }
 

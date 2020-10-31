@@ -1,8 +1,10 @@
 package com.jon.common.presets
 
+import android.content.SharedPreferences
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.room.*
+import com.jon.common.prefs.getStringFromPair
 import com.jon.common.utils.Protocol
 
 @Entity(tableName = "Presets", indices = [Index(value = ["id"], unique = true)])
@@ -113,6 +115,11 @@ class OutputPreset() : Parcelable {
                     split[2],
                     split[3].toInt()
             )
+        }
+
+        fun fromPrefs(prefs: SharedPreferences): OutputPreset? {
+            val key = Protocol.fromPrefs(prefs).presetPref
+            return fromString(prefs.getStringFromPair(key))
         }
     }
 }

@@ -1,10 +1,14 @@
 package com.jon.common.cot
 
+import android.annotation.SuppressLint
 import com.jon.common.cot.proto.Cotevent
 import com.jon.common.cot.proto.DetailOuterClass
 import com.jon.common.cot.proto.Takmessage
 import com.jon.common.di.BuildResources
+import com.jon.common.presets.OutputPreset
+import com.jon.common.utils.Protocol
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class ChatCursorOnTarget(
         val isSelf: Boolean,
@@ -13,6 +17,7 @@ class ChatCursorOnTarget(
 
     var message: String = ""
     var messageUid: String = ""
+    var outputPreset: OutputPreset? = null
 
     init {
         type = "b-t-f"
@@ -20,6 +25,11 @@ class ChatCursorOnTarget(
         ce = 0.0
         le = 9999999.0
         hae = 0.0
+
+        val now = UtcTimestamp.now()
+        start = now
+        time = now
+        stale = start.add(1, TimeUnit.DAYS)
     }
 
     override fun toXml(): ByteArray {
@@ -55,10 +65,11 @@ class ChatCursorOnTarget(
     }
 
     private fun buildXmlDetail(): String {
+        val serverDestination = getServerDestinationIfRequired()
         return ("<__chat id=\"All Chat Rooms\" chatroom=\"All Chat Rooms\" senderCallsign=\"%s\" groupOwner=\"false\"><chatgrp " +
                 "id=\"All Chat Rooms\" uid0=\"%s\" uid1=\"All Chat Rooms\"/></__chat><link uid=\"%s\" type=\"a-f-G-U-C\" relation=\"p-p\"/>" +
-                "<remarks source=\"BAO.F.%s.%s\" sourceID=\"%s\" to=\"All Chat Rooms\" time=\"%s\">%s</remarks>")
-                .format(callsign, uid, uid, sanitisePlatform(), uid, uid, time.isoTimestamp(), message)
+                "<remarks source=\"BAO.F.%s.%s\" sourceID=\"%s\" to=\"All Chat Rooms\" time=\"%s\">%s</remarks>%s")
+                .format(callsign, uid, uid, sanitisePlatform(), uid, uid, time.isoTimestamp(), message, serverDestination)
     }
 
     private fun sanitisePlatform(): String {
@@ -71,6 +82,18 @@ class ChatCursorOnTarget(
         return "GeoChat.$uid.All Chat Rooms.$messageUid"
     }
 
+    @SuppressLint("DefaultLocale")
+    private fun getServerDestinationIfRequired(): String {
+        outputPreset?.let {
+            return if (it.protocol != Protocol.UDP) {
+                "<__serverdestination destinations=\"${it.address}:${it.port}:${it.protocol.toString().toLowerCase()}:$uid\"/>"
+            } else {
+                ""
+            }
+        }
+        return ""
+    }
+
     companion object {
         fun fromBytes(bytes: ByteArray): ChatCursorOnTarget? {
             return try {
@@ -80,7 +103,6 @@ class ChatCursorOnTarget(
                     fromXml(bytes)
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
                 null
             }
         }
