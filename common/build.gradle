@@ -102,9 +102,9 @@ dependencies {
     /* Networking */
     api "io.reactivex.rxjava2:rxjava:$versions.rxjava"
     api "io.reactivex.rxjava2:rxandroid:$versions.rxandroid"
-    implementation "com.squareup.retrofit2:retrofit:$versions.retrofit"
-    implementation "com.squareup.retrofit2:converter-gson:$versions.retrofit"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:$versions.retrofit"
+    api "com.squareup.retrofit2:retrofit:$versions.retrofit"
+    api "com.squareup.retrofit2:converter-gson:$versions.retrofit"
+    api "com.squareup.retrofit2:adapter-rxjava2:$versions.retrofit"
 
     /* Navigation */
     api "androidx.navigation:navigation-fragment-ktx:$versions.navigation"
@@ -115,7 +115,7 @@ dependencies {
     api "com.android.support:multidex:$versions.multidex"
     api "com.rugovit.eventlivedata:eventlivedata:$versions.eventlivedata"
     implementation "org.opensextant:geodesy:$versions.coordinate_conversion"
-    implementation "com.google.android.gms:play-services-location:$versions.play_services_location"
+    api "com.google.android.gms:play-services-location:$versions.play_services_location"
     implementation "com.google.protobuf:protobuf-lite:$versions.protobuf_lite"
     implementation "commons-io:commons-io:$versions.commons_io"
 

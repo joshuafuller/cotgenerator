@@ -52,11 +52,11 @@ abstract class MainActivity : AppCompatActivity(),
 
     protected var service: CotService? = null
     private val viewModel: StateViewModel by viewModels()
-
-    private val updateChecker by lazy { UpdateChecker(buildResources) }
     private val compositeDisposable = CompositeDisposable()
-
     protected val navController: NavController by lazy { findNavController(uiResources.navHostFragmentId) }
+
+    @Inject
+    lateinit var updateChecker: UpdateChecker
 
     @Inject
     lateinit var statusRepository: IStatusRepository

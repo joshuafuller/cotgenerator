@@ -23,7 +23,8 @@ class AboutFragment : Fragment() {
     @Inject
     lateinit var buildResources: IBuildResources
 
-    private val updateChecker by lazy { UpdateChecker(buildResources) }
+    @Inject
+    lateinit var updateChecker: UpdateChecker
 
     private val rows: List<AboutRow> by lazy {
         listOf(

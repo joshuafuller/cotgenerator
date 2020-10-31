@@ -4,14 +4,19 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import androidx.room.Room
+import com.google.android.gms.location.LocationCallback
 import com.jon.common.presets.DatabaseMigrations
 import com.jon.common.presets.IPresetDao
 import com.jon.common.presets.PresetDatabase
 import com.jon.common.repositories.*
 import com.jon.common.repositories.impl.*
+import com.jon.common.service.GpsLocationCallback
 import com.jon.common.service.INotificationGenerator
 import com.jon.common.service.NotificationGenerator
 import com.jon.common.service.SocketFactory
+import com.jon.common.utils.Constants
+import com.jon.common.versioncheck.IGithubApi
+import com.jon.common.versioncheck.UpdateChecker
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -19,6 +24,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.components.ServiceComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 
@@ -38,12 +46,17 @@ abstract class BindsApplicationModule {
 @Module
 class ProvidesServiceModule {
     @Provides
-    fun bindsNotificationGenerator(
+    fun provideNotificationGenerator(
             @ApplicationContext context: Context,
             prefs: SharedPreferences,
-            buildResources: IBuildResources
+            buildResources: IBuildResources,
     ): INotificationGenerator {
         return NotificationGenerator(context, prefs, buildResources)
+    }
+
+    @Provides
+    fun provideLocationCallback(gpsRepository: IGpsRepository): LocationCallback {
+        return GpsLocationCallback(gpsRepository)
     }
 }
 
@@ -97,5 +110,24 @@ class ProvidesApplicationModule {
                 .addMigrations(*DatabaseMigrations.allMigrations)
                 .fallbackToDestructiveMigration()
                 .build()
+    }
+
+    @Provides
+    fun provideRetrofitClient(): Retrofit {
+        return Retrofit.Builder()
+                .baseUrl(Constants.GITHUB_API_BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build();
+    }
+
+    @Provides
+    fun provideGithubApi(retrofit: Retrofit): IGithubApi {
+        return retrofit.create(IGithubApi::class.java)
+    }
+
+    @Provides
+    fun provideUpdateChecker(githubApi: IGithubApi, buildResources: IBuildResources): UpdateChecker {
+        return UpdateChecker(githubApi, buildResources)
     }
 }

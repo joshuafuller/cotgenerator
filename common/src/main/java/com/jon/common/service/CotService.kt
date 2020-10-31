@@ -8,6 +8,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.jon.common.CotApplication
@@ -38,6 +39,9 @@ abstract class CotService : Service(),
     @Inject
     lateinit var socketRepository: ISocketRepository
 
+    @Inject
+    lateinit var locationCallback: LocationCallback
+
     inner class ServiceBinder : Binder() {
         val service = this@CotService
     }
@@ -47,7 +51,6 @@ abstract class CotService : Service(),
     private var updateRateSeconds = 0
     private var fusedLocationClient: FusedLocationProviderClient? = null
     private var locationRequest: LocationRequest? = null
-    private val locationCallback by lazy { GpsLocationCallback(gpsRepository) }
 
     private val threadManager by lazy {
         CotThreadManager(
