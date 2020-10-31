@@ -12,17 +12,14 @@ import com.jon.common.repositories.IBatteryRepository
 import com.jon.common.repositories.IDeviceUidRepository
 import com.jon.common.repositories.IGpsRepository
 import com.jon.common.service.CotFactory
-import com.jon.common.service.Offset
-import com.jon.common.service.Point
-import com.jon.common.utils.Bearing
 import com.jon.common.utils.Constants
-import com.jon.common.utils.GeometryUtils.arcdistance
-import com.jon.cotgenerator.prefs.GeneratorPrefs
 import com.jon.cotgenerator.R
+import com.jon.cotgenerator.prefs.GeneratorPrefs
 import com.jon.cotgenerator.service.streams.DoubleRandomStream
+import com.jon.cotgenerator.service.streams.IRandomStream
 import com.jon.cotgenerator.service.streams.IntRandomStream
 import com.jon.cotgenerator.service.streams.RadialDistanceRandomStream
-import com.jon.cotgenerator.service.streams.IRandomStream
+import com.jon.cotgenerator.utils.GeometryUtils.arcdistance
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -34,7 +31,7 @@ internal class GeneratorCotFactory @Inject constructor(
         buildResources: IBuildResources,
         deviceUidRepository: IDeviceUidRepository,
         gpsRepository: IGpsRepository,
-        batteryRepository: IBatteryRepository
+        batteryRepository: IBatteryRepository,
 ) : CotFactory(prefs, buildResources, deviceUidRepository, gpsRepository, batteryRepository) {
 
     private data class IconData(var cot: CursorOnTarget, var offset: Offset)
@@ -171,7 +168,7 @@ internal class GeneratorCotFactory @Inject constructor(
     private fun generateBoundedOffset(
             courseItr: IRandomStream<Double>,
             startPoint: Point,
-            attemptsRemaining: Int = MAX_OFFSET_GENERATION_ATTEMPTS
+            attemptsRemaining: Int = MAX_OFFSET_GENERATION_ATTEMPTS,
     ): Offset {
         if (attemptsRemaining == 0) {
             /* The recursive algorithm has failed too many times, so to avoid a stack overflow we just pick

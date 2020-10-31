@@ -1,6 +1,6 @@
-package com.jon.common.utils
+package com.jon.cotgenerator.service
 
-import com.jon.common.service.Point
+import com.jon.common.utils.Constants
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin

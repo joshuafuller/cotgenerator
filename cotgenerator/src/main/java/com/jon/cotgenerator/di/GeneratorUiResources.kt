@@ -1,4 +1,4 @@
-package com.jon.cotgenerator.service.di
+package com.jon.cotgenerator.di
 
 import androidx.navigation.NavDirections
 import com.jon.common.di.IUiResources

@@ -1,4 +1,4 @@
-package com.jon.cotgenerator.service.di
+package com.jon.cotgenerator.di
 
 import android.content.Context
 import com.jon.common.di.IBuildResources

@@ -1,11 +1,10 @@
-package com.jon.common.service
+package com.jon.cotgenerator.service
 
-import com.jon.common.utils.Bearing
-import com.jon.common.utils.GeometryUtils.arcdistance
+import com.jon.cotgenerator.utils.GeometryUtils.arcdistance
 
 data class Offset(
         var R: Double,    /* travel distance in metres */
-        var theta: Double /* bearing in degrees */
+        var theta: Double, /* bearing in degrees */
 ) {
     companion object {
         fun from(startPoint: Point): Builder {

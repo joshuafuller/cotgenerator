@@ -1,4 +1,4 @@
-package com.jon.common.service
+package com.jon.cotgenerator.service
 
 import com.jon.common.cot.CursorOnTarget
 import com.jon.common.utils.Constants
@@ -9,7 +9,7 @@ import kotlin.math.sin
 
 data class Point(
         var lat: Double, // radians
-        var lon: Double // radians
+        var lon: Double, // radians
 ) {
     fun add(offset: Offset): Point {
         val rOverR = offset.R / Constants.EARTH_RADIUS_METRES
