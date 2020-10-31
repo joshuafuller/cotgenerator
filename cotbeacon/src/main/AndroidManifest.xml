@@ -20,7 +20,7 @@
         tools:ignore="AllowBackup,GoogleAppIndexingWarning"
         tools:targetApi="q">
 
-        <activity android:name=".BeaconActivity">
+        <activity android:name=".ui.BeaconActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -28,7 +28,7 @@
         </activity>
 
         <service
-            android:name=".BeaconCotService"
+            android:name=".service.BeaconCotService"
             android:enabled="true"
             android:exported="false" />
 

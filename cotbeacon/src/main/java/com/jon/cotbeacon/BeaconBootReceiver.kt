@@ -9,6 +9,7 @@ import com.jon.common.di.IBuildResources
 import com.jon.common.prefs.getBooleanFromPair
 import com.jon.common.service.CotService
 import com.jon.common.utils.Notify
+import com.jon.cotbeacon.prefs.BeaconPrefs
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import javax.inject.Inject

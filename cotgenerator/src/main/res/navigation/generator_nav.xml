@@ -32,7 +32,7 @@
 
     <fragment
         android:id="@+id/nav_generator_edit_preset"
-        android:name="com.jon.cotgenerator.GeneratorEditPresetFragment"
+        android:name="com.jon.cotgenerator.ui.GeneratorEditPresetFragment"
         android:label="@string/toolbar_header_edit_preset">
         <argument
             android:name="preset_argument"

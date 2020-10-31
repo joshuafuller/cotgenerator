@@ -35,7 +35,7 @@
 
     <fragment
         android:id="@+id/nav_beacon_edit_preset"
-        android:name="com.jon.cotbeacon.BeaconEditPresetFragment"
+        android:name="com.jon.cotbeacon.ui.BeaconEditPresetFragment"
         android:label="@string/toolbar_header_edit_preset">
         <argument
             android:name="preset_argument"
@@ -52,7 +52,7 @@
 
     <fragment
         android:id="@+id/nav_chat"
-        android:name="com.jon.cotbeacon.chat.ChatFragment"
+        android:name="com.jon.cotbeacon.ui.chat.ChatFragment"
         android:label="@string/menu_chat"
         tools:layout="@layout/fragment_chat">
     </fragment>

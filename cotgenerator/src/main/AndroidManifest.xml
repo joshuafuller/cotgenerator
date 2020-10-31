@@ -19,7 +19,7 @@
         tools:ignore="AllowBackup,GoogleAppIndexingWarning"
         tools:targetApi="q">
 
-        <activity android:name=".GeneratorActivity">
+        <activity android:name=".ui.GeneratorActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -27,7 +27,7 @@
         </activity>
 
         <service
-            android:name=".GeneratorCotService"
+            android:name=".service.GeneratorCotService"
             android:enabled="true"
             android:exported="false" />
 

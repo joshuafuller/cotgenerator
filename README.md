@@ -110,6 +110,7 @@ Note that 100% of testing has been done on a OnePlus 6 running Android 10. If th
 Thanks to the crew at the TAK Discord, most notably [Corvo](https://github.com/brothercorvo) and [Field Mapper](https://github.com/fieldmapper) for hosting their public [FreeTAKServer](https://github.com/FreeTAKTeam/FreeTakServer) and OG TAK Server respectively, used extensively for testing.
 
 ## TODO
+- Add a button for sending/canceling
 - Change app launcher icons
 - Add a toggleable option to encrypt the database of presets
     - This would make SSL certificate passwords more secure, since they're currently stored in plaintext
