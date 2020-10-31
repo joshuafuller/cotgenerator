@@ -1,13 +1,13 @@
 package com.jon.cotbeacon
 
 import androidx.navigation.NavDirections
-import com.jon.common.di.UiResources
+import com.jon.common.di.IUiResources
 import com.jon.common.presets.OutputPreset
 import com.jon.common.ui.listpresets.ListPresetsFragmentDirections
 import com.jon.common.ui.main.MainFragmentDirections
 import javax.inject.Inject
 
-class BeaconUiResources @Inject constructor() : UiResources {
+class BeaconUiResources @Inject constructor() : IUiResources {
     override val activityLayoutId = R.layout.beacon_activity
     override val settingsXmlId = R.xml.settings
     override val mainMenuId = R.menu.beacon_main_menu

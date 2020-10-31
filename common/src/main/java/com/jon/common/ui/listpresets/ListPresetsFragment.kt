@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jon.common.R
-import com.jon.common.di.UiResources
+import com.jon.common.di.IUiResources
 import com.jon.common.presets.OutputPreset
 import com.jon.common.repositories.IPresetRepository
 import com.jon.common.utils.*
@@ -29,7 +29,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ListPresetsFragment : Fragment(),
-        PresetClickListener {
+        IPresetClickListener {
     private data class PresetRecyclerInfo(@IdRes val recyclerViewId: Int, @IdRes val emptyMessageId: Int, var adapter: ListPresetsAdapter? = null)
 
     private val recyclerViewMap: Map<Protocol, PresetRecyclerInfo> = hashMapOf(
@@ -44,7 +44,7 @@ class ListPresetsFragment : Fragment(),
     lateinit var presetRepository: IPresetRepository
 
     @Inject
-    lateinit var uiResources: UiResources
+    lateinit var uiResources: IUiResources
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)

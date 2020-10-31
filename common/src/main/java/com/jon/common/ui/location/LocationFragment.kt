@@ -20,7 +20,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import com.jon.common.R
-import com.jon.common.di.UiResources
+import com.jon.common.di.IUiResources
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getStringFromPair
 import com.jon.common.repositories.IGpsRepository
@@ -32,7 +32,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class LocationFragment : Fragment(),
         SensorEventListener,
-        GnssCallback.Listener {
+        GnssCallback.IListener {
 
     private val locationManager by lazy { requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager }
 
@@ -66,7 +66,7 @@ class LocationFragment : Fragment(),
     lateinit var prefs: SharedPreferences
 
     @Inject
-    lateinit var uiResources: UiResources
+    lateinit var uiResources: IUiResources
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

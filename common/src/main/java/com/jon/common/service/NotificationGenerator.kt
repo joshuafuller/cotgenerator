@@ -9,7 +9,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.jon.common.R
-import com.jon.common.di.BuildResources
+import com.jon.common.di.IBuildResources
 import com.jon.common.prefs.getStringFromPair
 import com.jon.common.presets.OutputPreset
 import com.jon.common.utils.GenerateInt
@@ -19,7 +19,7 @@ import javax.inject.Inject
 class NotificationGenerator @Inject constructor(
         private val context: Context,
         private val prefs: SharedPreferences,
-        private val buildResources: BuildResources
+        private val buildResources: IBuildResources
 ) : INotificationGenerator {
 
     private val stopServicePendingIntentId = GenerateInt.next()

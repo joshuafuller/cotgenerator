@@ -1,5 +1,5 @@
 package com.jon.cotgenerator.streams
 
-interface RandomStream<T> {
+interface IRandomStream<T> {
     fun next(): T
 }

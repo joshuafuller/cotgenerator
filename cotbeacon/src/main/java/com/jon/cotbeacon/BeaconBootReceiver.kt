@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
-import com.jon.common.di.BuildResources
+import com.jon.common.di.IBuildResources
 import com.jon.common.prefs.getBooleanFromPair
 import com.jon.common.service.CotService
 import com.jon.common.utils.Notify
@@ -20,7 +20,7 @@ class BeaconBootReceiver : BroadcastReceiver() {
     lateinit var prefs: SharedPreferences
 
     @Inject
-    lateinit var buildResources: BuildResources
+    lateinit var buildResources: IBuildResources
 
     override fun onReceive(context: Context, intent: Intent?) {
         try {

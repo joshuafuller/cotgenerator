@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputLayout
 import com.jon.common.cot.ChatCursorOnTarget
 import com.jon.common.cot.CotTeam
-import com.jon.common.di.UiResources
+import com.jon.common.di.IUiResources
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getStringFromPair
 import com.jon.common.presets.OutputPreset
@@ -36,7 +36,7 @@ class ChatFragment : Fragment() {
     lateinit var prefs: SharedPreferences
 
     @Inject
-    lateinit var uiResources: UiResources
+    lateinit var uiResources: IUiResources
 
     @Inject
     lateinit var chatRepository: IChatRepository
@@ -53,7 +53,7 @@ class ChatFragment : Fragment() {
     private lateinit var statusText: TextView
     private lateinit var disabledBox: ImageView
 
-    private val serviceCommunicator by lazy { requireActivity() as ChatServiceCommunicator }
+    private val serviceCommunicator by lazy { requireActivity() as IChatServiceCommunicator }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -10,12 +10,12 @@ import com.jon.common.cot.proto.StatusOuterClass
 import com.jon.common.cot.proto.Takmessage.TakMessage
 import com.jon.common.cot.proto.TakvOuterClass.Takv
 import com.jon.common.cot.proto.TrackOuterClass
-import com.jon.common.di.BuildResources
+import com.jon.common.di.IBuildResources
 import com.jon.common.utils.DataFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-open class CursorOnTarget(buildResources: BuildResources?) {
+open class CursorOnTarget(buildResources: IBuildResources?) {
     var how = "m-g"
     var type = "a-f-G-U-C"
 

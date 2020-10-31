@@ -1,11 +1,11 @@
 package com.jon.cotgenerator
 
 import android.content.Context
-import com.jon.common.di.BuildResources
+import com.jon.common.di.IBuildResources
 import java.text.SimpleDateFormat
 import java.util.*
 
-class GeneratorBuildResources(context: Context) : BuildResources {
+class GeneratorBuildResources(context: Context) : IBuildResources {
     override val appName = context.getString(R.string.app_name)
     override val platform = context.getString(R.string.app_name_all_caps)
     override val buildTimestamp: String = SimpleDateFormat("HH:mm:ss dd MMM yyyy z", Locale.ENGLISH).format(BuildConfig.BUILD_TIME)

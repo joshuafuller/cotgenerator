@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import androidx.preference.*
 import androidx.preference.EditTextPreference.OnBindEditTextListener
-import com.jon.common.di.UiResources
+import com.jon.common.di.IUiResources
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.PrefPair
 import com.jon.common.presets.OutputPreset
@@ -36,7 +36,7 @@ abstract class SettingsFragment : PreferenceFragmentCompat(),
     protected lateinit var prefs: SharedPreferences
 
     @Inject
-    protected lateinit var uiResources: UiResources
+    protected lateinit var uiResources: IUiResources
 
     protected open fun getPhoneInputKeys() = mutableListOf<String>(
             /* blank, all phone inputs are in Generator only */

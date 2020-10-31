@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import com.jon.common.cot.proto.Cotevent
 import com.jon.common.cot.proto.DetailOuterClass
 import com.jon.common.cot.proto.Takmessage
-import com.jon.common.di.BuildResources
+import com.jon.common.di.IBuildResources
 import com.jon.common.presets.OutputPreset
 import com.jon.common.utils.Protocol
 import java.util.*
@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit
 
 class ChatCursorOnTarget(
         val isSelf: Boolean,
-        private val buildResources: BuildResources? = null
+        private val buildResources: IBuildResources? = null
 ) : CursorOnTarget(buildResources) {
 
     var message: String = ""

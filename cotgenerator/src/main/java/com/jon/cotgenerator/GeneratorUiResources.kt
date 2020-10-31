@@ -1,13 +1,13 @@
 package com.jon.cotgenerator
 
 import androidx.navigation.NavDirections
-import com.jon.common.di.UiResources
+import com.jon.common.di.IUiResources
 import com.jon.common.presets.OutputPreset
 import com.jon.common.ui.listpresets.ListPresetsFragmentDirections
 import com.jon.common.ui.main.MainFragmentDirections
 import javax.inject.Inject
 
-class GeneratorUiResources @Inject constructor() : UiResources {
+class GeneratorUiResources @Inject constructor() : IUiResources {
     override val activityLayoutId = R.layout.generator_activity
     override val settingsXmlId = R.xml.settings
     override val mainMenuId = R.menu.generator_main_menu

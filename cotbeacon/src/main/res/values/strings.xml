@@ -4,7 +4,7 @@
 
     <string name="menu_chat">All Chat Rooms</string>
     <string name="menu_launch_from_boot">Start service from device boot?</string>
-    <string name="menu_launch_from_open">Start service from app launch?</string>
+    <string name="menu_launch_from_open">Start service on app launch?</string>
 
     <string name="permission_rationale">Two permissions are required:
         1) GPS - to translate into CoT;

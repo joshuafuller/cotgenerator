@@ -2,14 +2,14 @@ package com.jon.common.versioncheck
 
 import android.content.SharedPreferences
 import com.jon.common.cot.UtcTimestamp
-import com.jon.common.di.BuildResources
+import com.jon.common.di.IBuildResources
 import com.jon.common.prefs.CommonPrefs
 import io.reactivex.Observable
 import kotlin.math.max
 
-class UpdateChecker(private val buildResources: BuildResources) {
+class UpdateChecker(private val buildResources: IBuildResources) {
     fun fetchReleases(): Observable<List<GithubRelease>> {
-        val githubApi = RetrofitClient.get().create(GithubApi::class.java)
+        val githubApi = RetrofitClient.get().create(IGithubApi::class.java)
         return githubApi.getAllReleases()
     }
 

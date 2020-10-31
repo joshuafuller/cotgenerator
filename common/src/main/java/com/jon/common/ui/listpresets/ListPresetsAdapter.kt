@@ -5,12 +5,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.jon.common.R
-import com.jon.common.di.UiResources
 import com.jon.common.presets.OutputPreset
 
 internal class ListPresetsAdapter(
         context: Context,
-        private val clickListener: PresetClickListener
+        private val clickListener: IPresetClickListener
 ) : RecyclerView.Adapter<PresetViewHolder>() {
 
     private val presets = ArrayList<OutputPreset>()

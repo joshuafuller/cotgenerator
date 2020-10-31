@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import androidx.room.Room
 import com.jon.common.presets.DatabaseMigrations
-import com.jon.common.presets.PresetDao
+import com.jon.common.presets.IPresetDao
 import com.jon.common.presets.PresetDatabase
 import com.jon.common.repositories.*
 import com.jon.common.repositories.impl.*
@@ -41,7 +41,7 @@ class ProvidesServiceModule {
     fun bindsNotificationGenerator(
             @ApplicationContext context: Context,
             prefs: SharedPreferences,
-            buildResources: BuildResources
+            buildResources: IBuildResources
     ): INotificationGenerator {
         return NotificationGenerator(context, prefs, buildResources)
     }
@@ -69,7 +69,7 @@ class ProvidesApplicationModule {
 
     @Singleton
     @Provides
-    fun providePreset(@ApplicationContext context: Context, presetDao: PresetDao): IPresetRepository {
+    fun providePreset(@ApplicationContext context: Context, presetDao: IPresetDao): IPresetRepository {
         return PresetRepository(context, presetDao)
     }
 
@@ -86,7 +86,7 @@ class ProvidesApplicationModule {
     }
 
     @Provides
-    fun providePresetDao(appDatabase: PresetDatabase): PresetDao {
+    fun providePresetDao(appDatabase: PresetDatabase): IPresetDao {
         return appDatabase.presetDao()
     }
 

@@ -7,7 +7,7 @@ import kotlin.math.sqrt
 /**
  * Used to generate distance of an icon to the centre-point within a circle of radius R
  */
-class RadialDistanceRandomStream(random: Random, maxDistance: Double) : RandomStream<Double> {
+class RadialDistanceRandomStream(random: Random, maxDistance: Double) : IRandomStream<Double> {
     private val weightedElements = ArrayList<Double>()
     private val indexStream = IntRandomStream(
             random = random,

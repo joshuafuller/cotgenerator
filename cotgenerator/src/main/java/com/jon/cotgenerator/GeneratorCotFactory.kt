@@ -6,7 +6,7 @@ import com.jon.common.cot.CotRole
 import com.jon.common.cot.CotTeam
 import com.jon.common.cot.CursorOnTarget
 import com.jon.common.cot.UtcTimestamp
-import com.jon.common.di.BuildResources
+import com.jon.common.di.IBuildResources
 import com.jon.common.prefs.*
 import com.jon.common.repositories.IBatteryRepository
 import com.jon.common.repositories.IDeviceUidRepository
@@ -20,7 +20,7 @@ import com.jon.common.utils.GeometryUtils.arcdistance
 import com.jon.cotgenerator.streams.DoubleRandomStream
 import com.jon.cotgenerator.streams.IntRandomStream
 import com.jon.cotgenerator.streams.RadialDistanceRandomStream
-import com.jon.cotgenerator.streams.RandomStream
+import com.jon.cotgenerator.streams.IRandomStream
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -29,7 +29,7 @@ import kotlin.math.min
 
 internal class GeneratorCotFactory @Inject constructor(
         prefs: SharedPreferences,
-        buildResources: BuildResources,
+        buildResources: IBuildResources,
         deviceUidRepository: IDeviceUidRepository,
         gpsRepository: IGpsRepository,
         batteryRepository: IBatteryRepository
@@ -159,7 +159,7 @@ internal class GeneratorCotFactory @Inject constructor(
         )
     }
 
-    private fun generateInitialOffset(distanceItr: RandomStream<Double>, courseItr: RandomStream<Double>): Offset {
+    private fun generateInitialOffset(distanceItr: IRandomStream<Double>, courseItr: IRandomStream<Double>): Offset {
         return Offset(
                 R = distanceItr.next(),
                 theta = courseItr.next()
@@ -167,7 +167,7 @@ internal class GeneratorCotFactory @Inject constructor(
     }
 
     private fun generateBoundedOffset(
-            courseItr: RandomStream<Double>,
+            courseItr: IRandomStream<Double>,
             startPoint: Point,
             attemptsRemaining: Int = MAX_OFFSET_GENERATION_ATTEMPTS
     ): Offset {
@@ -189,11 +189,11 @@ internal class GeneratorCotFactory @Inject constructor(
         }
     }
 
-    private fun doubleIterator(min: Double, max: Double): RandomStream<Double> {
+    private fun doubleIterator(min: Double, max: Double): IRandomStream<Double> {
         return DoubleRandomStream(random, min, max)
     }
 
-    private fun weightedRadialIterator(): RandomStream<Double> {
+    private fun weightedRadialIterator(): IRandomStream<Double> {
         return RadialDistanceRandomStream(random, distributionRadius)
     }
 
@@ -213,7 +213,7 @@ internal class GeneratorCotFactory @Inject constructor(
         return icons.map { it.cot }
     }
 
-    private fun initialiseAltitude(altitudeIterator: RandomStream<Double>): Double {
+    private fun initialiseAltitude(altitudeIterator: IRandomStream<Double>): Double {
         return if (stayAtGroundLevel) {
             0.0
         } else {

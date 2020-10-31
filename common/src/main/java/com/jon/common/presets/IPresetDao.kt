@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 
 @Dao
-interface PresetDao {
+interface IPresetDao {
     @Query("SELECT * FROM Presets WHERE Protocol LIKE :protocol")
     fun getByProtocol(protocol: String): LiveData<List<OutputPreset>>
 

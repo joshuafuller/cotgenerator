@@ -1,5 +1,5 @@
 package com.jon.common.service;
 
-interface ThreadErrorListener {
+interface IThreadErrorListener {
     fun onThreadError(throwable: Throwable);
 }

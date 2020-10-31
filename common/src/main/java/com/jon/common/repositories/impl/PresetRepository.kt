@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import com.jon.common.R
 import com.jon.common.presets.OutputPreset
-import com.jon.common.presets.PresetDao
+import com.jon.common.presets.IPresetDao
 import com.jon.common.repositories.IPresetRepository
 import com.jon.common.utils.FileUtils
 import com.jon.common.utils.Protocol
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 class PresetRepository @Inject constructor(
         context: Context,
-        private val presetDao: PresetDao
+        private val presetDao: IPresetDao
 ): IPresetRepository {
     private val executor: Executor = Executors.newSingleThreadExecutor()
 

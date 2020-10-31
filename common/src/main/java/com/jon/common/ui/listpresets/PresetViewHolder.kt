@@ -9,7 +9,7 @@ import com.jon.common.presets.OutputPreset
 
 internal class PresetViewHolder(
         itemView: View,
-        private val clickListener: PresetClickListener,
+        private val clickListener: IPresetClickListener,
         private val presets: List<OutputPreset>,
 ) : RecyclerView.ViewHolder(itemView) {
 

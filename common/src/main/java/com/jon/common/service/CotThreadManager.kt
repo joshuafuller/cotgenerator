@@ -1,7 +1,6 @@
 package com.jon.common.service
 
 import android.content.SharedPreferences
-import com.jon.common.repositories.IPresetRepository
 import com.jon.common.repositories.ISocketRepository
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
@@ -9,7 +8,7 @@ import java.util.concurrent.Executors
 internal class CotThreadManager(
         private val prefs: SharedPreferences,
         private val cotFactory: CotFactory,
-        private val errorListener: ThreadErrorListener,
+        private val errorListener: IThreadErrorListener,
         private val socketRepository: ISocketRepository
 ) : ThreadManager(), SharedPreferences.OnSharedPreferenceChangeListener {
 

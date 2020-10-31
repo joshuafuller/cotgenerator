@@ -21,14 +21,14 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jon.common.CotApplication
 import com.jon.common.R
-import com.jon.common.di.BuildResources
-import com.jon.common.di.UiResources
+import com.jon.common.di.IBuildResources
+import com.jon.common.di.IUiResources
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getIntFromPair
 import com.jon.common.repositories.IStatusRepository
 import com.jon.common.service.CotService
 import com.jon.common.service.ServiceState
-import com.jon.common.ui.ServiceCommunicator
+import com.jon.common.ui.IServiceCommunicator
 import com.jon.common.ui.StateViewModel
 import com.jon.common.utils.GenerateInt
 import com.jon.common.utils.MinimumVersions
@@ -48,7 +48,7 @@ abstract class MainActivity : AppCompatActivity(),
         EasyPermissions.PermissionCallbacks,
         OnSharedPreferenceChangeListener,
         ServiceConnection,
-        ServiceCommunicator {
+        IServiceCommunicator {
 
     protected var service: CotService? = null
     private val viewModel: StateViewModel by viewModels()
@@ -65,10 +65,10 @@ abstract class MainActivity : AppCompatActivity(),
     protected lateinit var prefs: SharedPreferences
 
     @Inject
-    protected lateinit var uiResources: UiResources
+    protected lateinit var uiResources: IUiResources
 
     @Inject
-    protected lateinit var buildResources: BuildResources
+    protected lateinit var buildResources: IBuildResources
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

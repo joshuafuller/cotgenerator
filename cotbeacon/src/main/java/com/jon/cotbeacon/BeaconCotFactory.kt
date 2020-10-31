@@ -5,7 +5,7 @@ import com.jon.common.cot.CotRole
 import com.jon.common.cot.CotTeam
 import com.jon.common.cot.CursorOnTarget
 import com.jon.common.cot.UtcTimestamp
-import com.jon.common.di.BuildResources
+import com.jon.common.di.IBuildResources
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getIntFromPair
 import com.jon.common.prefs.getStringFromPair
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 internal class BeaconCotFactory @Inject constructor(
         prefs: SharedPreferences,
-        buildResources: BuildResources,
+        buildResources: IBuildResources,
         deviceUidRepository: IDeviceUidRepository,
         gpsRepository: IGpsRepository,
         batteryRepository: IBatteryRepository

@@ -1,15 +1,13 @@
 package com.jon.common.presets
 
 import androidx.room.Database
-import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.jon.common.CotApplication
 
 @Database(entities = [OutputPreset::class], version = 4)
 @TypeConverters(ProtocolConverter::class)
 abstract class PresetDatabase : RoomDatabase() {
-    abstract fun presetDao(): PresetDao
+    abstract fun presetDao(): IPresetDao
 
     companion object {
         const val FILENAME = "presets.db"

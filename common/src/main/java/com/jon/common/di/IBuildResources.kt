@@ -2,7 +2,7 @@ package com.jon.common.di
 
 import com.jon.common.service.CotService
 
-interface BuildResources {
+interface IBuildResources {
     val appName: String
     val platform: String
     val buildTimestamp: String

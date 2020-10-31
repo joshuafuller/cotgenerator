@@ -2,8 +2,8 @@ package com.jon.cotgenerator
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.jon.common.di.BuildResources
-import com.jon.common.di.UiResources
+import com.jon.common.di.IBuildResources
+import com.jon.common.di.IUiResources
 import com.jon.common.repositories.IBatteryRepository
 import com.jon.common.repositories.IDeviceUidRepository
 import com.jon.common.repositories.IGpsRepository
@@ -30,20 +30,20 @@ abstract class BindsActivityModule {
 class ProvidesApplicationModule {
     @Singleton
     @Provides
-    fun provideBuildResources(@ApplicationContext context: Context): BuildResources {
+    fun provideBuildResources(@ApplicationContext context: Context): IBuildResources {
         return GeneratorBuildResources(context)
     }
 
     @Singleton
     @Provides
-    fun bindActivityResources(): UiResources {
+    fun bindActivityResources(): IUiResources {
         return GeneratorUiResources()
     }
 
     @Provides
     fun provideCotFactory(
             prefs: SharedPreferences,
-            buildResources: BuildResources,
+            buildResources: IBuildResources,
             deviceUidRepository: IDeviceUidRepository,
             gpsRepository: IGpsRepository,
             batteryRepository: IBatteryRepository

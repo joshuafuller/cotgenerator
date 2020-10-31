@@ -5,7 +5,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 
 @RequiresApi(Build.VERSION_CODES.N)
-class GnssCallback(private val listener: Listener) : GnssStatus.Callback() {
+class GnssCallback(private val listener: IListener) : GnssStatus.Callback() {
 
     override fun onStopped() {
         listener.onUsefulSatellitesReported(GNSS_STOPPED)
@@ -26,7 +26,7 @@ class GnssCallback(private val listener: Listener) : GnssStatus.Callback() {
         const val GNSS_STOPPED = -1
     }
 
-    interface Listener {
+    interface IListener {
         fun onUsefulSatellitesReported(numUsefulSatellites: Int)
     }
 }

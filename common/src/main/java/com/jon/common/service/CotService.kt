@@ -19,7 +19,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 abstract class CotService : Service(),
-        ThreadErrorListener {
+        IThreadErrorListener {
     @Inject
     lateinit var prefs: SharedPreferences
 

@@ -13,13 +13,13 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import com.jon.common.R
-import com.jon.common.di.UiResources
+import com.jon.common.di.IUiResources
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getStringFromPair
 import com.jon.common.presets.OutputPreset
 import com.jon.common.repositories.IStatusRepository
 import com.jon.common.service.ServiceState
-import com.jon.common.ui.ServiceCommunicator
+import com.jon.common.ui.IServiceCommunicator
 import com.jon.common.utils.Notify
 import com.jon.common.utils.Protocol
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,10 +30,10 @@ import javax.inject.Inject
 class MainFragment : Fragment() {
 
     private lateinit var startStopButton: Button
-    private val serviceCommunicator by lazy { requireActivity() as ServiceCommunicator }
+    private val serviceCommunicator by lazy { requireActivity() as IServiceCommunicator }
 
     @Inject
-    lateinit var uiResources: UiResources
+    lateinit var uiResources: IUiResources
 
     @Inject
     lateinit var prefs: SharedPreferences

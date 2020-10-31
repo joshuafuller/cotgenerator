@@ -11,12 +11,12 @@ import com.jon.common.ui.main.MainActivity
 import com.jon.common.ui.main.MainFragmentDirections
 import com.jon.common.utils.Notify
 import com.jon.common.utils.safelyNavigate
-import com.jon.cotbeacon.chat.ChatServiceCommunicator
+import com.jon.cotbeacon.chat.IChatServiceCommunicator
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class BeaconActivity : MainActivity(),
-        ChatServiceCommunicator {
+        IChatServiceCommunicator {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val result = super.onCreateOptionsMenu(menu)
         menu.findItem(R.id.launch_from_boot).isChecked = prefs.getBooleanFromPair(BeaconPrefs.LAUNCH_FROM_BOOT)

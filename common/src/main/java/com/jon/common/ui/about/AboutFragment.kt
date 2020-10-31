@@ -8,7 +8,7 @@ import android.view.*
 import android.widget.ListView
 import androidx.fragment.app.Fragment
 import com.jon.common.R
-import com.jon.common.di.BuildResources
+import com.jon.common.di.IBuildResources
 import com.jon.common.utils.MinimumVersions
 import com.jon.common.utils.VersionUtils
 import com.jon.common.versioncheck.GithubRelease
@@ -21,7 +21,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AboutFragment : Fragment() {
     @Inject
-    lateinit var buildResources: BuildResources
+    lateinit var buildResources: IBuildResources
 
     private val updateChecker by lazy { UpdateChecker(buildResources) }
 
