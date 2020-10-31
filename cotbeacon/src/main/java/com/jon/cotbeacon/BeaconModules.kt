@@ -2,11 +2,13 @@ package com.jon.cotbeacon
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.jon.common.di.ActivityResources
 import com.jon.common.di.BuildResources
+import com.jon.common.di.UiResources
 import com.jon.common.repositories.IBatteryRepository
+import com.jon.cotbeacon.chat.IChatRepository
 import com.jon.common.repositories.IDeviceUidRepository
 import com.jon.common.repositories.IGpsRepository
+import com.jon.cotbeacon.chat.ChatRepository
 import com.jon.common.service.CotFactory
 import com.jon.common.ui.main.SettingsFragment
 import dagger.Binds
@@ -23,7 +25,7 @@ import javax.inject.Singleton
 abstract class BindsApplicationModule {
     @Singleton
     @Binds
-    abstract fun bindActivityResources(resources: BeaconActivityResources): ActivityResources
+    abstract fun bindChat(repository: ChatRepository): IChatRepository
 }
 
 @Module
@@ -40,6 +42,12 @@ class ProvidesApplicationModule {
     @Provides
     fun provideBuildResources(@ApplicationContext context: Context): BuildResources {
         return BeaconBuildResources(context)
+    }
+
+    @Singleton
+    @Provides
+    fun bindActivityResources(): UiResources {
+        return BeaconUiResources()
     }
 
     @Provides

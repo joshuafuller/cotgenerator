@@ -15,7 +15,7 @@ import com.jon.common.utils.DataFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class CursorOnTarget(buildResources: BuildResources) {
+open class CursorOnTarget(buildResources: BuildResources?) {
     var how = "m-g"
     var type = "a-f-G-U-C"
 
@@ -50,9 +50,9 @@ class CursorOnTarget(buildResources: BuildResources) {
     // System info
     var battery = 100                                   // internal battery charge percentage, scale of 1-100
     val device = getDeviceName()                 // Android device model
-    val platform = buildResources.platform       // application name
+    val platform = buildResources?.platform      // application name
     val os = Build.VERSION.SDK_INT.toString()    // Android SDK version number
-    val version = buildResources.versionName     // application version number
+    val version = buildResources?.versionName    // application version number
 
     fun toBytes(dataFormat: DataFormat): ByteArray {
         return when (dataFormat) {
@@ -61,12 +61,12 @@ class CursorOnTarget(buildResources: BuildResources) {
         }
     }
 
-    fun setStaleDiff(dt: Long, timeUnit: TimeUnit?) {
-        stale = start.add(dt, timeUnit!!)
+    fun setStaleDiff(dt: Long, timeUnit: TimeUnit) {
+        stale = start.add(dt, timeUnit)
     }
 
-    private fun toXml(): ByteArray {
-        return java.lang.String.format(Locale.ENGLISH,
+    protected open fun toXml(): ByteArray {
+        return String.format(Locale.ENGLISH,
                 "<event version=\"2.0\" uid=\"%s\" type=\"%s\" time=\"%s\" start=\"%s\" stale=\"%s\" how=\"%s\"><point lat=\"%.7f\" " +
                         "lon=\"%.7f\" hae=\"%f\" ce=\"%f\" le=\"%f\"/><detail><track speed=\"%.7f\" course=\"%.7f\"/><contact callsign=\"%s\"/>" +
                         "<__group name=\"%s\" role=\"%s\"/><takv device=\"%s\" platform=\"%s\" os=\"%s\" version=\"%s\"/><status battery=\"%d\"/>" +
@@ -76,7 +76,7 @@ class CursorOnTarget(buildResources: BuildResources) {
                 .toByteArray()
     }
 
-    private fun toProtobuf(): ByteArray {
+    protected open fun toProtobuf(): ByteArray {
         val cotBytes = TakMessage.newBuilder()
                 .setCotEvent(CotEvent.newBuilder()
                         .setType(type)
@@ -129,12 +129,14 @@ class CursorOnTarget(buildResources: BuildResources) {
         }
     }
 
-    companion object {
+    protected companion object {
+        const val MAGIC_BYTE = 0xbf.toByte()
+
         // Prepended to every protobuf packet
-        private val TAK_HEADER = byteArrayOf(
-                0xbf.toByte(), // magic byte
+        val TAK_HEADER = byteArrayOf(
+                MAGIC_BYTE,
                 0x01.toByte(), // protocol version
-                0xbf.toByte()  // magic byte
+                MAGIC_BYTE
         )
     }
 

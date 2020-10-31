@@ -15,12 +15,10 @@ import com.jon.common.repositories.IGpsRepository
 import com.jon.common.repositories.IPresetRepository
 import com.jon.common.repositories.IStatusRepository
 import com.jon.common.utils.Notify
-import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import javax.inject.Inject
 
-@AndroidEntryPoint
-class CotService : Service(),
+abstract class CotService : Service(),
         ThreadErrorListener {
     @Inject
     lateinit var prefs: SharedPreferences
@@ -91,14 +89,14 @@ class CotService : Service(),
         }
     }
 
-    fun start() {
+    open fun start() {
         Timber.i("Starting service")
         statusRepository.postStatus(ServiceState.RUNNING)
         threadManager.start()
         startForegroundService()
     }
 
-    fun shutdown() {
+    open fun shutdown() {
         statusRepository.postStatus(ServiceState.STOPPED)
         Timber.i("Stopping service")
         threadManager.shutdown()
@@ -157,8 +155,8 @@ class CotService : Service(),
     }
 
     companion object {
-        private val BASE_INTENT_ID = "com.jon.common.CotService."
-        val STOP_SERVICE = "${BASE_INTENT_ID}.STOP"
-        val START_SERVICE = "${BASE_INTENT_ID}.START"
+        private const val BASE_INTENT_ID = "com.jon.common.CotService."
+        const val STOP_SERVICE = "${BASE_INTENT_ID}.STOP"
+        const val START_SERVICE = "${BASE_INTENT_ID}.START"
     }
 }

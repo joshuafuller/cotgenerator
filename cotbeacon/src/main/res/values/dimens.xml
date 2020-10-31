@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="chatTimeTextSize">10sp</dimen>
+    <dimen name="chatCallsignTextSize">12sp</dimen>
+    <dimen name="chatMessageTextSize">14sp</dimen>
+    <dimen name="chatPaddingBetweenTimeAndCallsign">4dp</dimen>
+    <dimen name="chatCardviewContentPadding">4dp</dimen>
+    <dimen name="chatCardviewCallsignPadding">50dp</dimen>
+    <dimen name="chatInputMargin">8dp</dimen>
+</resources>

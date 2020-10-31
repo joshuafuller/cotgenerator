@@ -1,0 +1,65 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <androidx.cardview.widget.CardView
+        style="@style/ChatCardViewStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:orientation="vertical"
+        tools:ignore="RtlSymmetry"
+        tools:targetApi="lollipop">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/chat_timestamp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:paddingStart="@dimen/chatPaddingBetweenTimeAndCallsign"
+                    android:textSize="@dimen/chatTimeTextSize"
+                    tools:text="21:55:11"
+                    tools:textColor="@android:color/holo_blue_bright" />
+
+                <TextView
+                    android:id="@+id/chat_callsign"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:paddingStart="@dimen/chatPaddingBetweenTimeAndCallsign"
+                    android:paddingEnd="@dimen/chatCardviewCallsignPadding"
+                    android:textSize="@dimen/chatCallsignTextSize"
+                    android:textStyle="bold"
+                    tools:text="KENNETH"
+                    tools:textColor="@android:color/holo_blue_bright" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/chat_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:textSize="@dimen/chatMessageTextSize"
+                tools:text="This is my response" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

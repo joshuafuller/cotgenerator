@@ -2,6 +2,7 @@
     <string name="app_name">CoT Beacon</string>
     <string name="app_name_all_caps">COT-BEACON</string>
 
+    <string name="menu_chat">Chat</string>
     <string name="menu_launch_from_boot">Start service from device boot?</string>
     <string name="menu_launch_from_open">Start service from app launch?</string>
 
@@ -14,4 +15,8 @@
 
     <string name="start_from_open">CoT Beacon will now start transmitting as soon as you open the app!</string>
     <string name="dont_start_from_open">CoT Beacon will no longer launch its service when opening the app.</string>
+
+    <string name="chat_send">SEND</string>
+    <string name="chat_hint">Chat Message</string>
+    <string name="chat_inactive">Chat is inactive. Start the service first!</string>
 </resources>

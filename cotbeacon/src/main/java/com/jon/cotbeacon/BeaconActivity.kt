@@ -1,15 +1,22 @@
 package com.jon.cotbeacon
 
+import android.content.ComponentName
+import android.os.IBinder
 import android.view.Menu
 import android.view.MenuItem
+import androidx.annotation.StringRes
+import com.jon.common.cot.ChatCursorOnTarget
 import com.jon.common.prefs.getBooleanFromPair
 import com.jon.common.ui.main.MainActivity
 import com.jon.common.ui.main.MainFragmentDirections
 import com.jon.common.utils.Notify
+import com.jon.common.utils.safelyNavigate
+import com.jon.cotbeacon.chat.ChatServiceCommunicator
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class BeaconActivity : MainActivity() {
+class BeaconActivity : MainActivity(),
+        ChatServiceCommunicator {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val result = super.onCreateOptionsMenu(menu)
         menu.findItem(R.id.launch_from_boot).isChecked = prefs.getBooleanFromPair(BeaconPrefs.LAUNCH_FROM_BOOT)
@@ -20,9 +27,11 @@ class BeaconActivity : MainActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.location ->
-                navController.safelyNavigate(activityResources.mainToLocationDirections)
+                navController.safelyNavigate(uiResources.mainToLocationDirections)
+            R.id.chat ->
+                navController.safelyNavigate(MainFragmentDirections.actionMainToChat())
             R.id.about ->
-                navController.safelyNavigate(activityResources.mainToAboutDirections)
+                navController.safelyNavigate(uiResources.mainToAboutDirections)
             R.id.launch_from_boot ->
                 dealWithMenuCheckbox(
                         menuItem = item,
@@ -48,6 +57,10 @@ class BeaconActivity : MainActivity() {
             /* Launch the service if a) we're configured to do so and b) it's not already running */
             service?.start()
         }
+    }
+
+    override fun sendChat(chat: ChatCursorOnTarget) {
+        (service as BeaconCotService?)?.sendChat(chat)
     }
 
     /* Deal with checkbox pressing, since Android doesn't invert the "checked status" of a

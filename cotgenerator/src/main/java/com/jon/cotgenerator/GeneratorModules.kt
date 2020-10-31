@@ -2,8 +2,8 @@ package com.jon.cotgenerator
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.jon.common.di.ActivityResources
 import com.jon.common.di.BuildResources
+import com.jon.common.di.UiResources
 import com.jon.common.repositories.IBatteryRepository
 import com.jon.common.repositories.IDeviceUidRepository
 import com.jon.common.repositories.IGpsRepository
@@ -19,14 +19,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Singleton
 
 @Module
-@InstallIn(ApplicationComponent::class)
-abstract class BindsApplicationModule {
-    @Singleton
-    @Binds
-    abstract fun bindActivityResources(resources: GeneratorActivityResources): ActivityResources
-}
-
-@Module
 @InstallIn(ActivityComponent::class)
 abstract class BindsActivityModule {
     @Binds
@@ -40,6 +32,12 @@ class ProvidesApplicationModule {
     @Provides
     fun provideBuildResources(@ApplicationContext context: Context): BuildResources {
         return GeneratorBuildResources(context)
+    }
+
+    @Singleton
+    @Provides
+    fun bindActivityResources(): UiResources {
+        return GeneratorUiResources()
     }
 
     @Provides

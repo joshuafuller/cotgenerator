@@ -1,6 +1,6 @@
 package com.jon.common.ui
 
-internal interface ServiceCommunicator {
+interface ServiceCommunicator {
     fun startService()
     fun stopService()
     fun isServiceNull(): Boolean

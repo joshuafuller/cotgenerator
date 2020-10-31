@@ -11,12 +11,6 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/chat"
-        android:icon="@drawable/chat"
-        android:title="@string/menu_chat"
-        app:showAsAction="ifRoom" />
-
-    <item
         android:id="@+id/about"
         android:icon="@drawable/info"
         android:title="@string/menu_about"

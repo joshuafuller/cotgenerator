@@ -113,8 +113,8 @@ dependencies {
     /* Utils */
     api "com.jakewharton.timber:timber:$versions.timber"
     api "com.android.support:multidex:$versions.multidex"
+    api "com.rugovit.eventlivedata:eventlivedata:$versions.eventlivedata"
     implementation "org.opensextant:geodesy:$versions.coordinate_conversion"
-    implementation "com.rugovit.eventlivedata:eventlivedata:$versions.eventlivedata"
     implementation "com.google.android.gms:play-services-location:$versions.play_services_location"
     implementation "com.google.protobuf:protobuf-lite:$versions.protobuf_lite"
     implementation "commons-io:commons-io:$versions.commons_io"

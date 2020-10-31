@@ -48,7 +48,7 @@ abstract class MainActivity : AppCompatActivity(),
         ServiceConnection,
         ServiceCommunicator {
 
-    private var service: CotService? = null
+    protected var service: CotService? = null
     private val viewModel: StateViewModel by viewModels()
 
     private val updateChecker by lazy { UpdateChecker(buildResources) }
@@ -201,7 +201,7 @@ abstract class MainActivity : AppCompatActivity(),
 
     private fun startCotService() {
         /* Start the service and bind to it */
-        val intent = Intent(this, CotService::class.java)
+        val intent = Intent(this, buildResources.serviceClass)
         startService(intent)
         bindService(intent, this, BIND_AUTO_CREATE)
 

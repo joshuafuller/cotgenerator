@@ -16,9 +16,6 @@
             android:id="@+id/action_main_to_location"
             app:destination="@id/nav_location" />
         <action
-            android:id="@+id/action_main_to_chat"
-            app:destination="@id/nav_chat" />
-        <action
             android:id="@+id/action_main_to_about"
             app:destination="@id/nav_about" />
     </fragment>
@@ -48,13 +45,6 @@
         android:name="com.jon.common.ui.location.LocationFragment"
         android:label="@string/menu_location"
         tools:layout="@layout/fragment_location">
-    </fragment>
-
-    <fragment
-        android:id="@+id/nav_chat"
-        android:name="com.jon.common.ui.chat.ChatFragment"
-        android:label="@string/menu_chat"
-        tools:layout="@layout/fragment_chat">
     </fragment>
 
     <fragment

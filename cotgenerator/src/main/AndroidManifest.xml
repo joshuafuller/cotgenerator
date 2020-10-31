@@ -27,7 +27,7 @@
         </activity>
 
         <service
-            android:name="com.jon.common.service.CotService"
+            android:name=".GeneratorCotService"
             android:enabled="true"
             android:exported="false" />
 

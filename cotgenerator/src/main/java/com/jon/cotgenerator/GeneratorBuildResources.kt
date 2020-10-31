@@ -12,4 +12,5 @@ class GeneratorBuildResources(context: Context) : BuildResources {
     override val appId = BuildConfig.APPLICATION_ID
     override val versionName = BuildConfig.VERSION_NAME
     override val isDebug = BuildConfig.DEBUG
+    override val serviceClass = GeneratorCotService::class.java
 }

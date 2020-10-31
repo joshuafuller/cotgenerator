@@ -32,7 +32,7 @@ class NotificationGenerator @Inject constructor(
         val stopPendingIntent = PendingIntent.getService(
                 context,
                 stopServicePendingIntentId,
-                Intent(context, CotService::class.java).setAction(CotService.STOP_SERVICE),
+                Intent(context, buildResources.serviceClass).setAction(CotService.STOP_SERVICE),
                 0
         )
         val channelId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

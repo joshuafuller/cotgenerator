@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
+import com.jon.common.di.BuildResources
 import com.jon.common.prefs.getBooleanFromPair
 import com.jon.common.service.CotService
 import com.jon.common.utils.Notify
@@ -18,11 +19,14 @@ class BeaconBootReceiver : BroadcastReceiver() {
     @Inject
     lateinit var prefs: SharedPreferences
 
+    @Inject
+    lateinit var buildResources: BuildResources
+
     override fun onReceive(context: Context, intent: Intent?) {
         try {
             val launchFromBootEnabled = prefs.getBooleanFromPair(BeaconPrefs.LAUNCH_FROM_BOOT)
             if (launchFromBootEnabled && intent?.action == Intent.ACTION_BOOT_COMPLETED) {
-                val serviceIntent = Intent(context, CotService::class.java).apply {
+                val serviceIntent = Intent(context, buildResources.serviceClass).apply {
                     action = CotService.START_SERVICE
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
