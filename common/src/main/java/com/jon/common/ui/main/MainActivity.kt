@@ -21,8 +21,8 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jon.common.CotApplication
 import com.jon.common.R
-import com.jon.common.di.UiResources
 import com.jon.common.di.BuildResources
+import com.jon.common.di.UiResources
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getIntFromPair
 import com.jon.common.repositories.IStatusRepository
@@ -31,7 +31,9 @@ import com.jon.common.service.ServiceState
 import com.jon.common.ui.ServiceCommunicator
 import com.jon.common.ui.StateViewModel
 import com.jon.common.utils.GenerateInt
+import com.jon.common.utils.MinimumVersions
 import com.jon.common.utils.Notify
+import com.jon.common.utils.VersionUtils
 import com.jon.common.versioncheck.GithubRelease
 import com.jon.common.versioncheck.UpdateChecker
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -85,15 +87,17 @@ abstract class MainActivity : AppCompatActivity(),
     private fun buildActivity() {
         setContentView(uiResources.activityLayoutId)
         initialiseToolbar()
-        compositeDisposable.add(
-                updateChecker.fetchReleases()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                { onReleasesFetched(it) },
-                                { onReleaseFetchingFailure(it) }
-                        )
-        )
+        if (VersionUtils.isAtLeast(MinimumVersions.OKHTTP_MIN_SDK)) {
+            compositeDisposable.add(
+                    updateChecker.fetchReleases()
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    { onReleasesFetched(it) },
+                                    { onReleaseFetchingFailure(it) }
+                            )
+            )
+        }
         startCotService()
     }
 

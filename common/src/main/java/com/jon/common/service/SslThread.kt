@@ -60,6 +60,7 @@ internal class SslThread(
                 SecureRandom()
         )
         socket = (sslContext.socketFactory.createSocket(destIp, destPort) as SSLSocket).also {
+            it.enabledProtocols = arrayOf("TLSv1.1", "TLSv1.2")
             it.soTimeout = Constants.TCP_SOCKET_TIMEOUT_MS
             outputStream = it.outputStream
         }

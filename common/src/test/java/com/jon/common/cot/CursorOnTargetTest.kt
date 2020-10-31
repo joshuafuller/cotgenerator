@@ -1,8 +1,6 @@
 package com.jon.common.cot
 
-import com.jon.common.TestingInjector
 import com.jon.common.utils.DataFormat
-import com.jon.common.variants.Variant
 import org.hamcrest.Matcher
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
@@ -17,11 +15,10 @@ class CursorOnTargetTest {
 
     @Before
     fun initialise() {
-        Variant.setInjector(TestingInjector())
-        cot = CursorOnTarget()
-        cot.start = UtcTimestamp.now()
-        cot.time = cot.start
-        cot.stale = cot.start.add(10, TimeUnit.MINUTES)
+//        cot = CursorOnTarget()
+//        cot.start = UtcTimestamp.now()
+//        cot.time = cot.start
+//        cot.stale = cot.start.add(10, TimeUnit.MINUTES)
     }
 
     @Test

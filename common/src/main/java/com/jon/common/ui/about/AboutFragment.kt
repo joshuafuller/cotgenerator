@@ -9,6 +9,8 @@ import android.widget.ListView
 import androidx.fragment.app.Fragment
 import com.jon.common.R
 import com.jon.common.di.BuildResources
+import com.jon.common.utils.MinimumVersions
+import com.jon.common.utils.VersionUtils
 import com.jon.common.versioncheck.GithubRelease
 import com.jon.common.versioncheck.UpdateChecker
 import dagger.hilt.android.AndroidEntryPoint
@@ -71,11 +73,17 @@ class AboutFragment : Fragment() {
 
     @SuppressLint("CheckResult")
     private fun fetchLatestVersion() {
-        updateChecker.fetchReleases()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map { updateChecker.getLatestRelease(it) }
-                .subscribe(::onSuccess, ::onFailure)
+        /* Minimum SDK required by OkHttp, a dependency of Retrofit */
+        if (VersionUtils.isAtLeast(MinimumVersions.OKHTTP_MIN_SDK)) {
+            updateChecker.fetchReleases()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .map { updateChecker.getLatestRelease(it) }
+                    .subscribe(::onSuccess, ::onFailure)
+        } else {
+            rows[LATEST_INDEX].subtitle = "Update checking requires Android 5.0 or later"
+            adapter.notifyDataSetChanged()
+        }
     }
 
     private fun onSuccess(release: GithubRelease?) {

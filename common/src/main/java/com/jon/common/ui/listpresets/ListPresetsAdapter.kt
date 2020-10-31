@@ -5,19 +5,21 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.jon.common.R
+import com.jon.common.di.UiResources
 import com.jon.common.presets.OutputPreset
 
 internal class ListPresetsAdapter(
         context: Context,
-        private val clickListener: PresetClickListener)
-    : RecyclerView.Adapter<PresetViewHolder>() {
+        private val uiResources: UiResources,
+        private val clickListener: PresetClickListener
+) : RecyclerView.Adapter<PresetViewHolder>() {
 
     private val presets = ArrayList<OutputPreset>()
     private val inflater: LayoutInflater = LayoutInflater.from(context)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PresetViewHolder {
         val view = inflater.inflate(R.layout.preset_list_item, parent, false)
-        return PresetViewHolder(view, clickListener, presets)
+        return PresetViewHolder(view, clickListener, presets, uiResources)
     }
 
     override fun onBindViewHolder(holder: PresetViewHolder, position: Int) {

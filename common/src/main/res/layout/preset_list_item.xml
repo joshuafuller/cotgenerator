@@ -76,7 +76,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/colorAccent"
-                android:src="@drawable/delete" />
+                android:src="@drawable/delete_black" />
 
         </LinearLayout>
 

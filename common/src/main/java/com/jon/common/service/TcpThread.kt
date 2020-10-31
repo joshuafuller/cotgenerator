@@ -12,7 +12,6 @@ import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.net.UnknownHostException
-import java.util.*
 
 
 internal open class TcpThread(prefs: SharedPreferences) : BaseThread(prefs) {
@@ -47,8 +46,8 @@ internal open class TcpThread(prefs: SharedPreferences) : BaseThread(prefs) {
                 }
                 cotIcons = cotFactory.generate()
             }
-        } catch (e: Exception) {
-            throw RuntimeException(e.message)
+        } catch (t: Throwable) {
+            throw RuntimeException(t.message)
         } finally {
             shutdown()
         }
