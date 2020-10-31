@@ -4,7 +4,7 @@ import android.location.Location
 import androidx.lifecycle.LiveData
 
 interface IGpsRepository {
-    fun setLocation(location: Location?)
+    fun setLocation(location: Location)
     fun getLocation(): LiveData<Location?>
     fun latitude(): Double
     fun longitude(): Double

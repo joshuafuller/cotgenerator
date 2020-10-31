@@ -6,6 +6,6 @@ import com.jon.common.repositories.IGpsRepository
 
 internal class GpsLocationCallback(private val gpsRepository: IGpsRepository) : LocationCallback() {
     override fun onLocationResult(locationResult: LocationResult) {
-        gpsRepository.setLocation(locationResult.lastLocation)
+        locationResult.lastLocation?.let { gpsRepository.setLocation(it) }
     }
 }

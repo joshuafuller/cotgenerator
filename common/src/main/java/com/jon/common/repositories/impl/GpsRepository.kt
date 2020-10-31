@@ -12,14 +12,10 @@ class GpsRepository @Inject constructor() : IGpsRepository {
     private val lock = Any()
     private val lastLocation = MutableLiveData<Location?>().also { it.value = null }
 
-    override fun setLocation(location: Location?) {
+    override fun setLocation(location: Location) {
         synchronized(lock) {
-            if (location != null) {
-                Timber.d("Updating GPS to %f %f", location.latitude, location.longitude)
-                lastLocation.value = location
-            } else {
-                Timber.d("Null location")
-            }
+            Timber.d("Updating GPS to %f %f", location.latitude, location.longitude)
+            lastLocation.value = location
         }
     }
 

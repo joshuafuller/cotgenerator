@@ -81,7 +81,11 @@ abstract class CotService : Service(),
     fun initialiseFusedLocationClient() {
         try {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this).apply {
-                lastLocation.addOnSuccessListener { gpsRepository.setLocation(it) }
+                lastLocation.addOnSuccessListener {
+                    if (it != null) {
+                        gpsRepository.setLocation(it)
+                    }
+                }
             }
             initialiseLocationRequest()
         } catch (e: SecurityException) {
