@@ -23,8 +23,8 @@ internal object XmlParser {
         )
         cot.uid = getAttribute(
                 xml = xml,
-                element = "remarks",
-                attribute = "sourceID"
+                element = "chatgrp",
+                attribute = "uid0"
         )
         cot.message = getElement(
                 xml = xml,
@@ -37,7 +37,7 @@ internal object XmlParser {
     }
 
     private fun getAttribute(xml: String, element: String, attribute: String): String {
-        val regexPattern = "<$element .*? $attribute=\"(.*?)\".*?/?>"
+        val regexPattern = "<$element\\s+.*?$attribute=\"(.*?)\".*?/?>"
         return regexMatch(xml, regexPattern)
     }
 
