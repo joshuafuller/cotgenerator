@@ -20,9 +20,9 @@
     <ImageView
         android:id="@+id/disabled_box"
         android:layout_width="match_parent"
-        android:visibility="gone"
         android:layout_height="0dp"
         android:src="@drawable/translucent_box"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/chat_status"
         tools:ignore="ContentDescription" />
@@ -50,14 +50,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="@string/chat_hint"
-            android:textCursorDrawable="@null"
             app:colorControlActivated="@color/white"
             app:endIconMode="clear_text"
             app:hintTextColor="@color/white">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:textCursorDrawable="@null" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
