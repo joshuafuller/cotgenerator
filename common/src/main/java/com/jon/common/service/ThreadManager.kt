@@ -3,7 +3,7 @@ package com.jon.common.service
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 
-abstract class ThreadManager : OnSharedPreferenceChangeListener {
+abstract class ThreadManager(protected val prefs: SharedPreferences) : OnSharedPreferenceChangeListener {
 
     abstract fun start()
 

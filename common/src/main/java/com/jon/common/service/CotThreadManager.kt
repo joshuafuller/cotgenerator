@@ -6,16 +6,19 @@ import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
 internal class CotThreadManager(
-        private val prefs: SharedPreferences,
+        prefs: SharedPreferences,
         private val cotFactory: CotFactory,
         private val errorListener: IThreadErrorListener,
         private val socketRepository: ISocketRepository
-) : ThreadManager(), SharedPreferences.OnSharedPreferenceChangeListener {
+) : ThreadManager(prefs), SharedPreferences.OnSharedPreferenceChangeListener {
 
     private var thread: BaseThread? = null
 
-    override fun start() {
+    init {
         prefs.registerOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun start() {
         thread = BaseThread.fromPrefs(prefs, socketRepository, cotFactory).apply {
             setUncaughtExceptionHandler { _, t: Throwable -> errorListener.onThreadError(t) }
             start()

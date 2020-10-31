@@ -57,5 +57,6 @@ class SslListenRunnable(
     override fun close() {
         safeClose(socket)
         safeClose(inputStream)
+        socketRepository.clearSockets()
     }
 }

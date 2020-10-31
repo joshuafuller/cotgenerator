@@ -27,6 +27,7 @@ internal open class TcpThread(prefs: SharedPreferences) : BaseThread(prefs) {
         } catch (e: Exception) {
             /* ignore, we're shutting down anyway */
         }
+        socketRepository.clearSockets()
     }
 
     override fun run() {
@@ -45,6 +46,7 @@ internal open class TcpThread(prefs: SharedPreferences) : BaseThread(prefs) {
                 outputStream.flush()
             }
         } catch (t: Throwable) {
+            Timber.e(t)
             throw RuntimeException(t.message)
         } finally {
             shutdown()

@@ -32,11 +32,11 @@ internal class UdpThread(prefs: SharedPreferences) : BaseThread(prefs) {
                 }
                 cotIcons = cotFactory.generate()
             }
-        } catch (e: Exception) {
+        } catch (t: Throwable) {
             /* We've encountered an unexpected exception, so close all sockets and pass the message back to our
              * thread exception handler */
-            Timber.e(e)
-            throw RuntimeException(e.message)
+            Timber.e(t)
+            throw RuntimeException(t.message)
         } finally {
             shutdown()
         }

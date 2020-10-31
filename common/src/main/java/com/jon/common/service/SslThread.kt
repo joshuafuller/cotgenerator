@@ -17,6 +17,7 @@ internal class SslThread(
         super.shutdown()
         closeFromMainThread(socket)
         closeFromMainThread(outputStream)
+        socketRepository.clearSockets()
     }
 
     @Throws(IOException::class)

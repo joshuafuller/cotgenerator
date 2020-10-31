@@ -51,5 +51,6 @@ class TcpListenRunnable(
     override fun close() {
         safeClose(socket)
         safeClose(inputStream)
+        socketRepository.clearSockets()
     }
 }

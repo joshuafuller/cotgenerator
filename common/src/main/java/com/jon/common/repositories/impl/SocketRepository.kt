@@ -16,6 +16,11 @@ class SocketRepository @Inject constructor(private val socketFactory: SocketFact
     private var sslSocket: SSLSocket? = null
     private var outputStream: OutputStream? = null
 
+    override fun clearSockets() {
+        tcpSocket = null
+        sslSocket = null
+        outputStream = null
+    }
 
     override fun getUdpInputSocket(group: String, port: Int): MulticastSocket {
         synchronized(lock) {
@@ -27,8 +32,10 @@ class SocketRepository @Inject constructor(private val socketFactory: SocketFact
         synchronized(lock) {
             Timber.i("Getting TCP socket")
             tcpSocket?.let {
-                Timber.i("Returning existing at port %d", it.localPort)
-                return it
+                if (socketIsValid(it)) {
+                    Timber.i("Returning existing at port %d", it.localPort)
+                    return it
+                }
             }
             return socketFactory.getTcpSocket().also {
                 tcpSocket = it
@@ -37,10 +44,19 @@ class SocketRepository @Inject constructor(private val socketFactory: SocketFact
         }
     }
 
-    override fun getSslSocket(): SSLSocket {
+    override fun getSslSocket(): Socket {
         synchronized(lock) {
-            sslSocket?.let { return it }
-            return socketFactory.getSslSocket().also { sslSocket = it }
+            Timber.i("Getting SSL socket")
+            sslSocket?.let {
+                if (socketIsValid(it)) {
+                    Timber.i("Returning existing at port %d", it.localPort)
+                    return it
+                }
+            }
+            return socketFactory.getSslSocket().also {
+                sslSocket = it
+                Timber.i("Returning new at port %d", it.localPort)
+            }
         }
     }
 
@@ -48,6 +64,17 @@ class SocketRepository @Inject constructor(private val socketFactory: SocketFact
         synchronized(lock) {
             outputStream?.let { return it }
             return socketFactory.getOutputStream(socket).also { outputStream = it }
+        }
+    }
+
+    private fun socketIsValid(socket: Socket): Boolean {
+        return try {
+            socket.outputStream.write(0)
+            Timber.i("Socket is valid")
+            true
+        } catch (t: Throwable) {
+            Timber.w("Socket is not valid")
+            false
         }
     }
 }

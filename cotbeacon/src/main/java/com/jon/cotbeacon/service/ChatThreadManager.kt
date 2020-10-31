@@ -16,7 +16,7 @@ class ChatThreadManager(
         chatRepository: IChatRepository,
         private val deviceUidRepository: IDeviceUidRepository,
         socketRepository: ISocketRepository
-) : ThreadManager() {
+) : ThreadManager(prefs) {
 
     private var listeningExecutor = Executors.newSingleThreadExecutor()
     private var sendingExecutor = Executors.newSingleThreadExecutor()
@@ -24,6 +24,10 @@ class ChatThreadManager(
     private lateinit var sendRunnable: ChatSendRunnable
 
     private val runnableFactory = ChatRunnableFactory(prefs, socketRepository, chatRepository)
+
+    init {
+        prefs.registerOnSharedPreferenceChangeListener(this)
+    }
 
     override fun start() {
         if (listeningExecutor.isShutdown) {
