@@ -57,7 +57,7 @@ class ListPresetsFragment : Fragment(),
             val recyclerView = view.findViewById<RecyclerView>(info.recyclerViewId)
             recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-            info.adapter = ListPresetsAdapter(requireContext(), uiResources, this)
+            info.adapter = ListPresetsAdapter(requireContext(), this)
             recyclerView.adapter = info.adapter
             val emptyMessage = view.findViewById<View>(info.emptyMessageId).also { it.visibility = View.VISIBLE }
             presetRepository.getCustomByProtocol(protocol).observe(viewLifecycleOwner) { presets ->

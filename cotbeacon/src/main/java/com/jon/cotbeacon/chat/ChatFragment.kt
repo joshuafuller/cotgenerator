@@ -3,6 +3,7 @@ package com.jon.cotbeacon.chat
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.*
 import android.widget.Button
@@ -18,6 +19,7 @@ import com.jon.common.cot.CotTeam
 import com.jon.common.di.UiResources
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getStringFromPair
+import com.jon.common.presets.OutputPreset
 import com.jon.common.repositories.IDeviceUidRepository
 import com.jon.common.repositories.IStatusRepository
 import com.jon.common.service.ServiceState
@@ -69,6 +71,9 @@ class ChatFragment : Fragment() {
         statusText = view.findViewById(R.id.chat_status)
         disabledBox = view.findViewById(R.id.disabled_box)
 
+        /* Colour the hint message with the accent */
+        chatTextInput.hintTextColor = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), uiResources.accentColourId))
+
         /* Bring the shaded box to the front, then have it intercept all touch events (when visible, of course) */
         disabledBox.bringToFront()
         disabledBox.setOnTouchListener { _, _ -> true }
@@ -106,6 +111,7 @@ class ChatFragment : Fragment() {
             team = CotTeam.fromPrefs(prefs)
             callsign = prefs.getStringFromPair(CommonPrefs.CALLSIGN)
             message = inputMessage
+            outputPreset = OutputPreset.fromPrefs(prefs)
         }
         serviceCommunicator.sendChat(chat)
         chatTextInput.editText?.text?.clear()

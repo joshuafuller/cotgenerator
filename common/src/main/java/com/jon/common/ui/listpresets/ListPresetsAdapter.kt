@@ -10,7 +10,6 @@ import com.jon.common.presets.OutputPreset
 
 internal class ListPresetsAdapter(
         context: Context,
-        private val uiResources: UiResources,
         private val clickListener: PresetClickListener
 ) : RecyclerView.Adapter<PresetViewHolder>() {
 
@@ -19,7 +18,7 @@ internal class ListPresetsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PresetViewHolder {
         val view = inflater.inflate(R.layout.preset_list_item, parent, false)
-        return PresetViewHolder(view, clickListener, presets, uiResources)
+        return PresetViewHolder(view, clickListener, presets)
     }
 
     override fun onBindViewHolder(holder: PresetViewHolder, position: Int) {
