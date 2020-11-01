@@ -93,7 +93,15 @@ class ChatFragment : Fragment() {
             /* When new data is added, put it at the bottom of the view */
             it.stackFromEnd = true
         }
-        recyclerView.adapter = ChatAdapter(context).also { adapter = it }
+        adapter = ChatAdapter(context).also {
+            it.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+                override fun onChanged() {
+                    super.onChanged()
+                    recyclerView.scrollToPosition(adapter.itemCount-1)
+                }
+            })
+        }
+        recyclerView.adapter = adapter
     }
 
     private fun initialiseSendButton(view: View, context: Context) {
