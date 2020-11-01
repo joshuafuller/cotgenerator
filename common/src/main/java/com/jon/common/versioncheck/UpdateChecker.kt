@@ -9,11 +9,11 @@ import javax.inject.Inject
 import kotlin.math.max
 
 class UpdateChecker @Inject constructor(
-        private val githubApi: IGithubApi,
+        private val githubApi: IGithubApi?,
         private val buildResources: IBuildResources
 ) {
     fun fetchReleases(): Observable<List<GithubRelease>> {
-        return githubApi.getAllReleases()
+        return githubApi!!.getAllReleases()
     }
 
     fun getLatestRelease(releases: List<GithubRelease>?): GithubRelease? {

@@ -15,6 +15,8 @@ import com.jon.common.service.INotificationGenerator
 import com.jon.common.service.NotificationGenerator
 import com.jon.common.service.SocketFactory
 import com.jon.common.utils.Constants
+import com.jon.common.utils.MinimumVersions
+import com.jon.common.utils.VersionUtils
 import com.jon.common.versioncheck.IGithubApi
 import com.jon.common.versioncheck.UpdateChecker
 import dagger.Binds
@@ -113,21 +115,29 @@ class ProvidesApplicationModule {
     }
 
     @Provides
-    fun provideRetrofitClient(): Retrofit {
-        return Retrofit.Builder()
-                .baseUrl(Constants.GITHUB_API_BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build();
+    fun provideRetrofitClient(): Retrofit? {
+        return if (VersionUtils.isAtLeast(MinimumVersions.OKHTTP_MIN_SDK)) {
+            return Retrofit.Builder()
+                    .baseUrl(Constants.GITHUB_API_BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .build()
+        } else {
+            null
+        }
     }
 
     @Provides
-    fun provideGithubApi(retrofit: Retrofit): IGithubApi {
-        return retrofit.create(IGithubApi::class.java)
+    fun provideGithubApi(retrofit: Retrofit?): IGithubApi? {
+        return if (VersionUtils.isAtLeast(MinimumVersions.OKHTTP_MIN_SDK)) {
+            retrofit?.create(IGithubApi::class.java)
+        } else {
+            null
+        }
     }
 
     @Provides
-    fun provideUpdateChecker(githubApi: IGithubApi, buildResources: IBuildResources): UpdateChecker {
+    fun provideUpdateChecker(githubApi: IGithubApi?, buildResources: IBuildResources): UpdateChecker {
         return UpdateChecker(githubApi, buildResources)
     }
 }
