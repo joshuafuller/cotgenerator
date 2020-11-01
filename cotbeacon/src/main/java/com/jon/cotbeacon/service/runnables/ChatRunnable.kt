@@ -2,12 +2,14 @@ package com.jon.cotbeacon.service.runnables
 
 import android.content.SharedPreferences
 import com.jon.common.repositories.ISocketRepository
+import com.jon.common.service.IThreadErrorListener
 import com.jon.cotbeacon.repositories.IChatRepository
 import timber.log.Timber
 import java.net.SocketException
 
 abstract class ChatRunnable(
         protected val prefs: SharedPreferences,
+        protected val errorListener: IThreadErrorListener,
         protected val socketRepository: ISocketRepository,
         protected val chatRepository: IChatRepository,
 ) : Runnable {
@@ -18,7 +20,7 @@ abstract class ChatRunnable(
             Any()
         } catch (t: Throwable) {
             Timber.e(t)
-            chatRepository.postError(t.message ?: "Unknown exception")
+            errorListener.onThreadError(t)
             null
         }
     }
@@ -48,7 +50,7 @@ abstract class ChatRunnable(
             null
         } catch (t: Throwable) {
             Timber.e(t)
-            chatRepository.postError(t.message ?: "Unknown exception")
+            errorListener.onThreadError(t)
             null
         }
     }

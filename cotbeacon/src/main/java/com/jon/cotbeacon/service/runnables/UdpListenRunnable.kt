@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import com.jon.common.cot.ChatCursorOnTarget
 import com.jon.common.repositories.IDeviceUidRepository
 import com.jon.common.repositories.ISocketRepository
+import com.jon.common.service.IThreadErrorListener
 import com.jon.cotbeacon.repositories.IChatRepository
 import com.jon.cotbeacon.service.ChatConstants
 import timber.log.Timber
@@ -12,12 +13,13 @@ import java.net.MulticastSocket
 
 class UdpListenRunnable(
         prefs: SharedPreferences,
+        errorListener: IThreadErrorListener,
         socketRepository: ISocketRepository,
         chatRepository: IChatRepository,
         deviceUidRepository: IDeviceUidRepository,
-) : ChatListenRunnable(prefs, socketRepository, chatRepository, deviceUidRepository) {
+) : ChatListenRunnable(prefs, errorListener, socketRepository, chatRepository, deviceUidRepository) {
 
-    private lateinit var socket: MulticastSocket
+    private var socket: MulticastSocket? = null
 
     override fun run() {
         safeInitialise {
@@ -32,7 +34,7 @@ class UdpListenRunnable(
                 Timber.i("Listening for chat...")
                 val bytes = ByteArray(PACKET_BUFFER_SIZE)
                 val packet = DatagramPacket(bytes, PACKET_BUFFER_SIZE)
-                socket.receive(packet)
+                socket?.receive(packet)
                 val receivedBytes = packet.data.copyOf(packet.length)
                 val chat = ChatCursorOnTarget.fromBytes(receivedBytes)
                 if (chat?.uid != deviceUid) {

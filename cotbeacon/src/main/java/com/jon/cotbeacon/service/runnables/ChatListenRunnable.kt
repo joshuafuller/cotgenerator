@@ -5,6 +5,7 @@ import com.jon.common.cot.ChatCursorOnTarget
 import com.jon.common.cot.CotTeam
 import com.jon.common.repositories.IDeviceUidRepository
 import com.jon.common.repositories.ISocketRepository
+import com.jon.common.service.IThreadErrorListener
 import com.jon.cotbeacon.repositories.IChatRepository
 import timber.log.Timber
 import java.io.Closeable
@@ -12,10 +13,11 @@ import kotlin.math.abs
 
 abstract class ChatListenRunnable(
         prefs: SharedPreferences,
+        errorListener: IThreadErrorListener,
         socketRepository: ISocketRepository,
         chatRepository: IChatRepository,
         protected val deviceUidRepository: IDeviceUidRepository,
-) : ChatRunnable(prefs, socketRepository, chatRepository), Closeable {
+) : ChatRunnable(prefs, errorListener, socketRepository, chatRepository), Closeable {
 
     protected val deviceUid = deviceUidRepository.getUid()
 

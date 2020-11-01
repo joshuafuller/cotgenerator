@@ -8,9 +8,9 @@ import java.util.concurrent.Executors
 internal class CotThreadManager(
         prefs: SharedPreferences,
         private val cotFactory: CotFactory,
-        private val errorListener: IThreadErrorListener,
+        errorListener: IThreadErrorListener,
         private val socketRepository: ISocketRepository
-) : ThreadManager(prefs), SharedPreferences.OnSharedPreferenceChangeListener {
+) : ThreadManager(prefs, errorListener), SharedPreferences.OnSharedPreferenceChangeListener {
 
     private var thread: BaseThread? = null
 

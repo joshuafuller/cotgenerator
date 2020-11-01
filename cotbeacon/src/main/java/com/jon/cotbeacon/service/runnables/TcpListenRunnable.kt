@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import com.jon.common.cot.ChatCursorOnTarget
 import com.jon.common.repositories.IDeviceUidRepository
 import com.jon.common.repositories.ISocketRepository
+import com.jon.common.service.IThreadErrorListener
 import com.jon.cotbeacon.repositories.IChatRepository
 import timber.log.Timber
 import java.io.BufferedInputStream
@@ -12,23 +13,24 @@ import java.net.Socket
 
 class TcpListenRunnable(
         prefs: SharedPreferences,
+        errorListener: IThreadErrorListener,
         socketRepository: ISocketRepository,
         chatRepository: IChatRepository,
         deviceUidRepository: IDeviceUidRepository,
-) : ChatListenRunnable(prefs, socketRepository, chatRepository, deviceUidRepository) {
+) : ChatListenRunnable(prefs, errorListener, socketRepository, chatRepository, deviceUidRepository) {
 
-    private lateinit var socket: Socket
+    private var socket: Socket? = null
     private var inputStream: InputStream? = null
 
     override fun run() {
         safeInitialise {
             socket = socketRepository.getTcpSocket()
-            inputStream = BufferedInputStream(socket.getInputStream())
+            inputStream = BufferedInputStream(socket?.getInputStream())
         } ?: return
 
         while (true) {
             postErrorIfThrowable {
-                Timber.i("Listening for chat from port %d to %d", socket.port, socket.localPort)
+                Timber.i("Listening for chat from port %d to %d", socket?.port, socket?.localPort)
                 val bytes = ByteArray(PACKET_BUFFER_SIZE)
                 val length = inputStream?.read(bytes) ?: return@postErrorIfThrowable
                 val receivedBytes = bytes.copyOf(length)
