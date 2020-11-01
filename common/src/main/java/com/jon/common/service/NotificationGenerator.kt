@@ -6,7 +6,9 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Build
+import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
+import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import com.jon.common.R
 import com.jon.common.di.IBuildResources
@@ -20,13 +22,16 @@ import javax.inject.Inject
 class NotificationGenerator @Inject constructor(
         private val context: Context,
         private val prefs: SharedPreferences,
-        private val buildResources: IBuildResources
+        private val buildResources: IBuildResources,
 ) : INotificationGenerator {
 
-    private val stopServicePendingIntentId = GenerateInt.next()
-    private val foregroundChannelId = "${buildResources.appId}.FOREGROUND"
+    private val notificationManager = context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
 
-    private lateinit var foregroundNotificationBuilder: NotificationCompat.Builder
+    private val stopServicePendingIntentId = GenerateInt.next()
+
+    private val foregroundChannelId = "${buildResources.appId}.FOREGROUND"
+    private val errorChannelId = "${buildResources.appId}.ERROR"
+    private val notificationChannelId = "${buildResources.appId}.NOTIFICATION"
 
     override fun getForegroundNotification(): Notification {
         /* Intent to stop the service when the notification button is tapped */
@@ -37,12 +42,11 @@ class NotificationGenerator @Inject constructor(
                 0
         )
         val channelId = if (VersionUtils.isAtLeast(26)) {
-            createForegroundNotificationChannel()
             foregroundChannelId
         } else {
             buildResources.appName
         }
-        foregroundNotificationBuilder = NotificationCompat.Builder(context, channelId)
+        val builder = NotificationCompat.Builder(context, channelId)
                 .setOngoing(true)
                 .setSmallIcon(R.drawable.target)
                 .setContentTitle(buildResources.appName)
@@ -50,18 +54,42 @@ class NotificationGenerator @Inject constructor(
                 .addAction(R.drawable.stop, context.getString(R.string.notification_stop), stopPendingIntent)
 
         if (VersionUtils.isAtLeast(21)) {
-            foregroundNotificationBuilder.setCategory(Notification.CATEGORY_SERVICE)
+            builder.setCategory(Notification.CATEGORY_SERVICE)
         }
         if (VersionUtils.isLessThan(26)) {
-            foregroundNotificationBuilder.priority = NotificationCompat.PRIORITY_MAX
+            builder.priority = NotificationCompat.PRIORITY_MAX
         }
-        return foregroundNotificationBuilder.build()
+        return builder.build()
+    }
+
+    override fun showErrorNotification(errorMessage: String?) {
+        notificationManager.notify(
+                GenerateInt.next(),
+                NotificationCompat.Builder(context, errorChannelId)
+                        .setOngoing(false)
+                        .setSmallIcon(R.drawable.error)
+                        .setContentTitle("Error")
+                        .setStyle(bigText(errorMessage ?: "Null error: check the stack trace for info"))
+                        .build()
+        )
+    }
+
+    override fun showNotification(@DrawableRes iconId: Int, title: String, subtitle: String) {
+        notificationManager.notify(
+                GenerateInt.next(),
+                NotificationCompat.Builder(context, notificationChannelId)
+                        .setOngoing(false)
+                        .setSmallIcon(iconId)
+                        .setContentTitle(title)
+                        .setContentText(subtitle)
+                        .setStyle(bigText(subtitle))
+                        .build()
+        )
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun createNotificationChannel() {
-        val manager = context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
-        manager.createNotificationChannel(
+    override fun createForegroundChannel() {
+        notificationManager.createNotificationChannel(
                 NotificationChannel(
                         foregroundChannelId,
                         buildResources.appName,
@@ -76,6 +104,39 @@ class NotificationGenerator @Inject constructor(
         )
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun createErrorChannel() {
+        notificationManager.createNotificationChannel(
+                NotificationChannel(
+                        errorChannelId,
+                        "Error",
+                        NotificationManager.IMPORTANCE_HIGH
+                ).apply {
+                    lightColor = Color.RED
+                    lockscreenVisibility = Notification.VISIBILITY_PRIVATE
+                    vibrationPattern = longArrayOf(0, 1000) // zero delay, then vibrate for 1 second
+                    setSound(null, null)
+                    setShowBadge(false)
+                }
+        )
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun createNotificationChannel(@StringRes titleId: Int) {
+        notificationManager.createNotificationChannel(
+                NotificationChannel(
+                        notificationChannelId,
+                        context.getString(titleId),
+                        NotificationManager.IMPORTANCE_HIGH
+                ).apply {
+                    lightColor = Color.YELLOW
+                    lockscreenVisibility = Notification.VISIBILITY_PRIVATE
+                    vibrationPattern = longArrayOf(0, 200) // zero delay, then vibrate for 0.2 seconds
+                    setSound(null, null)
+                    setShowBadge(true)
+                }
+        )
+    }
 
     private fun getPresetInfoString(prefs: SharedPreferences): String {
         val protocol = Protocol.fromPrefs(prefs)
@@ -83,4 +144,5 @@ class NotificationGenerator @Inject constructor(
         return protocol.toString() + if (preset == null) ": Unknown" else ": " + preset.alias
     }
 
+    private fun bigText(text: String?) = NotificationCompat.BigTextStyle().bigText(text)
 }

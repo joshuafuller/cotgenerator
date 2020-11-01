@@ -3,6 +3,9 @@ package com.jon.cotbeacon.service
 import com.jon.common.cot.ChatCursorOnTarget
 import com.jon.common.repositories.IDeviceUidRepository
 import com.jon.common.service.CotService
+import com.jon.common.utils.VersionUtils
+import com.jon.cotbeacon.BeaconApplication
+import com.jon.cotbeacon.R
 import com.jon.cotbeacon.repositories.IChatRepository
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -23,6 +26,25 @@ class BeaconCotService : CotService() {
                 deviceUidRepository = deviceUidRepository,
                 socketRepository = socketRepository,
         )
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        if (VersionUtils.isAtLeast(26)) {
+            notificationGenerator.createNotificationChannel(R.string.chat_notification_title)
+        }
+
+        chatRepository.getLatestChat().observe(this) {
+            if (!it.isSelf && !BeaconApplication.chatFragmentIsVisible) {
+                /* Only show a notification if this isn't a self-message, and if the chat fragment
+                * isn't already open. */
+                notificationGenerator.showNotification(
+                        iconId = R.drawable.chat,
+                        title = "Message from ${it.callsign}",
+                        subtitle = "${it.start.shortLocalTimestamp()}: ${it.message}"
+                )
+            }
+        }
     }
 
     override fun start() {

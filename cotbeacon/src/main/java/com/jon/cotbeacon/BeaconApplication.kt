@@ -10,4 +10,8 @@ class BeaconApplication : CotApplication() {
 
         /* Implementation details TBC */
     }
+
+    companion object {
+        var chatFragmentIsVisible = false
+    }
 }

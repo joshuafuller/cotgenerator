@@ -1,25 +1,23 @@
 package com.jon.common.service
 
-import android.app.Service
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Binder
-import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import androidx.lifecycle.LifecycleService
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
-import com.jon.common.CotApplication
 import com.jon.common.repositories.IGpsRepository
 import com.jon.common.repositories.ISocketRepository
 import com.jon.common.repositories.IStatusRepository
-import com.jon.common.utils.Notify
+import com.jon.common.utils.VersionUtils
 import timber.log.Timber
 import javax.inject.Inject
 
-abstract class CotService : Service(),
+abstract class CotService : LifecycleService(),
         IThreadErrorListener {
     @Inject
     lateinit var prefs: SharedPreferences
@@ -63,7 +61,16 @@ abstract class CotService : Service(),
 
 
     override fun onBind(intent: Intent): IBinder? {
+        super.onBind(intent)
         return binder
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        if (VersionUtils.isAtLeast(26)) {
+            notificationGenerator.createForegroundChannel()
+            notificationGenerator.createErrorChannel()
+        }
     }
 
     override fun onDestroy() {
@@ -112,11 +119,7 @@ abstract class CotService : Service(),
 
     private fun error(throwable: Throwable) {
         Timber.e(throwable)
-        if (!CotApplication.activityIsVisible) {
-            /* No UI activities open, so post a toast which should(!) appear over any other apps in the foreground */
-            val handler = Handler(Looper.getMainLooper())
-            handler.post { Notify.toast(applicationContext, throwable.message!!) }
-        }
+        notificationGenerator.showErrorNotification(throwable.message)
         shutdown()
         ServiceState.errorMessage = throwable.message
         statusRepository.postStatus(ServiceState.ERROR)

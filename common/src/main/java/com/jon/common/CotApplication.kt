@@ -26,7 +26,5 @@ open class CotApplication : MultiDexApplication() {
         private var instance: CotApplication? = null
         val context: Context
             get() = instance!!.applicationContext
-
-        var activityIsVisible = false
     }
 }

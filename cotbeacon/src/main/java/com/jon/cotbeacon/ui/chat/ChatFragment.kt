@@ -24,6 +24,7 @@ import com.jon.common.repositories.IDeviceUidRepository
 import com.jon.common.repositories.IStatusRepository
 import com.jon.common.service.ServiceState
 import com.jon.common.utils.Notify
+import com.jon.cotbeacon.BeaconApplication
 import com.jon.cotbeacon.R
 import com.jon.cotbeacon.repositories.IChatRepository
 import com.jon.cotbeacon.ui.IChatServiceCommunicator
@@ -69,6 +70,7 @@ class ChatFragment : Fragment() {
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        BeaconApplication.chatFragmentIsVisible = true
         chatTextInput = view.findViewById(R.id.chat_message_input)
         statusText = view.findViewById(R.id.chat_status)
         disabledBox = view.findViewById(R.id.disabled_box)
@@ -85,6 +87,11 @@ class ChatFragment : Fragment() {
         initialiseSendButton(view, context)
         observeServiceStatus()
         observeChatStatus()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        BeaconApplication.chatFragmentIsVisible = false
     }
 
     private fun initialiseRecyclerView(view: View, context: Context) {

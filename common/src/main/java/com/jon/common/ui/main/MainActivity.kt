@@ -19,7 +19,6 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.jon.common.CotApplication
 import com.jon.common.R
 import com.jon.common.di.IBuildResources
 import com.jon.common.di.IUiResources
@@ -118,13 +117,7 @@ abstract class MainActivity : AppCompatActivity(),
 
     override fun onResume() {
         super.onResume()
-        CotApplication.activityIsVisible = true
         prefs.registerOnSharedPreferenceChangeListener(this)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        CotApplication.activityIsVisible = false
     }
 
     override fun onDestroy() {

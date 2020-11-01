@@ -5,6 +5,7 @@ import com.jon.common.cot.ChatCursorOnTarget
 import com.rugovit.eventlivedata.EventLiveData
 
 interface IChatRepository {
+    fun getLatestChat(): LiveData<ChatCursorOnTarget>
     fun getChats(): LiveData<List<ChatCursorOnTarget>>
     fun postChat(chat: ChatCursorOnTarget)
     fun getErrors(): EventLiveData<String>

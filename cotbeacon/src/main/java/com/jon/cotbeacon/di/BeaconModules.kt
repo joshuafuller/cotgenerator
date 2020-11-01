@@ -5,12 +5,12 @@ import android.content.SharedPreferences
 import com.jon.common.di.IBuildResources
 import com.jon.common.di.IUiResources
 import com.jon.common.repositories.IBatteryRepository
-import com.jon.cotbeacon.repositories.IChatRepository
 import com.jon.common.repositories.IDeviceUidRepository
 import com.jon.common.repositories.IGpsRepository
-import com.jon.cotbeacon.repositories.ChatRepository
 import com.jon.common.service.CotFactory
 import com.jon.common.ui.main.SettingsFragment
+import com.jon.cotbeacon.repositories.ChatRepository
+import com.jon.cotbeacon.repositories.IChatRepository
 import com.jon.cotbeacon.service.BeaconCotFactory
 import com.jon.cotbeacon.ui.BeaconSettingsFragment
 import dagger.Binds
