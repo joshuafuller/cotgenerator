@@ -9,6 +9,7 @@ import com.jon.common.di.IBuildResources
 import com.jon.common.prefs.getBooleanFromPair
 import com.jon.common.service.CotService
 import com.jon.common.utils.Notify
+import com.jon.common.utils.VersionUtils
 import com.jon.cotbeacon.prefs.BeaconPrefs
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
@@ -30,7 +31,7 @@ class BeaconBootReceiver : BroadcastReceiver() {
                 val serviceIntent = Intent(context, buildResources.serviceClass).apply {
                     action = CotService.START_SERVICE
                 }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                if (VersionUtils.isAtLeast(26)) {
                     context.startForegroundService(serviceIntent)
                 } else {
                     context.startService(serviceIntent)

@@ -7,8 +7,8 @@ object VersionUtils {
         return Build.VERSION.SDK_INT >= sdkMinimum
     }
 
-    fun isAtMost(sdkMaximum: Int): Boolean {
-        return Build.VERSION.SDK_INT <= sdkMaximum
+    fun isLessThan(sdkMaximum: Int): Boolean {
+        return Build.VERSION.SDK_INT < sdkMaximum
     }
 }
 

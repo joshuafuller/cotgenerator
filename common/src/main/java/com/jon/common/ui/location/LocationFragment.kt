@@ -25,6 +25,7 @@ import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getStringFromPair
 import com.jon.common.repositories.IGpsRepository
 import com.jon.common.utils.Notify
+import com.jon.common.utils.VersionUtils
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -107,7 +108,7 @@ class LocationFragment : Fragment(),
     @SuppressLint("MissingPermission")
     override fun onStart() {
         super.onStart()
-        if (sdkOver24()) {
+        if (VersionUtils.isAtLeast(24)) {
             gnssCallback = GnssCallback(this).also {
                 locationManager.registerGnssStatusCallback(it)
             }
@@ -116,7 +117,7 @@ class LocationFragment : Fragment(),
 
     override fun onStop() {
         super.onStop()
-        if (sdkOver24()) {
+        if (VersionUtils.isAtLeast(24)) {
             gnssCallback?.let { locationManager.unregisterGnssStatusCallback(it) }
         }
     }
@@ -232,9 +233,5 @@ class LocationFragment : Fragment(),
 
     private companion object {
         const val GPS_NOT_ENABLED = "GPS NOT ENABLED"
-
-        fun sdkOver24(): Boolean {
-            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-        }
     }
 }

@@ -14,6 +14,7 @@ import com.jon.common.prefs.getStringFromPair
 import com.jon.common.presets.OutputPreset
 import com.jon.common.utils.GenerateInt
 import com.jon.common.utils.Protocol
+import com.jon.common.utils.VersionUtils
 import javax.inject.Inject
 
 class NotificationGenerator @Inject constructor(
@@ -35,8 +36,8 @@ class NotificationGenerator @Inject constructor(
                 Intent(context, buildResources.serviceClass).setAction(CotService.STOP_SERVICE),
                 0
         )
-        val channelId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createNotificationChannel()
+        val channelId = if (VersionUtils.isAtLeast(26)) {
+            createForegroundNotificationChannel()
             foregroundChannelId
         } else {
             buildResources.appName
@@ -48,10 +49,10 @@ class NotificationGenerator @Inject constructor(
                 .setContentText(getPresetInfoString(prefs))
                 .addAction(R.drawable.stop, context.getString(R.string.notification_stop), stopPendingIntent)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (VersionUtils.isAtLeast(21)) {
             foregroundNotificationBuilder.setCategory(Notification.CATEGORY_SERVICE)
         }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        if (VersionUtils.isLessThan(26)) {
             foregroundNotificationBuilder.priority = NotificationCompat.PRIORITY_MAX
         }
         return foregroundNotificationBuilder.build()

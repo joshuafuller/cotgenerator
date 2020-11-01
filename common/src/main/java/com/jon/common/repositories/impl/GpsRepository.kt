@@ -1,10 +1,10 @@
 package com.jon.common.repositories.impl
 
 import android.location.Location
-import android.os.Build
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.jon.common.repositories.IGpsRepository
+import com.jon.common.utils.VersionUtils
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -54,7 +54,7 @@ class GpsRepository @Inject constructor() : IGpsRepository {
     }
 
     override fun linearError90(): Double {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && lastLocation.value?.hasVerticalAccuracy() == true) {
+        return if (VersionUtils.isAtLeast(26) && lastLocation.value?.hasVerticalAccuracy() == true) {
             lastLocation.value?.verticalAccuracyMeters?.toDouble() ?: UNKNOWN
         } else {
             UNKNOWN

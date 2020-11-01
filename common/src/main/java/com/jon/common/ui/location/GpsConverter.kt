@@ -1,7 +1,7 @@
 package com.jon.common.ui.location
 
 import android.location.Location
-import android.os.Build
+import com.jon.common.utils.VersionUtils
 import org.opensextant.geodesy.Angle
 import org.opensextant.geodesy.Latitude
 import org.opensextant.geodesy.Longitude
@@ -16,7 +16,7 @@ internal class GpsConverter {
             var positionalError: String = UNKNOWN,
             var altitudeWgs84: String = UNKNOWN,
             var speedMetresPerSec: String = UNKNOWN,
-            var bearing: String = UNKNOWN
+            var bearing: String = UNKNOWN,
     )
 
     fun convertCoordinates(location: Location?, format: CoordinateFormat): Converted {
@@ -115,7 +115,7 @@ internal class GpsConverter {
 
         private fun formatSpeed(location: Location): String {
             return if (location.hasSpeed()) {
-                val accuracy = if (sdkOver26() && location.hasSpeedAccuracy()) {
+                val accuracy = if (VersionUtils.isAtLeast(26) && location.hasSpeedAccuracy()) {
                     " ± %.1f".format(abs(location.speedAccuracyMetersPerSecond))
                 } else ""
                 "%.1f%s m/s".format(location.speed, accuracy)
@@ -126,7 +126,7 @@ internal class GpsConverter {
 
         private fun formatAltitude(location: Location): String {
             return if (location.hasAltitude()) {
-                val accuracy = if (sdkOver26() && location.hasVerticalAccuracy()) {
+                val accuracy = if (VersionUtils.isAtLeast(26) && location.hasVerticalAccuracy()) {
                     " ± %.1f".format(abs(location.verticalAccuracyMeters))
                 } else ""
                 return "%.1f%sm".format(location.altitude, accuracy)
@@ -141,17 +141,13 @@ internal class GpsConverter {
                 return NA
             }
             return if (location.hasBearing()) {
-                val accuracy = if (sdkOver26() && location.hasBearingAccuracy()) {
+                val accuracy = if (VersionUtils.isAtLeast(26) && location.hasBearingAccuracy()) {
                     " ± %.1f".format(abs(location.bearingAccuracyDegrees))
                 } else ""
                 return "%.1f%s° %s".format(location.bearing, accuracy, AngleUtils.getDirection(location.bearing.toDouble()))
             } else {
                 UNKNOWN
             }
-        }
-
-        private fun sdkOver26(): Boolean {
-            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
         }
     }
 }
