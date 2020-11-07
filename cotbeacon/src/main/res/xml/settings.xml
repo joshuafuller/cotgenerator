@@ -5,7 +5,7 @@
         app:iconSpaceReserved="false"
         app:title="@string/pref_category_cot_settings">
 
-        <EditTextPreference
+        <com.jon.common.prefs.RefreshCallsignPreference
             android:key="@string/key_callsign"
             app:iconSpaceReserved="false"
             app:title="@string/desc_callsign"
