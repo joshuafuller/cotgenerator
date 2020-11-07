@@ -24,6 +24,10 @@ android {
         setProperty("archivesBaseName", "common-$versionName")
     }
 
+    buildFeatures {
+        viewBinding true
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -91,6 +95,10 @@ dependencies {
 
     /* Lifecycle */
     api "androidx.lifecycle:lifecycle-extensions:$versions.lifecycle"
+    api "androidx.lifecycle:lifecycle-runtime-ktx:$versions.lifecycle"
+    api "androidx.lifecycle:lifecycle-common-java8:$versions.lifecycle"
+    api "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.lifecycle"
+    api "androidx.lifecycle:lifecycle-livedata-ktx:$versions.lifecycle"
     kapt "androidx.lifecycle:lifecycle-compiler:$versions.lifecycle"
 
     /* Room Database */

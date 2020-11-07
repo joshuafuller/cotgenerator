@@ -35,6 +35,12 @@
             android:exported="false"
             android:foregroundServiceType="location" />
 
+        <receiver android:name=".service.DozeReceiver" >
+            <intent-filter>
+                <action android:name="android.os.action.DEVICE_IDLE_MODE_CHANGED" />
+            </intent-filter>
+        </receiver>
+
         <receiver android:name=".BeaconBootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

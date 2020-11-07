@@ -1,12 +1,18 @@
 package com.jon.cotbeacon.service
 
+import android.content.IntentFilter
+import android.os.PowerManager
+import androidx.annotation.RequiresApi
 import com.jon.common.cot.ChatCursorOnTarget
+import com.jon.common.prefs.getBooleanFromPair
 import com.jon.common.repositories.IDeviceUidRepository
 import com.jon.common.service.CotService
+import com.jon.common.utils.MinimumVersions.IGNORE_BATTERY_OPTIMISATIONS
 import com.jon.common.utils.MinimumVersions.NOTIFICATION_CHANNELS
 import com.jon.common.utils.VersionUtils
 import com.jon.cotbeacon.BeaconApplication
 import com.jon.cotbeacon.R
+import com.jon.cotbeacon.prefs.BeaconPrefs
 import com.jon.cotbeacon.repositories.IChatRepository
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -29,12 +35,37 @@ class BeaconCotService : CotService() {
         )
     }
 
+    private lateinit var dozeReceiver: DozeReceiver
+
     override fun onCreate() {
         super.onCreate()
         if (VersionUtils.isAtLeast(NOTIFICATION_CHANNELS)) {
             notificationGenerator.createNotificationChannel(R.string.chat_notification_title)
         }
+        observeChatMessages()
 
+        if (VersionUtils.isAtLeast(IGNORE_BATTERY_OPTIMISATIONS)) {
+            initialiseDozeReceiver()
+        }
+    }
+
+    override fun start() {
+        super.start()
+        if (prefs.getBooleanFromPair(BeaconPrefs.ENABLE_CHAT)) {
+            chatThreadManager.start()
+        }
+    }
+
+    override fun shutdown() {
+        super.shutdown()
+        chatThreadManager.shutdown()
+
+        if (VersionUtils.isAtLeast(IGNORE_BATTERY_OPTIMISATIONS)) {
+            unregisterReceiver(dozeReceiver)
+        }
+    }
+
+    private fun observeChatMessages() {
         chatRepository.getLatestChat().observe(this) {
             if (!it.isSelf && !BeaconApplication.chatFragmentIsVisible) {
                 /* Only show a notification if this isn't a self-message, and if the chat fragment
@@ -48,14 +79,16 @@ class BeaconCotService : CotService() {
         }
     }
 
-    override fun start() {
-        super.start()
-        chatThreadManager.start()
-    }
-
-    override fun shutdown() {
-        super.shutdown()
-        chatThreadManager.shutdown()
+    @RequiresApi(IGNORE_BATTERY_OPTIMISATIONS)
+    private fun initialiseDozeReceiver() {
+        registerReceiver(
+                DozeReceiver().also { dozeReceiver = it },
+                IntentFilter().apply {
+                    addAction(PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED)
+                }
+        )
+        // Tell it to grab the current "doze mode" value
+        dozeReceiver.postDozeModeValue(this, gpsRepository)
     }
 
     fun sendChat(chatMessage: ChatCursorOnTarget) {

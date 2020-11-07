@@ -74,8 +74,24 @@ internal class BeaconCotFactory @Inject constructor(
         cot.speed = gpsRepository.speed()
         cot.ce = gpsRepository.circularError90()
         cot.le = gpsRepository.linearError90()
-        val gpsSrc = if (gpsRepository.hasGpsFix()) "GPS" else "NO-GPS-FIX"
+        val gpsSrc = getGpsSrc()
         cot.altsrc = gpsSrc
         cot.geosrc = gpsSrc
+        updateDozeModeTags()
+    }
+
+    private fun getGpsSrc(): String {
+        return when {
+            gpsRepository.idleModeActive() -> "???"
+            gpsRepository.hasGpsFix() -> "GPS"
+            else -> "???"
+        }
+    }
+
+    private fun updateDozeModeTags() {
+        cot.setDozeModeTags(
+                isDozeMode = gpsRepository.idleModeActive(),
+                lastGpsUpdateMs = gpsRepository.getLastUpdateTime()
+        )
     }
 }

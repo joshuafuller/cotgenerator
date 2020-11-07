@@ -13,15 +13,31 @@ class GpsRepository @Inject constructor() : IGpsRepository {
     private val lock = Any()
     private val lastLocation = MutableLiveData<Location?>().also { it.value = null }
 
+    private var lastUpdateTimeMs = 0L
+    private var idleMode = false
+
+    override fun onIdleModeChanged(idleModeActive: Boolean) {
+        idleMode = idleModeActive
+    }
+
+    override fun idleModeActive(): Boolean {
+        return idleMode
+    }
+
     override fun setLocation(location: Location) {
         synchronized(lock) {
             Timber.d("Updating GPS to %f %f", location.latitude, location.longitude)
+            lastUpdateTimeMs = System.currentTimeMillis()
             lastLocation.value = location
         }
     }
 
     override fun getLocation(): LiveData<Location?> {
         return lastLocation
+    }
+
+    override fun getLastUpdateTime(): Long {
+        return lastUpdateTimeMs
     }
 
     override fun latitude() = lastLocation.value?.latitude ?: ZERO

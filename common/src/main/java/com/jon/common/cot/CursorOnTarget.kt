@@ -12,6 +12,8 @@ import com.jon.common.cot.proto.TakvOuterClass.Takv
 import com.jon.common.cot.proto.TrackOuterClass
 import com.jon.common.di.IBuildResources
 import com.jon.common.utils.DataFormat
+import com.jon.common.utils.TimeUtils
+import timber.log.Timber
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -29,6 +31,7 @@ open class CursorOnTarget(buildResources: IBuildResources?) {
 
     // Contact info
     var callsign = "CALLSIGN" // ATAK callsign
+    private var callsignAddendum: String = ""     // Used to include information about device doze mode, if it's active
 
     // Position and movement info
     var hae = 0.0 // height above ellipsoid in metres
@@ -65,14 +68,23 @@ open class CursorOnTarget(buildResources: IBuildResources?) {
         stale = start.add(dt, timeUnit)
     }
 
+    fun setDozeModeTags(isDozeMode: Boolean, lastGpsUpdateMs: Long) {
+        val diffMs = (System.currentTimeMillis() - lastGpsUpdateMs)
+        /* If we're in doze mode, append a tag to the callsign so their status is visible on the map */
+        callsignAddendum = if (isDozeMode) {
+            Timber.i("Setting doze mode tag")
+            " DOZING FOR ${TimeUtils.msToString(diffMs)}"
+        } else ""
+    }
+
     protected open fun toXml(): ByteArray {
         return String.format(Locale.ENGLISH,
                 "<event version=\"2.0\" uid=\"%s\" type=\"%s\" time=\"%s\" start=\"%s\" stale=\"%s\" how=\"%s\"><point lat=\"%.7f\" " +
-                        "lon=\"%.7f\" hae=\"%f\" ce=\"%f\" le=\"%f\"/><detail><track speed=\"%.7f\" course=\"%.7f\"/><contact callsign=\"%s\"/>" +
+                        "lon=\"%.7f\" hae=\"%f\" ce=\"%f\" le=\"%f\"/><detail><track speed=\"%.7f\" course=\"%.7f\"/><contact callsign=\"%s%s\"/>" +
                         "<__group name=\"%s\" role=\"%s\"/><takv device=\"%s\" platform=\"%s\" os=\"%s\" version=\"%s\"/><status battery=\"%d\"/>" +
                         "<precisionlocation altsrc=\"%s\" geopointsrc=\"%s\" /></detail></event>",
                 uid, type, time.isoTimestamp(), start.isoTimestamp(), stale.isoTimestamp(), how, lat, lon, hae, ce, le, speed,
-                course, callsign, team.toString(), role.toString(), device, platform, os, version, battery, altsrc, geosrc)
+                course, callsign, callsignAddendum, team.toString(), role.toString(), device, platform, os, version, battery, altsrc, geosrc)
                 .toByteArray()
     }
 

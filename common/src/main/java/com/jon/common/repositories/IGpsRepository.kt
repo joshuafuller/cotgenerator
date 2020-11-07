@@ -4,8 +4,11 @@ import android.location.Location
 import androidx.lifecycle.LiveData
 
 interface IGpsRepository {
+    fun onIdleModeChanged(idleModeActive: Boolean)
+    fun idleModeActive(): Boolean
     fun setLocation(location: Location)
     fun getLocation(): LiveData<Location?>
+    fun getLastUpdateTime(): Long
     fun latitude(): Double
     fun longitude(): Double
     fun altitude(): Double
