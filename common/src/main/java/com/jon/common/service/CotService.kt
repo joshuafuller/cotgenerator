@@ -81,12 +81,21 @@ abstract class CotService : LifecycleService(),
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val result = super.onStartCommand(intent, flags, startId)
         Timber.i("onStartCommand ${intent?.action}")
-        when (intent?.action) {
-            STOP_SERVICE -> shutdown()
-            START_SERVICE -> start()
+        return when (intent?.action) {
+            STOP_SERVICE -> {
+                shutdown()
+                result
+            }
+            START_SERVICE -> {
+                start()
+                START_STICKY
+            }
+            else -> {
+                result
+            }
         }
-        return super.onStartCommand(intent, flags, startId)
     }
 
     fun initialiseFusedLocationClient() {
