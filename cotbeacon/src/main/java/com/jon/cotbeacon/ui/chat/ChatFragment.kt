@@ -6,7 +6,6 @@ import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.*
-import android.widget.Button
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,6 +21,7 @@ import com.jon.common.repositories.IStatusRepository
 import com.jon.common.service.ServiceState
 import com.jon.common.ui.viewBinding
 import com.jon.common.utils.Notify
+import com.jon.common.utils.Protocol
 import com.jon.cotbeacon.BeaconApplication
 import com.jon.cotbeacon.R
 import com.jon.cotbeacon.databinding.FragmentChatBinding
@@ -75,7 +75,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
 
         val context = requireContext()
         initialiseRecyclerView(context)
-        initialiseSendButton(view, context)
+        initialiseSendButton(context)
         observeServiceStatus()
         observeChatStatus()
     }
@@ -103,7 +103,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         binding.chatRecyclerView.adapter = adapter
     }
 
-    private fun initialiseSendButton(view: View, context: Context) {
+    private fun initialiseSendButton(context: Context) {
         binding.chatSendButton.setBackgroundColor(ContextCompat.getColor(context, uiResources.accentColourId))
         val icon = ContextCompat.getDrawable(context, R.drawable.send)
         binding.chatSendButton.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null)
@@ -125,14 +125,18 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         binding.chatMessageInput.editText?.text?.clear()
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun observeServiceStatus() {
         statusRepository.getStatus().observe(viewLifecycleOwner) {
             if (it == ServiceState.RUNNING) {
                 binding.chatStatus.visibility = View.GONE
                 binding.disabledBox.visibility = View.GONE
+                val runningSsl = Protocol.fromPrefs(prefs) == Protocol.SSL
+                binding.sslWarning.visibility = if (runningSsl) View.VISIBLE else View.GONE
             } else {
                 binding.chatStatus.visibility = View.VISIBLE
                 binding.disabledBox.visibility = View.VISIBLE
+                binding.sslWarning.visibility = View.GONE
             }
         }
     }

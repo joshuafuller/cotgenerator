@@ -19,5 +19,6 @@
     <string name="chat_send">SEND</string>
     <string name="chat_hint">Chat Message</string>
     <string name="chat_inactive">Chat is inactive. Start the service first!</string>
+    <string name="chat_ssl_warning">Warning: the chat function may be receive-only for SSL servers!</string>
     <string name="chat_notification_title">Chat Received</string>
 </resources>

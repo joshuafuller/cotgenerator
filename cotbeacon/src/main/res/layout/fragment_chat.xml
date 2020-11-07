@@ -17,6 +17,19 @@
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/ssl_warning"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/holo_orange_dark"
+        android:gravity="center"
+        android:padding="@dimen/chatInputMargin"
+        android:text="@string/chat_ssl_warning"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/chat_status" />
+
     <ImageView
         android:id="@+id/disabled_box"
         android:layout_width="match_parent"

@@ -48,6 +48,10 @@ Also included is a handy "My Location" screen - accessed from the toolbar on the
 
 As of version 1.7.0, a chat function has been added to allow text communication between CoT Beacon and anyone else on the TAK network. This supports UDP, TCP and SSL protocols, but only sends/receives messages through the "All Chat Rooms" group in TAK. A screenshot of the window is shown below. Note that these messages are not saved between app restarts, and messages can only be sent/received when the service is running.
 
+Also, please be aware that my testing with SSL servers has shown that I can only receive chat messages in Beacon, not send. The reason for this is unclear, but it may be a configuration issue on the Discord TAK server (the only one I've been able to test with). Chat works both-ways for UDP and TCP protocols, however.
+
+There is also a
+
 | Beacon Chat |
 :--:|
 ![20 Icons Elevated](docs/screenshots/ui_chat.jpg)|
@@ -110,7 +114,9 @@ Note that 100% of testing has been done on a OnePlus 6 running Android 10. If th
 Thanks to the crew at the TAK Discord, most notably [Corvo](https://github.com/brothercorvo) and [Field Mapper](https://github.com/fieldmapper) for hosting their public [FreeTAKServer](https://github.com/FreeTAKTeam/FreeTakServer) and OG TAK Server respectively, used extensively for testing.
 
 ## TODO
-- Add a button for sending/canceling
+- Fix package parsing error
+- three-way toggle preference?
+- Add a button for sending/canceling emergencies
 - Change app launcher icons
 - Add a toggleable option to encrypt the database of presets
     - This would make SSL certificate passwords more secure, since they're currently stored in plaintext
