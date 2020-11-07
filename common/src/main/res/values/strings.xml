@@ -54,6 +54,7 @@
 
     <string name="unknown">UNKNOWN</string>
     <string name="blank" />
+    <string name="refresh">REFRESH</string>
 
     <string name="battery_optimisation_dialog_title">Disable Battery Optimisation</string>
     <string name="battery_optimisation_dialog_message">Select "ALLOW" in the following window.</string>

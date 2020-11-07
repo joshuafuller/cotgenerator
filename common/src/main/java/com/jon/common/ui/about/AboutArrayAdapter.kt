@@ -12,7 +12,7 @@ import com.jon.common.R
 internal class AboutArrayAdapter(
         context: Context,
         private val rows: List<AboutRow>
-) : ArrayAdapter<AboutRow>(context, R.layout.fragment_about_listview_item, R.id.aboutItemTextTitle, rows) {
+) : ArrayAdapter<AboutRow>(context, R.layout.fragment_about_row, R.id.aboutItemTextTitle, rows) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view = super.getView(position, null, parent)

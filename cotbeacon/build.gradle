@@ -25,6 +25,10 @@ android {
         setProperty("archivesBaseName", "$applicationId-$versionName")
     }
 
+    buildFeatures {
+        viewBinding true
+    }
+
     buildTypes {
         release {
             minifyEnabled false

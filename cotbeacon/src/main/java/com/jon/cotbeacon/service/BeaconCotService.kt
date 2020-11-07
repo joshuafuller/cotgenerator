@@ -15,7 +15,9 @@ import com.jon.cotbeacon.R
 import com.jon.cotbeacon.prefs.BeaconPrefs
 import com.jon.cotbeacon.repositories.IChatRepository
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class BeaconCotService : CotService() {
@@ -49,6 +51,13 @@ class BeaconCotService : CotService() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        if (VersionUtils.isAtLeast(IGNORE_BATTERY_OPTIMISATIONS)) {
+            unregisterReceiver(dozeReceiver)
+        }
+    }
+
     override fun start() {
         super.start()
         if (prefs.getBooleanFromPair(BeaconPrefs.ENABLE_CHAT)) {
@@ -59,10 +68,6 @@ class BeaconCotService : CotService() {
     override fun shutdown() {
         super.shutdown()
         chatThreadManager.shutdown()
-
-        if (VersionUtils.isAtLeast(IGNORE_BATTERY_OPTIMISATIONS)) {
-            unregisterReceiver(dozeReceiver)
-        }
     }
 
     private fun observeChatMessages() {
@@ -89,6 +94,7 @@ class BeaconCotService : CotService() {
         )
         // Tell it to grab the current "doze mode" value
         dozeReceiver.postDozeModeValue(this, gpsRepository)
+        Timber.i("Doze receiver initialised")
     }
 
     fun sendChat(chatMessage: ChatCursorOnTarget) {

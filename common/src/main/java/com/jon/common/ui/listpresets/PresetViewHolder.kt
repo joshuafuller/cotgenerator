@@ -1,27 +1,22 @@
 package com.jon.common.ui.listpresets
 
-import android.view.View
-import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.jon.common.R
+import com.jon.common.databinding.PresetListItemBinding
 import com.jon.common.presets.OutputPreset
 
 internal class PresetViewHolder(
-        itemView: View,
+        binding: PresetListItemBinding,
         private val clickListener: IPresetClickListener,
         private val presets: List<OutputPreset>,
-) : RecyclerView.ViewHolder(itemView) {
+) : RecyclerView.ViewHolder(binding.root) {
 
-    val alias: TextView = itemView.findViewById(R.id.presetListItemAlias)
-    val address: TextView = itemView.findViewById(R.id.presetListItemAddress)
-    val port: TextView = itemView.findViewById(R.id.presetListItemPort)
-
-    private val edit: ImageButton = itemView.findViewById(R.id.presetListItemEdit)
-    private val delete: ImageButton = itemView.findViewById(R.id.presetListItemDelete)
+    val alias = binding.alias
+    val address: TextView = binding.address
+    val port: TextView = binding.port
 
     init {
-        edit.setOnClickListener { clickListener.onClickEditItem(presets[adapterPosition]) }
-        delete.setOnClickListener { clickListener.onClickDeleteItem(presets[adapterPosition]) }
+        binding.editButton.setOnClickListener { clickListener.onClickEditItem(presets[adapterPosition]) }
+        binding.deleteButton.setOnClickListener { clickListener.onClickDeleteItem(presets[adapterPosition]) }
     }
 }

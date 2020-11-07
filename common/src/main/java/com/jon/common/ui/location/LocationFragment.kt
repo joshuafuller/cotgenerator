@@ -12,18 +12,20 @@ import android.location.Location
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
-import android.view.*
-import android.widget.Button
-import android.widget.TextView
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import com.jon.common.R
+import com.jon.common.databinding.FragmentLocationBinding
 import com.jon.common.di.IUiResources
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getStringFromPair
 import com.jon.common.repositories.IGpsRepository
+import com.jon.common.ui.viewBinding
 import com.jon.common.utils.MinimumVersions.GNSS_CALLBACK
 import com.jon.common.utils.Notify
 import com.jon.common.utils.VersionUtils
@@ -32,34 +34,19 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class LocationFragment : Fragment(),
+class LocationFragment : Fragment(R.layout.fragment_location),
         SensorEventListener,
         GnssCallback.IListener {
 
+    private val binding by viewBinding(FragmentLocationBinding::bind)
+
     private val locationManager by lazy { requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager }
-
     private val gpsConverter = GpsConverter()
-    private var mostRecentLocation: Location? = null
-    private lateinit var coordinateFormat: CoordinateFormat
-    private lateinit var latitude: TextView
-    private lateinit var longitude: TextView
-    private lateinit var latLayout: View
-    private lateinit var lonLayout: View
-    private lateinit var mgrsLayout: View
-    private lateinit var positionalError: TextView
-    private lateinit var numSatelliteFixes: TextView
-    private lateinit var mgrs: TextView
-    private lateinit var coordinateFormatButton: Button
-    private lateinit var coordinateCopyButton: Button
-
     private val compass by lazy { Compass(requireContext()) }
-    private lateinit var compassDegrees: TextView
-
-    private lateinit var altitude: TextView
-    private lateinit var speed: TextView
-    private lateinit var bearing: TextView
+    private lateinit var coordinateFormat: CoordinateFormat
 
     private var gnssCallback: GnssCallback? = null
+    private var mostRecentLocation: Location? = null
 
     @Inject
     lateinit var gpsRepository: IGpsRepository
@@ -75,30 +62,14 @@ class LocationFragment : Fragment(),
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = View.inflate(context, R.layout.fragment_location, null)
-        /* Coordinate views */
-        latitude = view.findViewById(R.id.coords_lat_degrees)
-        longitude = view.findViewById(R.id.coords_lon_degrees)
-        mgrs = view.findViewById(R.id.coords_mgrs)
-        positionalError = view.findViewById(R.id.coords_positional_error)
-        latLayout = view.findViewById(R.id.latitude_layout)
-        lonLayout = view.findViewById(R.id.longitude_layout)
-        mgrsLayout = view.findViewById(R.id.mgrs_layout)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         initialiseCoordinateFormat()
-        initialiseCoordinateButtons(view)
+        initialiseCoordinateButtons()
         observeGpsData()
-        numSatelliteFixes = view.findViewById(R.id.gps_useful_satellites)
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            numSatelliteFixes.text = GPS_NOT_ENABLED
+            binding.numSatellites.text = GPS_NOT_ENABLED
         }
-
-        /* Other views */
-        compassDegrees = view.findViewById(R.id.compass_degrees)
-        bearing = view.findViewById(R.id.bearing)
-        speed = view.findViewById(R.id.speed_m_per_s)
-        altitude = view.findViewById(R.id.altitude_metres)
-        return view
     }
 
     override fun onResume() {
@@ -118,7 +89,7 @@ class LocationFragment : Fragment(),
 
     override fun onStop() {
         super.onStop()
-        if (VersionUtils.isAtLeast(24)) {
+        if (VersionUtils.isAtLeast(GNSS_CALLBACK)) {
             gnssCallback?.let { locationManager.unregisterGnssStatusCallback(it) }
         }
     }
@@ -139,7 +110,7 @@ class LocationFragment : Fragment(),
             return
         }
         compass.getCompassReading(event).also {
-            compassDegrees.text = "%3.0f° %s".format(it.degrees, it.direction)
+            binding.compassDegrees.text = "%3.0f° %s".format(it.degrees, it.direction)
         }
     }
 
@@ -149,7 +120,7 @@ class LocationFragment : Fragment(),
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onUsefulSatellitesReported(numUsefulSatellites: Int) {
-        numSatelliteFixes.text = if (numUsefulSatellites == GnssCallback.GNSS_STOPPED) {
+        binding.numSatellites.text = if (numUsefulSatellites == GnssCallback.GNSS_STOPPED) {
             GPS_NOT_ENABLED
         } else {
             numUsefulSatellites.toString()
@@ -163,14 +134,13 @@ class LocationFragment : Fragment(),
         showCorrectCoordinateViews()
     }
 
-    private fun initialiseCoordinateButtons(view: View) {
+    private fun initialiseCoordinateButtons() {
         val accent = ContextCompat.getColor(requireContext(), uiResources.accentColourId)
-        coordinateFormatButton = view.findViewById(R.id.coord_format_button)
-        coordinateFormatButton.setBackgroundColor(accent)
-        coordinateFormatButton.text = coordinateFormat.name
-        coordinateFormatButton.setOnClickListener {
+        binding.coordFormatButton.setBackgroundColor(accent)
+        binding.coordFormatButton.text = coordinateFormat.name
+        binding.coordFormatButton.setOnClickListener {
             coordinateFormat = CoordinateFormat.getNext(coordinateFormat)
-            coordinateFormatButton.text = coordinateFormat.name
+            binding.coordFormatButton.text = coordinateFormat.name
             convertAndDisplayCoordinates(mostRecentLocation)
             showCorrectCoordinateViews()
             prefs.edit()
@@ -178,12 +148,11 @@ class LocationFragment : Fragment(),
                     .apply()
         }
 
-        coordinateCopyButton = view.findViewById(R.id.coord_copy_button)
-        coordinateCopyButton.setBackgroundColor(accent)
+        binding.coordCopyButton.setBackgroundColor(accent)
         val tintedIcon = DrawableCompat.wrap(ContextCompat.getDrawable(requireContext(), R.drawable.copy)!!)
         DrawableCompat.setTint(tintedIcon, ContextCompat.getColor(requireContext(), R.color.black))
-        coordinateCopyButton.setCompoundDrawablesWithIntrinsicBounds(tintedIcon, null, null, null)
-        coordinateCopyButton.setOnClickListener {
+        binding.coordCopyButton.setCompoundDrawablesWithIntrinsicBounds(tintedIcon, null, null, null)
+        binding.coordCopyButton.setOnClickListener {
             /* Convert the displayed coordinates to a string and place it in the clipboard */
             val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val coordsString = gpsConverter.coordinatesToCopyableString(mostRecentLocation, coordinateFormat)
@@ -202,13 +171,13 @@ class LocationFragment : Fragment(),
 
     private fun convertAndDisplayCoordinates(location: Location?) {
         gpsConverter.convertCoordinates(location, coordinateFormat).also {
-            latitude.text = it.latitude
-            longitude.text = it.longitude
-            mgrs.text = it.mgrs
-            positionalError.text = it.positionalError
-            altitude.text = it.altitudeWgs84
-            speed.text = it.speedMetresPerSec
-            bearing.text = it.bearing
+            binding.latDegrees.text = it.latitude
+            binding.lonDegrees.text = it.longitude
+            binding.mgrs.text = it.mgrs
+            binding.positionalError.text = it.positionalError
+            binding.altitudeMetres.text = it.altitudeWgs84
+            binding.speed.text = it.speedMetresPerSec
+            binding.bearing.text = it.bearing
         }
     }
 
@@ -216,13 +185,13 @@ class LocationFragment : Fragment(),
         when (coordinateFormat) {
             CoordinateFormat.MGRS ->
                 toggleViewVisibility(
-                        visible = listOf(mgrsLayout),
-                        hidden = listOf(latLayout, lonLayout)
+                        visible = listOf(binding.mgrsLayout),
+                        hidden = listOf(binding.latitudeLayout, binding.longitudeLayout)
                 )
             else ->
                 toggleViewVisibility(
-                        visible = listOf(latLayout, lonLayout),
-                        hidden = listOf(mgrsLayout)
+                        visible = listOf(binding.latitudeLayout, binding.longitudeLayout),
+                        hidden = listOf(binding.mgrsLayout)
                 )
         }
     }

@@ -29,7 +29,7 @@
                 android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/listPresetsSslRecyclerView"
+                android:id="@+id/ssl_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/padding"
@@ -38,7 +38,7 @@
                 tools:listitem="@layout/preset_list_item" />
 
             <TextView
-                android:id="@+id/sslNoneFound"
+                android:id="@+id/ssl_none_found"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -56,7 +56,7 @@
                 android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/listPresetsTcpRecyclerView"
+                android:id="@+id/tcp_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/padding"
@@ -65,7 +65,7 @@
                 tools:listitem="@layout/preset_list_item" />
 
             <TextView
-                android:id="@+id/tcpNoneFound"
+                android:id="@+id/tcp_none_found"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -83,7 +83,7 @@
                 android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/listPresetsUdpRecyclerView"
+                android:id="@+id/udp_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/padding"
@@ -92,7 +92,7 @@
                 tools:listitem="@layout/preset_list_item" />
 
             <TextView
-                android:id="@+id/udpNoneFound"
+                android:id="@+id/udp_none_found"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"

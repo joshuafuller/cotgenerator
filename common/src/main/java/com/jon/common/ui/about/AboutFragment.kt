@@ -5,10 +5,11 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
-import android.widget.ListView
 import androidx.fragment.app.Fragment
 import com.jon.common.R
+import com.jon.common.databinding.FragmentAboutBinding
 import com.jon.common.di.IBuildResources
+import com.jon.common.ui.viewBinding
 import com.jon.common.utils.MinimumVersions
 import com.jon.common.utils.VersionUtils
 import com.jon.common.versioncheck.GithubRelease
@@ -19,14 +20,14 @@ import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AboutFragment : Fragment() {
+class AboutFragment : Fragment(R.layout.fragment_about) {
     @Inject
     lateinit var buildResources: IBuildResources
 
     @Inject
     lateinit var updateChecker: UpdateChecker
 
-    private val rows: List<AboutRow> by lazy {
+    private val rows by lazy {
         listOf(
                 AboutRow("Version", buildResources.versionName),
                 AboutRow("Build Type", if (buildResources.isDebug) "Debug" else "Release"),
@@ -36,6 +37,8 @@ class AboutFragment : Fragment() {
         )
     }
 
+    private val binding by viewBinding(FragmentAboutBinding::bind)
+
     private val adapter by lazy { AboutArrayAdapter(requireContext(), rows) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,10 +46,10 @@ class AboutFragment : Fragment() {
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val listView = View.inflate(context, R.layout.fragment_about_listview, null) as ListView
-        listView.adapter = adapter
-        listView.setOnItemClickListener { _, _, position: Int, _ ->
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.listView.adapter = adapter
+        binding.listView.setOnItemClickListener { _, _, position: Int, _ ->
             if (position == GITHUB_INDEX) {
                 /* Open a web browser to the Github page */
                 val intent = Intent(Intent.ACTION_VIEW)
@@ -59,11 +62,6 @@ class AboutFragment : Fragment() {
                 fetchLatestVersion()
             }
         }
-        return listView
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         fetchLatestVersion()
     }
 
@@ -75,7 +73,7 @@ class AboutFragment : Fragment() {
     @SuppressLint("CheckResult")
     private fun fetchLatestVersion() {
         /* Minimum SDK required by OkHttp, a dependency of Retrofit */
-        if (VersionUtils.isAtLeast(MinimumVersions.OKHTTP_MIN_SDK)) {
+        if (VersionUtils.isAtLeast(MinimumVersions.OKHTTP_SSL)) {
             updateChecker.fetchReleases()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())

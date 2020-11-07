@@ -7,13 +7,10 @@ import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.*
 import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.textfield.TextInputLayout
 import com.jon.common.cot.ChatCursorOnTarget
 import com.jon.common.cot.CotTeam
 import com.jon.common.di.IUiResources
@@ -23,9 +20,11 @@ import com.jon.common.presets.OutputPreset
 import com.jon.common.repositories.IDeviceUidRepository
 import com.jon.common.repositories.IStatusRepository
 import com.jon.common.service.ServiceState
+import com.jon.common.ui.viewBinding
 import com.jon.common.utils.Notify
 import com.jon.cotbeacon.BeaconApplication
 import com.jon.cotbeacon.R
+import com.jon.cotbeacon.databinding.FragmentChatBinding
 import com.jon.cotbeacon.repositories.IChatRepository
 import com.jon.cotbeacon.ui.IChatServiceCommunicator
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,7 +32,7 @@ import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ChatFragment : Fragment() {
+class ChatFragment : Fragment(R.layout.fragment_chat) {
 
     @Inject
     lateinit var prefs: SharedPreferences
@@ -50,11 +49,9 @@ class ChatFragment : Fragment() {
     @Inject
     lateinit var statusRepository: IStatusRepository
 
-    private lateinit var adapter: ChatAdapter
+    private val binding by viewBinding(FragmentChatBinding::bind)
 
-    private lateinit var chatTextInput: TextInputLayout
-    private lateinit var statusText: TextView
-    private lateinit var disabledBox: ImageView
+    private lateinit var adapter: ChatAdapter
 
     private val serviceCommunicator by lazy { requireActivity() as IChatServiceCommunicator }
 
@@ -63,27 +60,21 @@ class ChatFragment : Fragment() {
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return View.inflate(context, R.layout.fragment_chat, null)
-    }
-
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        /* Block notifications of new messages whilst this fragment is open */
         BeaconApplication.chatFragmentIsVisible = true
-        chatTextInput = view.findViewById(R.id.chat_message_input)
-        statusText = view.findViewById(R.id.chat_status)
-        disabledBox = view.findViewById(R.id.disabled_box)
 
         /* Colour the hint message with the accent */
-        chatTextInput.hintTextColor = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), uiResources.accentColourId))
+        binding.chatMessageInput.hintTextColor = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), uiResources.accentColourId))
 
         /* Bring the shaded box to the front, then have it intercept all touch events (when visible, of course) */
-        disabledBox.bringToFront()
-        disabledBox.setOnTouchListener { _, _ -> true }
+        binding.disabledBox.bringToFront()
+        binding.disabledBox.setOnTouchListener { _, _ -> true }
 
         val context = requireContext()
-        initialiseRecyclerView(view, context)
+        initialiseRecyclerView(context)
         initialiseSendButton(view, context)
         observeServiceStatus()
         observeChatStatus()
@@ -91,32 +82,32 @@ class ChatFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        /* Re-allow notifications of chat messages */
         BeaconApplication.chatFragmentIsVisible = false
     }
 
-    private fun initialiseRecyclerView(view: View, context: Context) {
-        val recyclerView = view.findViewById<RecyclerView>(R.id.chat_recycler_view)
-        recyclerView.layoutManager = LinearLayoutManager(context).also {
+    private fun initialiseRecyclerView(context: Context) {
+        binding.chatRecyclerView.layoutManager = LinearLayoutManager(context).also {
             /* When new data is added, put it at the bottom of the view */
             it.stackFromEnd = true
         }
         adapter = ChatAdapter(context).also {
             it.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
                 override fun onChanged() {
+                    /* New item arrived, so scroll to the bottom to see it */
                     super.onChanged()
-                    recyclerView.scrollToPosition(adapter.itemCount-1)
+                    binding.chatRecyclerView.scrollToPosition(adapter.itemCount - 1)
                 }
             })
         }
-        recyclerView.adapter = adapter
+        binding.chatRecyclerView.adapter = adapter
     }
 
     private fun initialiseSendButton(view: View, context: Context) {
-        val sendButton = view.findViewById<Button>(R.id.chat_send_button)
-        sendButton.setBackgroundColor(ContextCompat.getColor(context, uiResources.accentColourId))
+        binding.chatSendButton.setBackgroundColor(ContextCompat.getColor(context, uiResources.accentColourId))
         val icon = ContextCompat.getDrawable(context, R.drawable.send)
-        sendButton.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null)
-        sendButton.setOnClickListener {
+        binding.chatSendButton.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null)
+        binding.chatSendButton.setOnClickListener {
             getInputText()?.let { sendChat(it) }
         }
     }
@@ -131,17 +122,17 @@ class ChatFragment : Fragment() {
             outputPreset = OutputPreset.fromPrefs(prefs)
         }
         serviceCommunicator.sendChat(chat)
-        chatTextInput.editText?.text?.clear()
+        binding.chatMessageInput.editText?.text?.clear()
     }
 
     private fun observeServiceStatus() {
         statusRepository.getStatus().observe(viewLifecycleOwner) {
             if (it == ServiceState.RUNNING) {
-                statusText.visibility = View.GONE
-                disabledBox.visibility = View.GONE
+                binding.chatStatus.visibility = View.GONE
+                binding.disabledBox.visibility = View.GONE
             } else {
-                statusText.visibility = View.VISIBLE
-                disabledBox.visibility = View.VISIBLE
+                binding.chatStatus.visibility = View.VISIBLE
+                binding.disabledBox.visibility = View.VISIBLE
             }
         }
     }
@@ -156,7 +147,7 @@ class ChatFragment : Fragment() {
     }
 
     private fun getInputText(): String? {
-        return chatTextInput.editText?.text?.toString()?.trim()
+        return binding.chatMessageInput.editText?.text?.toString()?.trim()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
