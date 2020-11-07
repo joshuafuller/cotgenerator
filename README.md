@@ -115,7 +115,6 @@ Thanks to the crew at the TAK Discord, most notably [Corvo](https://github.com/b
 
 ## TODO
 - Fix package parsing error
-- three-way toggle preference?
 - Add a button for sending/canceling emergencies
 - Change app launcher icons
 - Add a toggleable option to encrypt the database of presets

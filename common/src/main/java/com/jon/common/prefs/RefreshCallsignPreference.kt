@@ -2,7 +2,6 @@ package com.jon.common.prefs
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.TypedValue
 import android.widget.Button
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
@@ -44,7 +43,7 @@ class RefreshCallsignPreference(
             refreshButton = findViewById<Button>(R.id.refresh_button)?.also { button ->
                 uiResources?.let { setButtonColours(button, it) }
             }
-            refreshButton?.setOnClickListener { view ->
+            refreshButton?.setOnClickListener {
                 val newCallsign = atakCallsigns.random()
                 text = newCallsign
                 prefs.edit().putString(CommonPrefs.CALLSIGN.key, newCallsign).apply()
@@ -63,17 +62,5 @@ class RefreshCallsignPreference(
         val tintedIcon = DrawableCompat.wrap(icon!!)
         DrawableCompat.setTint(tintedIcon, ContextCompat.getColor(context, R.color.black))
         button.setCompoundDrawablesWithIntrinsicBounds(tintedIcon, null, null, null)
-    }
-}
-
-/* Copied from androidx.core.content.res.TypedArrayUtils, since that method is package-private */
-private fun getDefaultAttr(context: Context): Int {
-    val value = TypedValue()
-    val attr = R.attr.editTextPreferenceStyle
-    context.theme.resolveAttribute(attr, value, true)
-    return if (value.resourceId != 0) {
-        attr
-    } else {
-        android.R.attr.editTextPreferenceStyle
     }
 }
