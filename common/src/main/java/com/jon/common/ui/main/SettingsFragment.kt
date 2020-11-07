@@ -13,6 +13,7 @@ import androidx.preference.EditTextPreference.OnBindEditTextListener
 import com.jon.common.di.IUiResources
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.PrefPair
+import com.jon.common.prefs.RefreshCallsignPreference
 import com.jon.common.presets.OutputPreset
 import com.jon.common.repositories.IPresetRepository
 import com.jon.common.utils.InputValidator
@@ -62,6 +63,9 @@ abstract class SettingsFragment : PreferenceFragmentCompat(),
 
     override fun onCreatePreferences(savedState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(uiResources.settingsXmlId, rootKey)
+
+        val callsignPreference = findPreference<RefreshCallsignPreference>(CommonPrefs.CALLSIGN.key)
+        callsignPreference?.setUiResources(uiResources)
 
         /* Set numeric input on numeric fields */
         val phoneInputType = OnBindEditTextListener { it.inputType = InputType.TYPE_CLASS_PHONE }
