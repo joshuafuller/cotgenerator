@@ -272,6 +272,17 @@ abstract class MainActivity : AppCompatActivity(),
                 .show()
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == BATTERY_OPTIMISATION_CODE && VersionUtils.isAtLeast(IGNORE_BATTERY_OPTIMISATIONS) && isBatteryOptimised()) {
+            // User clicked "DENY", so close the app and let them do it again
+            Notify.toast(this, "Battery optimisation should be disabled!")
+            closeApp()
+        } else {
+            buildActivity()
+        }
+    }
+
     private fun closeApp() {
         if (VersionUtils.isAtLeast(FINISH_AND_REMOVE_TASK)) {
             finishAndRemoveTask()
