@@ -15,8 +15,10 @@ internal class SslThread(
 
     override fun shutdown() {
         super.shutdown()
-        closeFromMainThread(socket)
-        closeFromMainThread(outputStream)
+        try {
+            closeFromMainThread(socket)
+            closeFromMainThread(outputStream)
+        } catch (ignored : UninitializedPropertyAccessException) { }
         socketRepository.clearSockets()
     }
 
