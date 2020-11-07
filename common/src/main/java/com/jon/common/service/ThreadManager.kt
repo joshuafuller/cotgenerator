@@ -17,11 +17,4 @@ abstract class ThreadManager(
     abstract fun restart()
 
     abstract fun isRunning(): Boolean
-
-    override fun onSharedPreferenceChanged(prefs: SharedPreferences, key: String) {
-        /* If any preferences are changed, kill the thread and instantly reload with the new settings */
-        if (isRunning()) {
-            restart()
-        }
-    }
 }

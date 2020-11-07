@@ -53,7 +53,7 @@ abstract class MainActivity : AppCompatActivity(),
         IServiceCommunicator {
 
     protected var service: CotService? = null
-    private val viewModel: StateViewModel by viewModels()
+    protected val viewModel: StateViewModel by viewModels()
     private val compositeDisposable = CompositeDisposable()
     protected val navController: NavController by lazy { findNavController(uiResources.navHostFragmentId) }
 

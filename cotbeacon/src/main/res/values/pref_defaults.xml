@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <bool name="def_enable_chat">true</bool>
     <bool name="def_launch_from_boot">false</bool>
     <bool name="def_launch_from_open">false</bool>
 </resources>

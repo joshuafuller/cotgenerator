@@ -4,14 +4,17 @@ import android.content.SharedPreferences
 import android.os.Handler
 import android.os.Looper
 import com.jon.common.cot.ChatCursorOnTarget
+import com.jon.common.prefs.getBooleanFromPair
 import com.jon.common.repositories.IDeviceUidRepository
 import com.jon.common.repositories.ISocketRepository
 import com.jon.common.service.IThreadErrorListener
 import com.jon.common.service.ThreadManager
+import com.jon.cotbeacon.prefs.BeaconPrefs
 import com.jon.cotbeacon.repositories.IChatRepository
 import com.jon.cotbeacon.service.runnables.ChatListenRunnable
 import com.jon.cotbeacon.service.runnables.ChatRunnableFactory
 import com.jon.cotbeacon.service.runnables.ChatSendRunnable
+import timber.log.Timber
 import java.util.concurrent.Executors
 
 class ChatThreadManager(
@@ -50,6 +53,7 @@ class ChatThreadManager(
     }
 
     override fun shutdown() {
+        Timber.i("shutting down")
         synchronized(lock) {
             listenRunnable?.close()
             listeningExecutor.shutdownNow()
@@ -58,13 +62,30 @@ class ChatThreadManager(
     }
 
     override fun restart() {
-        shutdown()
-        start()
+        Timber.i("restarting")
+        synchronized(lock) {
+            shutdown()
+            if (chatIsEnabled()) {
+                start()
+            }
+        }
     }
 
     override fun isRunning(): Boolean {
         synchronized(lock) {
             return !listeningExecutor.isTerminated
+        }
+    }
+
+    override fun onSharedPreferenceChanged(prefs: SharedPreferences, key: String) {
+        synchronized(lock) {
+            if (isRunning()) {
+                /* If any preferences are changed during runtime, kill the threads and reload with the new settings */
+                restart()
+            } else if (chatIsEnabled()) {
+                /* If chat was previously disabled (threads weren't running) and now it's enabled, start it up */
+                start()
+            }
         }
     }
 
@@ -82,5 +103,9 @@ class ChatThreadManager(
         mainHandler.post {
             errorListener.onThreadError(throwable)
         }
+    }
+
+    private fun chatIsEnabled(): Boolean {
+        return prefs.getBooleanFromPair(BeaconPrefs.ENABLE_CHAT)
     }
 }

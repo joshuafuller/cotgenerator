@@ -125,4 +125,34 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:icon="@drawable/other"
+        app:title="@string/pref_category_other_settings">
+
+        <SwitchPreference
+            android:defaultValue="@bool/def_enable_chat"
+            android:key="@string/key_enable_chat"
+            android:summary="@string/summary_enable_chat"
+            app:iconSpaceReserved="false"
+            app:title="@string/desc_enable_chat"
+            app:useSimpleSummaryProvider="true" />
+
+        <SwitchPreference
+            android:defaultValue="@bool/def_launch_from_boot"
+            android:key="@string/key_launch_from_boot"
+            android:summary="@string/summary_launch_from_boot"
+            app:iconSpaceReserved="false"
+            app:title="@string/desc_launch_from_boot"
+            app:useSimpleSummaryProvider="true" />
+
+        <SwitchPreference
+            android:defaultValue="@bool/def_launch_from_open"
+            android:key="@string/key_launch_from_open"
+            android:summary="@string/summary_launch_from_open"
+            app:iconSpaceReserved="false"
+            app:title="@string/desc_launch_from_open"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

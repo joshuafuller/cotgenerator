@@ -5,4 +5,5 @@ import com.jon.common.service.ServiceState
 
 class StateViewModel : ViewModel() {
     var currentState: ServiceState = ServiceState.STOPPED
+    var hasBeenCreatedAlready = false
 }

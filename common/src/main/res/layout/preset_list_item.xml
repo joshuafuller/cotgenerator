@@ -30,7 +30,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/presetListItemAlias"
+                android:id="@+id/alias"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="marquee"
@@ -40,7 +40,7 @@
                 tools:text="Alias" />
 
             <TextView
-                android:id="@+id/presetListItemAddress"
+                android:id="@+id/address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="4"
@@ -48,7 +48,7 @@
                 tools:text="192.168.1.2" />
 
             <TextView
-                android:id="@+id/presetListItemPort"
+                android:id="@+id/port"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="4"
@@ -65,14 +65,14 @@
             android:orientation="horizontal">
 
             <ImageButton
-                android:id="@+id/presetListItemEdit"
+                android:id="@+id/edit_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/colorAccent"
                 android:src="@drawable/edit" />
 
             <ImageButton
-                android:id="@+id/presetListItemDelete"
+                android:id="@+id/delete_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/colorAccent"

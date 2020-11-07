@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pref_category_other_settings">Other Settings</string>
+
+    <string name="desc_enable_chat">Enable Chat?</string>
+    <string name="desc_launch_from_boot">Start Service On Device Boot?</string>
+    <string name="desc_launch_from_open">Start Service On App Launch?</string>
+
+    <string name="summary_enable_chat">If enabled, the app will listen for messages sent to the "All Chat Rooms" channel. Note that battery drain may be slightly higher, and chat is quite hit-or-miss with SSL servers.</string>
+    <string name="summary_launch_from_boot">If enabled, the transmission service will launch automatically after rebooting the device.</string>
+    <string name="summary_launch_from_open">If enabled, the transmission service automatically when opening the app from the home screen, skipping the need to press "START SERVICE".</string>
+
+</resources>
