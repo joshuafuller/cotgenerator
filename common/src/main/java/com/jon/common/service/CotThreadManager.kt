@@ -2,14 +2,13 @@ package com.jon.common.service
 
 import android.content.SharedPreferences
 import com.jon.common.repositories.ISocketRepository
-import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
 internal class CotThreadManager(
         prefs: SharedPreferences,
         private val cotFactory: CotFactory,
         errorListener: IThreadErrorListener,
-        private val socketRepository: ISocketRepository
+        private val socketRepository: ISocketRepository,
 ) : ThreadManager(prefs, errorListener), SharedPreferences.OnSharedPreferenceChangeListener {
 
     private var thread: BaseThread? = null
@@ -19,31 +18,47 @@ internal class CotThreadManager(
     }
 
     override fun start() {
-        thread = BaseThread.fromPrefs(prefs, socketRepository, cotFactory).apply {
-            setUncaughtExceptionHandler { _, t: Throwable -> errorListener.onThreadError(t) }
-            start()
+        synchronized(lock) {
+            thread = BaseThread.fromPrefs(prefs, socketRepository, cotFactory).apply {
+                setUncaughtExceptionHandler { _, t: Throwable -> errorListener.onThreadError(t) }
+                start()
+            }
         }
     }
 
     override fun shutdown() {
-        thread?.let {
-            val executor: Executor = Executors.newSingleThreadExecutor()
-            executor.execute {
-                it.shutdown()
-                thread = null
+        synchronized(lock) {
+            Executors.newSingleThreadExecutor().execute {
+                synchronized(lock) {
+                    thread?.shutdown()
+                    thread = null
+                }
+            }
+        }
+    }
+
+    override fun restart() {
+        Executors.newSingleThreadExecutor().execute {
+            synchronized(lock) {
+                thread?.shutdown()
+                start()
             }
         }
     }
 
     override fun onSharedPreferenceChanged(prefs: SharedPreferences, key: String) {
         /* If any preferences are changed, kill the thread and instantly reload with the new settings */
-        if (isRunning()) {
-            shutdown()
-            start()
+        synchronized(lock) {
+            if (isRunning()) {
+                cotFactory.clear()
+                restart()
+            }
         }
     }
 
     override fun isRunning(): Boolean {
-        return thread?.isRunning() ?: false
+        synchronized(lock) {
+            return thread?.isRunning() ?: false
+        }
     }
 }

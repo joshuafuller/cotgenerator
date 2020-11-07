@@ -43,7 +43,6 @@ abstract class BaseThread(protected val prefs: SharedPreferences) : Thread() {
     open fun shutdown() {
         synchronized(lock) {
             bIsRunning = false
-            cotFactory.clear()
             interrupt()
         }
     }

@@ -24,7 +24,7 @@ internal class SslThread(
     override fun sendToDestination(cot: CursorOnTarget) {
         try {
             outputStream.write(cot.toBytes(dataFormat))
-            Timber.i("Sent cot: %s", cot.callsign)
+            Timber.i("Sent cot: %s to %d from %d", cot.callsign, socket.port, socket.localPort)
         } catch (e: NullPointerException) {
             /* Thrown when the thread is cancelled from another thread and we try to access the sockets */
             shutdown()

@@ -30,6 +30,7 @@ internal class UdpThread(prefs: SharedPreferences) : BaseThread(prefs) {
                     sendToDestination(cot)
                     bufferSleep(bufferTimeMs)
                 }
+                if (!isRunning()) break
                 cotIcons = cotFactory.generate()
             }
         } catch (t: Throwable) {

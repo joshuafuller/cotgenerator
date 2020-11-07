@@ -25,8 +25,8 @@ class ChatThreadManager(
     private val mainHandler = Handler(Looper.getMainLooper())
     private var listeningExecutor = Executors.newSingleThreadExecutor()
     private var sendingExecutor = Executors.newSingleThreadExecutor()
-    private lateinit var listenRunnable: ChatListenRunnable
-    private lateinit var sendRunnable: ChatSendRunnable
+    private var listenRunnable: ChatListenRunnable? = null
+    private var sendRunnable: ChatSendRunnable? = null
 
     private val runnableFactory = ChatRunnableFactory(
             prefs = prefs,
@@ -40,29 +40,42 @@ class ChatThreadManager(
     }
 
     override fun start() {
-        if (listeningExecutor.isShutdown) {
-            listeningExecutor = Executors.newSingleThreadExecutor()
+        synchronized(lock) {
+            if (listeningExecutor.isShutdown) {
+                listeningExecutor = Executors.newSingleThreadExecutor()
+            }
+            listenRunnable = runnableFactory.getListenRunnable(deviceUidRepository)
+            listeningExecutor.execute(listenRunnable)
         }
-        listenRunnable = runnableFactory.getListenRunnable(deviceUidRepository)
-        listeningExecutor.execute(listenRunnable)
     }
 
     override fun shutdown() {
-        listenRunnable.close()
-        listeningExecutor.shutdownNow()
-        sendingExecutor.shutdownNow()
+        synchronized(lock) {
+            listenRunnable?.close()
+            listeningExecutor.shutdownNow()
+            sendingExecutor.shutdownNow()
+        }
+    }
+
+    override fun restart() {
+        shutdown()
+        start()
     }
 
     override fun isRunning(): Boolean {
-        return !listeningExecutor.isTerminated
+        synchronized(lock) {
+            return !listeningExecutor.isTerminated
+        }
     }
 
     fun sendChat(chatMessage: ChatCursorOnTarget) {
-        if (sendingExecutor.isShutdown) {
-            sendingExecutor = Executors.newSingleThreadExecutor()
+        synchronized(lock) {
+            if (sendingExecutor.isShutdown) {
+                sendingExecutor = Executors.newSingleThreadExecutor()
+            }
+            sendRunnable = runnableFactory.getSendRunnable(chatMessage)
+            sendingExecutor.execute(sendRunnable)
         }
-        sendRunnable = runnableFactory.getSendRunnable(chatMessage)
-        sendingExecutor.execute(sendRunnable)
     }
 
     override fun onThreadError(throwable: Throwable) {

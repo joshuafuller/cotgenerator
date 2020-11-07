@@ -42,6 +42,7 @@ internal open class TcpThread(prefs: SharedPreferences) : BaseThread(prefs) {
                     sendToDestination(cot)
                     bufferSleep(bufferTimeMs.toLong())
                 }
+                if (!isRunning()) break
                 cotIcons = cotFactory.generate()
                 outputStream.flush()
             }

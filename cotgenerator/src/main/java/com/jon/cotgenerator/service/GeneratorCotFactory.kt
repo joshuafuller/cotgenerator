@@ -38,30 +38,24 @@ internal class GeneratorCotFactory @Inject constructor(
 
     private val random = Random(System.currentTimeMillis())
 
-    private val useRandomCallsigns = prefs.getBooleanFromPair(GeneratorPrefs.RANDOM_CALLSIGNS)
-    private val useIndexedCallsigns = prefs.getBooleanFromPair(GeneratorPrefs.INDEXED_CALLSIGNS)
-    private val useRandomTeams = prefs.getBooleanFromPair(GeneratorPrefs.RANDOM_COLOUR)
-    private val useRandomRoles = prefs.getBooleanFromPair(GeneratorPrefs.RANDOM_ROLE)
-    private val iconCount = prefs.parseIntFromPair(GeneratorPrefs.ICON_COUNT)
-    private val callsigns = getCallsigns()
-    private val distributionRadius = prefs.parseDoubleFromPair(GeneratorPrefs.RADIAL_DISTRIBUTION)
-    private val followGps = prefs.getBooleanFromPair(GeneratorPrefs.FOLLOW_GPS_LOCATION)
-    private val centreLat = prefs.parseDoubleFromPair(GeneratorPrefs.CENTRE_LATITUDE)
-    private val centreLon = prefs.parseDoubleFromPair(GeneratorPrefs.CENTRE_LONGITUDE)
-    private val stayAtGroundLevel = prefs.getBooleanFromPair(GeneratorPrefs.STAY_AT_GROUND_LEVEL)
-    private val centreAlt = if (stayAtGroundLevel) 0.0 else prefs.parseDoubleFromPair(GeneratorPrefs.CENTRE_ALTITUDE)
-    private val staleTimer = prefs.getIntFromPair(CommonPrefs.STALE_TIMER).toLong()
-    private var movementSpeed = prefs.parseDoubleFromPair(GeneratorPrefs.MOVEMENT_SPEED) * Constants.MPH_TO_METRES_PER_SECOND
-    private var travelDistance: Double
+    private var useRandomCallsigns: Boolean = false
+    private var useIndexedCallsigns: Boolean = false
+    private var useRandomTeams: Boolean = false
+    private var useRandomRoles: Boolean = false
+    private var iconCount: Int = 1
+    private var distributionRadius: Double = 0.0
+    private var followGps: Boolean = false
+    private var centreLat: Double = 0.0
+    private var centreLon: Double = 0.0
+    private var stayAtGroundLevel: Boolean = false
+    private var centreAlt: Double = 0.0
+    private var staleTimer: Long = 0
+    private var movementSpeed: Double = 0.0
+    private var travelDistance: Double = 0.0
 
+    private lateinit var callsigns: List<String>
     private lateinit var distributionCentre: Point
     private var icons = mutableListOf<IconData>()
-
-    init {
-        /* Stop any fuckery with distribution radii */
-        movementSpeed = min(movementSpeed, distributionRadius / 2.0)
-        travelDistance = movementSpeed * prefs.getIntFromPair(CommonPrefs.TRANSMISSION_PERIOD)
-    }
 
     override fun clear() {
         icons.clear()
@@ -76,6 +70,7 @@ internal class GeneratorCotFactory @Inject constructor(
     }
 
     override fun initialise(): List<CursorOnTarget> {
+        grabValuesFromPreferences()
         icons = ArrayList()
         updateDistributionCentre()
         val now = UtcTimestamp.now()
@@ -121,6 +116,27 @@ internal class GeneratorCotFactory @Inject constructor(
             it.cot.battery = batteryRepository.getPercentage()
         }
         return getCotList()
+    }
+
+    private fun grabValuesFromPreferences() {
+        useRandomCallsigns = prefs.getBooleanFromPair(GeneratorPrefs.RANDOM_CALLSIGNS)
+        useIndexedCallsigns = prefs.getBooleanFromPair(GeneratorPrefs.INDEXED_CALLSIGNS)
+        useRandomTeams = prefs.getBooleanFromPair(GeneratorPrefs.RANDOM_COLOUR)
+        useRandomRoles = prefs.getBooleanFromPair(GeneratorPrefs.RANDOM_ROLE)
+        iconCount = prefs.parseIntFromPair(GeneratorPrefs.ICON_COUNT)
+        callsigns = getCallsigns()
+        distributionRadius = prefs.parseDoubleFromPair(GeneratorPrefs.RADIAL_DISTRIBUTION)
+        followGps = prefs.getBooleanFromPair(GeneratorPrefs.FOLLOW_GPS_LOCATION)
+        centreLat = prefs.parseDoubleFromPair(GeneratorPrefs.CENTRE_LATITUDE)
+        centreLon = prefs.parseDoubleFromPair(GeneratorPrefs.CENTRE_LONGITUDE)
+        stayAtGroundLevel = prefs.getBooleanFromPair(GeneratorPrefs.STAY_AT_GROUND_LEVEL)
+        centreAlt = if (stayAtGroundLevel) 0.0 else prefs.parseDoubleFromPair(GeneratorPrefs.CENTRE_ALTITUDE)
+        staleTimer = prefs.getIntFromPair(CommonPrefs.STALE_TIMER).toLong()
+        movementSpeed = prefs.parseDoubleFromPair(GeneratorPrefs.MOVEMENT_SPEED) * Constants.MPH_TO_METRES_PER_SECOND
+
+        /* Stop any fuckery with distribution radii */
+        movementSpeed = min(movementSpeed, distributionRadius / 2.0)
+        travelDistance = movementSpeed * prefs.getIntFromPair(CommonPrefs.TRANSMISSION_PERIOD)
     }
 
     private fun getCallsigns(): List<String> {
