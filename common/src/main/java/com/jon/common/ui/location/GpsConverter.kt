@@ -1,6 +1,7 @@
 package com.jon.common.ui.location
 
 import android.location.Location
+import com.jon.common.utils.MinimumVersions.HEADING_ACCURACY
 import com.jon.common.utils.VersionUtils
 import org.opensextant.geodesy.Angle
 import org.opensextant.geodesy.Latitude
@@ -115,7 +116,7 @@ internal class GpsConverter {
 
         private fun formatSpeed(location: Location): String {
             return if (location.hasSpeed()) {
-                val accuracy = if (VersionUtils.isAtLeast(26) && location.hasSpeedAccuracy()) {
+                val accuracy = if (VersionUtils.isAtLeast(HEADING_ACCURACY) && location.hasSpeedAccuracy()) {
                     " ± %.1f".format(abs(location.speedAccuracyMetersPerSecond))
                 } else ""
                 "%.1f%s m/s".format(location.speed, accuracy)
@@ -126,7 +127,7 @@ internal class GpsConverter {
 
         private fun formatAltitude(location: Location): String {
             return if (location.hasAltitude()) {
-                val accuracy = if (VersionUtils.isAtLeast(26) && location.hasVerticalAccuracy()) {
+                val accuracy = if (VersionUtils.isAtLeast(HEADING_ACCURACY) && location.hasVerticalAccuracy()) {
                     " ± %.1f".format(abs(location.verticalAccuracyMeters))
                 } else ""
                 return "%.1f%sm".format(location.altitude, accuracy)
@@ -141,7 +142,7 @@ internal class GpsConverter {
                 return NA
             }
             return if (location.hasBearing()) {
-                val accuracy = if (VersionUtils.isAtLeast(26) && location.hasBearingAccuracy()) {
+                val accuracy = if (VersionUtils.isAtLeast(HEADING_ACCURACY) && location.hasBearingAccuracy()) {
                     " ± %.1f".format(abs(location.bearingAccuracyDegrees))
                 } else ""
                 return "%.1f%s° %s".format(location.bearing, accuracy, AngleUtils.getDirection(location.bearing.toDouble()))

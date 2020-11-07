@@ -116,7 +116,7 @@ class ProvidesApplicationModule {
 
     @Provides
     fun provideRetrofitClient(): Retrofit? {
-        return if (VersionUtils.isAtLeast(MinimumVersions.OKHTTP_MIN_SDK)) {
+        return if (VersionUtils.isAtLeast(MinimumVersions.OKHTTP_SSL)) {
             return Retrofit.Builder()
                     .baseUrl(Constants.GITHUB_API_BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())
@@ -129,7 +129,7 @@ class ProvidesApplicationModule {
 
     @Provides
     fun provideGithubApi(retrofit: Retrofit?): IGithubApi? {
-        return if (VersionUtils.isAtLeast(MinimumVersions.OKHTTP_MIN_SDK)) {
+        return if (VersionUtils.isAtLeast(MinimumVersions.OKHTTP_SSL)) {
             retrofit?.create(IGithubApi::class.java)
         } else {
             null

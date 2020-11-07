@@ -13,6 +13,7 @@ import com.google.android.gms.location.LocationServices
 import com.jon.common.repositories.IGpsRepository
 import com.jon.common.repositories.ISocketRepository
 import com.jon.common.repositories.IStatusRepository
+import com.jon.common.utils.MinimumVersions.NOTIFICATION_CHANNELS
 import com.jon.common.utils.VersionUtils
 import timber.log.Timber
 import javax.inject.Inject
@@ -67,7 +68,7 @@ abstract class CotService : LifecycleService(),
 
     override fun onCreate() {
         super.onCreate()
-        if (VersionUtils.isAtLeast(26)) {
+        if (VersionUtils.isAtLeast(NOTIFICATION_CHANNELS)) {
             notificationGenerator.createForegroundChannel()
             notificationGenerator.createErrorChannel()
         }

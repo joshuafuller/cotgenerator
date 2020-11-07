@@ -55,6 +55,9 @@
     <string name="unknown">UNKNOWN</string>
     <string name="blank" />
 
+    <string name="battery_optimisation_dialog_title">Disable Battery Optimisation</string>
+    <string name="battery_optimisation_dialog_message">Select "ALLOW" in the following window.</string>
+
     <string name="location_coordinates">Coordinates</string>
     <string name="location_copy">COPY</string>
     <string name="location_latitude">Latitude:</string>

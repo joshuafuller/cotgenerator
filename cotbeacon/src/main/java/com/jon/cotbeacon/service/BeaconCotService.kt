@@ -3,6 +3,7 @@ package com.jon.cotbeacon.service
 import com.jon.common.cot.ChatCursorOnTarget
 import com.jon.common.repositories.IDeviceUidRepository
 import com.jon.common.service.CotService
+import com.jon.common.utils.MinimumVersions.NOTIFICATION_CHANNELS
 import com.jon.common.utils.VersionUtils
 import com.jon.cotbeacon.BeaconApplication
 import com.jon.cotbeacon.R
@@ -30,7 +31,7 @@ class BeaconCotService : CotService() {
 
     override fun onCreate() {
         super.onCreate()
-        if (VersionUtils.isAtLeast(26)) {
+        if (VersionUtils.isAtLeast(NOTIFICATION_CHANNELS)) {
             notificationGenerator.createNotificationChannel(R.string.chat_notification_title)
         }
 

@@ -1,17 +1,18 @@
 package com.jon.common.ui.main
 
 import android.Manifest
-import android.content.ComponentName
-import android.content.Intent
-import android.content.ServiceConnection
-import android.content.SharedPreferences
+import android.annotation.SuppressLint
+import android.content.*
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.net.Uri
 import android.os.Bundle
 import android.os.IBinder
+import android.os.PowerManager
+import android.provider.Settings
 import android.view.Menu
 import android.view.View
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.NavController
@@ -30,7 +31,9 @@ import com.jon.common.service.ServiceState
 import com.jon.common.ui.IServiceCommunicator
 import com.jon.common.ui.StateViewModel
 import com.jon.common.utils.GenerateInt
-import com.jon.common.utils.MinimumVersions
+import com.jon.common.utils.MinimumVersions.FINISH_AND_REMOVE_TASK
+import com.jon.common.utils.MinimumVersions.IGNORE_BATTERY_OPTIMISATIONS
+import com.jon.common.utils.MinimumVersions.OKHTTP_SSL
 import com.jon.common.utils.Notify
 import com.jon.common.utils.VersionUtils
 import com.jon.common.versioncheck.GithubRelease
@@ -71,22 +74,24 @@ abstract class MainActivity : AppCompatActivity(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (EasyPermissions.hasPermissions(this, *PERMISSIONS)) {
-            buildActivity()
-        } else {
+        if (!EasyPermissions.hasPermissions(this, *PERMISSIONS)) {
             EasyPermissions.requestPermissions(
                     this,
                     getString(uiResources.permissionRationaleId),
                     PERMISSIONS_CODE,
                     *PERMISSIONS
             )
+        } else if (VersionUtils.isAtLeast(IGNORE_BATTERY_OPTIMISATIONS) && isBatteryOptimised()) {
+            disableBatteryOptimisation()
+        } else {
+            buildActivity()
         }
     }
 
     private fun buildActivity() {
         setContentView(uiResources.activityLayoutId)
         initialiseToolbar()
-        if (VersionUtils.isAtLeast(MinimumVersions.OKHTTP_MIN_SDK)) {
+        if (VersionUtils.isAtLeast(OKHTTP_SSL)) {
             compositeDisposable.add(
                     updateChecker.fetchReleases()
                             .subscribeOn(Schedulers.io())
@@ -183,7 +188,7 @@ abstract class MainActivity : AppCompatActivity(),
         return viewModel.currentState == ServiceState.RUNNING
     }
 
-    protected fun getRootView(): View {
+    private fun getRootView(): View {
         return findViewById(android.R.id.content)
     }
 
@@ -209,7 +214,7 @@ abstract class MainActivity : AppCompatActivity(),
         val err = "You need to grant all permissions!"
         Timber.e(err)
         Notify.toast(applicationContext, err)
-        finish()
+        closeApp()
     }
 
     private fun onReleasesFetched(releases: List<GithubRelease>) {
@@ -240,7 +245,43 @@ abstract class MainActivity : AppCompatActivity(),
         }
     }
 
+    @RequiresApi(IGNORE_BATTERY_OPTIMISATIONS)
+    private fun isBatteryOptimised(): Boolean {
+        val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+        return !powerManager.isIgnoringBatteryOptimizations(packageName)
+    }
+
+    @SuppressLint("BatteryLife")
+    @RequiresApi(IGNORE_BATTERY_OPTIMISATIONS)
+    private fun disableBatteryOptimisation() {
+        MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.battery_optimisation_dialog_title)
+                .setMessage(R.string.battery_optimisation_dialog_message)
+                .setPositiveButton(android.R.string.ok) { _, _ ->
+                    // Add a positive button which will take the user to battery settings when pressed.
+                    startActivityForResult(
+                            Intent().apply {
+                                action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+                                data = Uri.parse("package:$packageName")
+                            },
+                            BATTERY_OPTIMISATION_CODE
+                    )
+                }
+                .setCancelable(false)
+                .setOnCancelListener { closeApp() }
+                .show()
+    }
+
+    private fun closeApp() {
+        if (VersionUtils.isAtLeast(FINISH_AND_REMOVE_TASK)) {
+            finishAndRemoveTask()
+        } else {
+            finish()
+        }
+    }
+
     companion object {
+        private val BATTERY_OPTIMISATION_CODE = GenerateInt.next()
         private val PERMISSIONS_CODE = GenerateInt.next()
         val PERMISSIONS = arrayOf(
                 Manifest.permission.ACCESS_FINE_LOCATION,

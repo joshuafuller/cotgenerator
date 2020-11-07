@@ -24,6 +24,7 @@ import com.jon.common.di.IUiResources
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getStringFromPair
 import com.jon.common.repositories.IGpsRepository
+import com.jon.common.utils.MinimumVersions.GNSS_CALLBACK
 import com.jon.common.utils.Notify
 import com.jon.common.utils.VersionUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -108,7 +109,7 @@ class LocationFragment : Fragment(),
     @SuppressLint("MissingPermission")
     override fun onStart() {
         super.onStart()
-        if (VersionUtils.isAtLeast(24)) {
+        if (VersionUtils.isAtLeast(GNSS_CALLBACK)) {
             gnssCallback = GnssCallback(this).also {
                 locationManager.registerGnssStatusCallback(it)
             }
