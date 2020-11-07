@@ -11,7 +11,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 class ChatCursorOnTarget(
-        val isSelf: Boolean,
+        val isIncoming: Boolean,
         private val buildResources: IBuildResources? = null
 ) : CursorOnTarget(buildResources) {
 
@@ -110,7 +110,7 @@ class ChatCursorOnTarget(
         private fun fromProtobuf(bytes: ByteArray): ChatCursorOnTarget {
             val trimmedBytes = bytes.drop(3).toByteArray()
             val takMessage = Takmessage.TakMessage.parseFrom(trimmedBytes)
-            val cot = ChatCursorOnTarget(isSelf = false)
+            val cot = ChatCursorOnTarget(isIncoming = true)
             val event = takMessage.cotEvent
             cot.type = event.type
             cot.uid = event.uid

@@ -113,7 +113,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
     }
 
     private fun sendChat(inputMessage: String) {
-        val chat = ChatCursorOnTarget(isSelf = true).apply {
+        val chat = ChatCursorOnTarget(isIncoming = false).apply {
             uid = deviceUidRepository.getUid()
             messageUid = UUID.randomUUID().toString()
             team = CotTeam.fromPrefs(prefs)

@@ -47,7 +47,7 @@
         app:layout_constraintBottom_toTopOf="@id/chat_input_layout"
         app:layout_constraintTop_toBottomOf="@id/chat_status"
         tools:itemCount="2"
-        tools:listitem="@layout/chat_recycler_item_mine" />
+        tools:listitem="@layout/chat_recycler_item_outgoing" />
 
     <LinearLayout
         android:id="@+id/chat_input_layout"

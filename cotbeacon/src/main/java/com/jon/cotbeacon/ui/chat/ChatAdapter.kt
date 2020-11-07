@@ -18,8 +18,8 @@ internal class ChatAdapter(context: Context) : RecyclerView.Adapter<ChatViewHold
     }
 
     override fun getItemViewType(position: Int): Int {
-        val isSelf = chats[position].isSelf
-        return LAYOUTS.getValue(isSelf)
+        val isIncoming = chats[position].isIncoming
+        return LAYOUTS.getValue(isIncoming)
     }
 
     override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
@@ -36,8 +36,8 @@ internal class ChatAdapter(context: Context) : RecyclerView.Adapter<ChatViewHold
 
     private companion object {
         val LAYOUTS = mapOf(
-                true to R.layout.chat_recycler_item_mine,
-                false to R.layout.chat_recycler_item_other
+                true to R.layout.chat_recycler_item_incoming,
+                false to R.layout.chat_recycler_item_outgoing
         )
     }
 }

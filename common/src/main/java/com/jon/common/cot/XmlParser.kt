@@ -2,7 +2,7 @@ package com.jon.common.cot
 
 internal object XmlParser {
     fun parseChat(bytes: ByteArray): ChatCursorOnTarget {
-        val cot = ChatCursorOnTarget(isSelf = false)
+        val cot = ChatCursorOnTarget(isIncoming = true)
         val xml = setQuotes(String(bytes))
         cot.start = UtcTimestamp(
                 getAttribute(

@@ -72,7 +72,7 @@ class BeaconCotService : CotService() {
 
     private fun observeChatMessages() {
         chatRepository.getLatestChat().observe(this) {
-            if (!it.isSelf && !BeaconApplication.chatFragmentIsVisible) {
+            if (it.isIncoming && !BeaconApplication.chatFragmentIsVisible) {
                 /* Only show a notification if this isn't a self-message, and if the chat fragment
                 * isn't already open. */
                 notificationGenerator.showNotification(
