@@ -2,7 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
-        app:iconSpaceReserved="false"
+        android:icon="@drawable/target"
         app:title="@string/pref_category_cot_settings">
 
         <com.jon.common.prefs.RefreshCallsignPreference
@@ -18,8 +18,8 @@
             app:cpv_colorPresets="@array/teamColours"
             app:cpv_colorShape="circle"
             app:cpv_dialogTitle="@string/desc_team_colour"
-            app:cpv_showColorShades="false"
             app:cpv_selectOnClick="true"
+            app:cpv_showColorShades="false"
             app:iconSpaceReserved="false"
             app:title="@string/desc_team_colour" />
 
@@ -45,7 +45,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        app:iconSpaceReserved="false"
+        android:icon="@drawable/transmit"
         app:title="@string/pref_category_transmission_settings">
 
         <SeekBarPreference
