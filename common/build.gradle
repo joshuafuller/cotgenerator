@@ -83,7 +83,7 @@ dependencies {
     api "androidx.constraintlayout:constraintlayout:$versions.constraintlayout"
     api "com.google.android.material:material:$versions.material"
     api "androidx.preference:preference-ktx:$versions.preference"
-    api "com.jaredrummler:colorpicker:$versions.colorpicker"
+    api "com.github.jonapoul:colorpicker:$versions.colorpicker"
     api "com.leinardi.android:speed-dial:$versions.android_speed_dial"
     api "com.nbsp:materialfilepicker:$versions.materialfilepicker"
     api "pub.devrel:easypermissions:$versions.easypermissions"

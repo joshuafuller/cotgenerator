@@ -33,13 +33,15 @@
             app:iconSpaceReserved="false"
             app:title="@string/desc_random_colour" />
 
-        <com.jaredrummler.android.colorpicker.ColorPreferenceCompat
+        <com.jonapoul.colorpicker.ColorPreferenceCompat
             android:defaultValue="@integer/def_team_colour"
             android:key="@string/key_team_colour"
             app:cpv_allowCustom="false"
             app:cpv_colorPresets="@array/teamColours"
             app:cpv_colorShape="circle"
+            app:cpv_dialogTitle="@string/desc_team_colour"
             app:cpv_showColorShades="false"
+            app:cpv_selectOnClick="true"
             app:iconSpaceReserved="false"
             app:title="@string/desc_team_colour" />
 
