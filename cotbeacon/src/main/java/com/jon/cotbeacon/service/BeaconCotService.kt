@@ -3,7 +3,6 @@ package com.jon.cotbeacon.service
 import android.content.IntentFilter
 import android.os.PowerManager
 import androidx.annotation.RequiresApi
-import com.jon.common.cot.ChatCursorOnTarget
 import com.jon.common.prefs.getBooleanFromPair
 import com.jon.common.repositories.IDeviceUidRepository
 import com.jon.common.service.CotService
@@ -12,8 +11,10 @@ import com.jon.common.utils.MinimumVersions.NOTIFICATION_CHANNELS
 import com.jon.common.utils.VersionUtils
 import com.jon.cotbeacon.BeaconApplication
 import com.jon.cotbeacon.R
+import com.jon.cotbeacon.cot.ChatCursorOnTarget
 import com.jon.cotbeacon.prefs.BeaconPrefs
 import com.jon.cotbeacon.repositories.IChatRepository
+import com.jon.cotbeacon.service.chat.ChatThreadManager
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import javax.inject.Inject

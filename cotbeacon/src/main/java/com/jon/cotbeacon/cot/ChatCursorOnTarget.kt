@@ -1,6 +1,8 @@
-package com.jon.common.cot
+package com.jon.cotbeacon.cot
 
 import android.annotation.SuppressLint
+import com.jon.common.cot.CursorOnTarget
+import com.jon.common.cot.UtcTimestamp
 import com.jon.common.cot.proto.Cotevent
 import com.jon.common.cot.proto.DetailOuterClass
 import com.jon.common.cot.proto.Takmessage

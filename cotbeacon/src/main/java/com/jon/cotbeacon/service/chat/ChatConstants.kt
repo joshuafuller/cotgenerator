@@ -1,4 +1,4 @@
-package com.jon.cotbeacon.service
+package com.jon.cotbeacon.service.chat
 
 internal object ChatConstants {
     const val UDP_PORT = 17012

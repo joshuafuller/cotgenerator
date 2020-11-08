@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.jon.common.cot.ChatCursorOnTarget
+import com.jon.cotbeacon.cot.ChatCursorOnTarget
 import com.jon.common.cot.CotTeam
 import com.jon.common.di.IUiResources
 import com.jon.common.prefs.CommonPrefs

@@ -6,7 +6,7 @@ import android.content.SharedPreferences
 import android.os.IBinder
 import android.view.Menu
 import android.view.MenuItem
-import com.jon.common.cot.ChatCursorOnTarget
+import com.jon.cotbeacon.cot.ChatCursorOnTarget
 import com.jon.common.prefs.getBooleanFromPair
 import com.jon.common.ui.main.MainActivity
 import com.jon.common.ui.main.MainFragmentDirections

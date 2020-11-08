@@ -1,4 +1,6 @@
-package com.jon.common.cot
+package com.jon.cotbeacon.cot
+
+import com.jon.common.cot.UtcTimestamp
 
 internal object XmlParser {
     fun parseChat(bytes: ByteArray): ChatCursorOnTarget {

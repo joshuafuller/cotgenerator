@@ -4,7 +4,7 @@ import android.graphics.Color
 import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.jon.common.cot.ChatCursorOnTarget
+import com.jon.cotbeacon.cot.ChatCursorOnTarget
 import com.jon.common.utils.ColourUtils
 import com.jon.cotbeacon.R
 

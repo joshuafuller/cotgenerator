@@ -1,7 +1,7 @@
-package com.jon.cotbeacon.service.runnables
+package com.jon.cotbeacon.service.chat.runnables
 
 import android.content.SharedPreferences
-import com.jon.common.cot.ChatCursorOnTarget
+import com.jon.cotbeacon.cot.ChatCursorOnTarget
 import com.jon.common.repositories.IDeviceUidRepository
 import com.jon.common.repositories.ISocketRepository
 import com.jon.common.service.IThreadErrorListener
@@ -10,9 +10,8 @@ import timber.log.Timber
 import java.io.BufferedInputStream
 import java.io.InputStream
 import java.net.Socket
-import java.net.SocketTimeoutException
 
-class SslListenRunnable(
+class TcpChatListenRunnable(
         prefs: SharedPreferences,
         errorListener: IThreadErrorListener,
         socketRepository: ISocketRepository,
@@ -25,7 +24,7 @@ class SslListenRunnable(
 
     override fun run() {
         safeInitialise {
-            socket = socketRepository.getSslSocket()
+            socket = socketRepository.getTcpSocket()
             inputStream = BufferedInputStream(socket?.getInputStream())
         } ?: return
 
@@ -33,12 +32,7 @@ class SslListenRunnable(
             postErrorIfThrowable {
                 Timber.i("Listening for chat from port %d to %d", socket?.port, socket?.localPort)
                 val bytes = ByteArray(PACKET_BUFFER_SIZE)
-                val length = try {
-                    inputStream?.read(bytes) ?: return@postErrorIfThrowable
-                } catch (e: SocketTimeoutException) {
-                    /* SSL sockets have a natural timeout value, so catch this and rerun the loop */
-                    return@postErrorIfThrowable
-                }
+                val length = inputStream?.read(bytes) ?: return@postErrorIfThrowable
                 val receivedBytes = bytes.copyOf(length)
                 val xml = String(receivedBytes)
                 if (!xml.contains("All Chat Rooms")) {
@@ -52,7 +46,7 @@ class SslListenRunnable(
                 }
             } ?: break
         }
-        Timber.i("Finishing SslListenRunnable")
+        Timber.i("Finishing TcpChatListenRunnable")
         close()
     }
 

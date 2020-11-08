@@ -66,6 +66,14 @@ protobuf {
     }
 }
 
+sourceSets {
+    main {
+        java {
+            srcDirs = ["src/main/java", "${protobuf.generatedFilesBaseDir}/main/java"]
+        }
+    }
+}
+
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
@@ -124,7 +132,7 @@ dependencies {
     api "com.rugovit.eventlivedata:eventlivedata:$versions.eventlivedata"
     implementation "org.opensextant:geodesy:$versions.coordinate_conversion"
     api "com.google.android.gms:play-services-location:$versions.play_services_location"
-    implementation "com.google.protobuf:protobuf-lite:$versions.protobuf_lite"
+    api "com.google.protobuf:protobuf-lite:$versions.protobuf_lite"
     implementation "commons-io:commons-io:$versions.commons_io"
 
     /* Testing */

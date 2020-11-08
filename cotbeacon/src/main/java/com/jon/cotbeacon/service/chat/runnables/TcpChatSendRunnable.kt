@@ -1,7 +1,7 @@
-package com.jon.cotbeacon.service.runnables
+package com.jon.cotbeacon.service.chat.runnables
 
 import android.content.SharedPreferences
-import com.jon.common.cot.ChatCursorOnTarget
+import com.jon.cotbeacon.cot.ChatCursorOnTarget
 import com.jon.common.repositories.ISocketRepository
 import com.jon.common.service.IThreadErrorListener
 import com.jon.common.utils.DataFormat
@@ -10,7 +10,7 @@ import timber.log.Timber
 import java.io.OutputStream
 import java.net.Socket
 
-class SslSendRunnable(
+class TcpChatSendRunnable(
         prefs: SharedPreferences,
         errorListener: IThreadErrorListener,
         socketRepository: ISocketRepository,
@@ -23,20 +23,19 @@ class SslSendRunnable(
 
     override fun run() {
         safeInitialise {
-            socket = socketRepository.getSslSocket()
+            socket = socketRepository.getTcpSocket()
             outputStream = socketRepository.getOutputStream(socket)
         } ?: return
 
         postErrorIfThrowable {
-            Timber.i("Sending chat message: ${chatMessage.message} from ${socket.localPort} to ${socket.port}")
+            Timber.i("Sending chat message: ${chatMessage.message} to port %d from %d", socket.port, socket.localPort)
             outputStream?.let {
-                Timber.i("Sending %s", String(chatMessage.toBytes(DataFormat.XML)))
                 it.write(chatMessage.toBytes(DataFormat.XML))
                 it.flush()
                 chatRepository.postChat(chatMessage)
             }
         }
 
-        Timber.i("Finishing TcpSendRunnable")
+        Timber.i("Finishing TcpChatSendRunnable")
     }
 }

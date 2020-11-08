@@ -1,17 +1,17 @@
-package com.jon.cotbeacon.service.runnables
+package com.jon.cotbeacon.service.chat.runnables
 
 import android.content.SharedPreferences
-import com.jon.common.cot.ChatCursorOnTarget
+import com.jon.cotbeacon.cot.ChatCursorOnTarget
 import com.jon.common.repositories.ISocketRepository
 import com.jon.common.service.IThreadErrorListener
 import com.jon.cotbeacon.repositories.IChatRepository
-import com.jon.cotbeacon.service.ChatConstants
+import com.jon.cotbeacon.service.chat.ChatConstants
 import timber.log.Timber
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
 
-class UdpSendRunnable(
+class UdpChatSendRunnable(
         prefs: SharedPreferences,
         errorListener: IThreadErrorListener,
         socketRepository: ISocketRepository,
@@ -34,6 +34,6 @@ class UdpSendRunnable(
             chatRepository.postChat(chatMessage)
         }
 
-        Timber.i("Finishing ChatSendRunnable")
+        Timber.i("Finishing UdpChatSendRunnable")
     }
 }

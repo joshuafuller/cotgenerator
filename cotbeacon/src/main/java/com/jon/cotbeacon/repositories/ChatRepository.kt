@@ -2,7 +2,7 @@ package com.jon.cotbeacon.repositories
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.jon.common.cot.ChatCursorOnTarget
+import com.jon.cotbeacon.cot.ChatCursorOnTarget
 import com.rugovit.eventlivedata.EventLiveData
 import com.rugovit.eventlivedata.MutableEventLiveData
 import javax.inject.Inject

@@ -1,9 +1,9 @@
-package com.jon.cotbeacon.service
+package com.jon.cotbeacon.service.chat
 
 import android.content.SharedPreferences
 import android.os.Handler
 import android.os.Looper
-import com.jon.common.cot.ChatCursorOnTarget
+import com.jon.cotbeacon.cot.ChatCursorOnTarget
 import com.jon.common.prefs.getBooleanFromPair
 import com.jon.common.repositories.IDeviceUidRepository
 import com.jon.common.repositories.ISocketRepository
@@ -11,9 +11,8 @@ import com.jon.common.service.IThreadErrorListener
 import com.jon.common.service.ThreadManager
 import com.jon.cotbeacon.prefs.BeaconPrefs
 import com.jon.cotbeacon.repositories.IChatRepository
-import com.jon.cotbeacon.service.runnables.ChatListenRunnable
-import com.jon.cotbeacon.service.runnables.ChatRunnableFactory
-import com.jon.cotbeacon.service.runnables.ChatSendRunnable
+import com.jon.cotbeacon.service.chat.runnables.ChatListenRunnable
+import com.jon.cotbeacon.service.chat.runnables.ChatSendRunnable
 import timber.log.Timber
 import java.util.concurrent.Executors
 

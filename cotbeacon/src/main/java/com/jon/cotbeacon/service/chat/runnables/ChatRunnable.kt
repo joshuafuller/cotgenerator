@@ -1,4 +1,4 @@
-package com.jon.cotbeacon.service.runnables
+package com.jon.cotbeacon.service.chat.runnables
 
 import android.content.SharedPreferences
 import com.jon.common.repositories.ISocketRepository
