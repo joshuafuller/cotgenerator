@@ -1,19 +1,16 @@
 package com.jon.cotbeacon.ui
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.view.LayoutInflater
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.jon.common.prefs.getBooleanFromPair
 import com.jon.cotbeacon.R
 import com.jon.cotbeacon.cot.EmergencyType
 import com.jon.cotbeacon.databinding.EmergencyDialogBinding
-import com.jon.cotbeacon.prefs.BeaconPrefs
 
 internal class EmergencyDialogBuilder(
         context: Context,
-        prefs: SharedPreferences,
-        callback: (EmergencyType) -> Unit
+        emergencyIsActive: Boolean,
+        callback: (EmergencyType) -> Unit,
 ) : MaterialAlertDialogBuilder(context) {
 
     private val binding = EmergencyDialogBinding.inflate(LayoutInflater.from(context), null, false)
@@ -21,7 +18,7 @@ internal class EmergencyDialogBuilder(
     init {
         binding.spinner.setItems(EmergencyType.values().map { it.description })
 
-        val defaultSelection = if (prefs.getBooleanFromPair(BeaconPrefs.EMERGENCY_ACTIVE)) {
+        val defaultSelection = if (emergencyIsActive) {
             EmergencyType.CANCEL
         } else {
             EmergencyType.ALERT_911

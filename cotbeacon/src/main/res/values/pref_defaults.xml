@@ -3,5 +3,4 @@
     <bool name="def_enable_chat">true</bool>
     <bool name="def_launch_from_boot">false</bool>
     <bool name="def_launch_from_open">false</bool>
-    <bool name="key_emergency_active">false</bool>
 </resources>

@@ -21,7 +21,6 @@
         android:layout_height="wrap_content"
         android:layout_weight="3"
         app:ms_background_color="@color/colorPrimaryLight"
-        app:ms_dropdown_height="wrap_content"
         app:ms_text_color="@color/white" />
 
 </LinearLayout>

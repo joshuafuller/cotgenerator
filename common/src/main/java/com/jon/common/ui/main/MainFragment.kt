@@ -67,7 +67,6 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        Notify.setAnchor(binding.startStopButton)
         statusRepository.getStatus().observe(viewLifecycleOwner) {
             if (it == ServiceState.RUNNING) {
                 showStopButton(binding.startStopButton)
@@ -75,6 +74,11 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                 showStartButton(binding.startStopButton)
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Notify.setAnchor(binding.startStopButton)
     }
 
     override fun onPause() {

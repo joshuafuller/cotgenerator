@@ -55,7 +55,7 @@ class EmergencyThreadManager(
     }
 
     fun sendEmergency(emergencyType: EmergencyType) {
-        Timber.i("Cancelling emergency")
+        Timber.i("Sending emergency ${emergencyType.description}")
         synchronized(lock) {
             val runnable = when (Protocol.fromPrefs(prefs)) {
                 Protocol.UDP -> UdpEmergencyRunnable(prefs, errorListener, socketRepository, gpsRepository, deviceUidRepository, emergencyType)

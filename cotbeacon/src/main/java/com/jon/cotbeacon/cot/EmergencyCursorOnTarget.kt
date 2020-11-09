@@ -38,7 +38,7 @@ class EmergencyCursorOnTarget(
 
     override fun toXml(): ByteArray {
         return String.format(Locale.ENGLISH,
-                "<event version=\"2.0\" uid=\"%s-9-1-1\" type=\"%s\" time=\"%s\" start=\"%s\" stale=\"%s\" how=\"%s\">" +
+                "<event version=\"2.0\" uid=\"%s\" type=\"%s\" time=\"%s\" start=\"%s\" stale=\"%s\" how=\"%s\">" +
                         "<point lat=\"%.7f\" lon=\"%.7f\" hae=\"%f\" ce=\"%f\" le=\"%f\"/><detail>%s</detail></event>",
                 messageUid(), type, time.isoTimestamp(), start.isoTimestamp(), stale.isoTimestamp(), how, lat, lon, hae, ce, le, buildXmlDetail()
         ).toByteArray()
