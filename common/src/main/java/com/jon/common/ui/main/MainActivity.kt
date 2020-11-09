@@ -87,6 +87,9 @@ abstract class MainActivity : AppCompatActivity(),
     }
 
     private fun buildActivity() {
+        if (viewModel.activityIsBuilt) {
+            return
+        }
         setContentView(uiResources.activityLayoutId)
         initialiseToolbar()
         if (VersionUtils.isAtLeast(OKHTTP_SSL)) {
@@ -101,6 +104,7 @@ abstract class MainActivity : AppCompatActivity(),
             )
         }
         startCotService()
+        viewModel.activityIsBuilt = true
     }
 
     private fun initialiseToolbar() {
