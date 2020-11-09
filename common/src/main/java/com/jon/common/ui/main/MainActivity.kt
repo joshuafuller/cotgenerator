@@ -1,7 +1,6 @@
 package com.jon.common.ui.main
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.*
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.net.Uri
@@ -12,7 +11,6 @@ import android.provider.Settings
 import android.view.Menu
 import android.view.View
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.NavController
@@ -74,14 +72,14 @@ abstract class MainActivity : AppCompatActivity(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (!EasyPermissions.hasPermissions(this, *PERMISSIONS)) {
+        if (!hasPermissions()) {
             EasyPermissions.requestPermissions(
                     this,
                     getString(uiResources.permissionRationaleId),
                     PERMISSIONS_CODE,
                     *PERMISSIONS
             )
-        } else if (VersionUtils.isAtLeast(IGNORE_BATTERY_OPTIMISATIONS) && isBatteryOptimised()) {
+        } else if (isBatteryOptimised()) {
             disableBatteryOptimisation()
         } else {
             buildActivity()
@@ -123,6 +121,10 @@ abstract class MainActivity : AppCompatActivity(),
     override fun onResume() {
         super.onResume()
         prefs.registerOnSharedPreferenceChangeListener(this)
+
+        if (hasPermissions() && isBatteryOptimised()) {
+            disableBatteryOptimisation()
+        }
     }
 
     override fun onDestroy() {
@@ -188,7 +190,7 @@ abstract class MainActivity : AppCompatActivity(),
         return viewModel.currentState == ServiceState.RUNNING
     }
 
-    private fun getRootView(): View {
+    protected fun getRootView(): View {
         return findViewById(android.R.id.content)
     }
 
@@ -245,15 +247,21 @@ abstract class MainActivity : AppCompatActivity(),
         }
     }
 
-    @RequiresApi(IGNORE_BATTERY_OPTIMISATIONS)
-    private fun isBatteryOptimised(): Boolean {
-        val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
-        return !powerManager.isIgnoringBatteryOptimizations(packageName)
+    private fun hasPermissions(): Boolean {
+        return EasyPermissions.hasPermissions(this, *PERMISSIONS)
     }
 
-    @SuppressLint("BatteryLife")
-    @RequiresApi(IGNORE_BATTERY_OPTIMISATIONS)
+    private fun isBatteryOptimised(): Boolean {
+        return if (VersionUtils.isAtLeast(IGNORE_BATTERY_OPTIMISATIONS)) {
+            val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+            return !powerManager.isIgnoringBatteryOptimizations(packageName)
+        } else false
+    }
+
     private fun disableBatteryOptimisation() {
+        if (!VersionUtils.isAtLeast(IGNORE_BATTERY_OPTIMISATIONS)) {
+            return
+        }
         MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.battery_optimisation_dialog_title)
                 .setMessage(R.string.battery_optimisation_dialog_message)
@@ -274,7 +282,7 @@ abstract class MainActivity : AppCompatActivity(),
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == BATTERY_OPTIMISATION_CODE && VersionUtils.isAtLeast(IGNORE_BATTERY_OPTIMISATIONS) && isBatteryOptimised()) {
+        if (requestCode == BATTERY_OPTIMISATION_CODE && isBatteryOptimised()) {
             // User clicked "DENY", so close the app and let them do it again
             Notify.toast(this, "Battery optimisation should be disabled!")
             closeApp()

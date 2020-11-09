@@ -3,4 +3,5 @@
     <string name="key_enable_chat">enable_chat</string>
     <string name="key_launch_from_boot">launch_from_boot</string>
     <string name="key_launch_from_open">launch_from_open</string>
+    <string name="key_emergency_active">emergency_active</string>
 </resources>

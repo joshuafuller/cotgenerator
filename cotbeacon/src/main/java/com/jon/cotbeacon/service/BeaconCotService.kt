@@ -12,9 +12,11 @@ import com.jon.common.utils.VersionUtils
 import com.jon.cotbeacon.BeaconApplication
 import com.jon.cotbeacon.R
 import com.jon.cotbeacon.cot.ChatCursorOnTarget
+import com.jon.cotbeacon.cot.EmergencyType
 import com.jon.cotbeacon.prefs.BeaconPrefs
 import com.jon.cotbeacon.repositories.IChatRepository
 import com.jon.cotbeacon.service.chat.ChatThreadManager
+import com.jon.cotbeacon.service.emergency.EmergencyThreadManager
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import javax.inject.Inject
@@ -35,6 +37,16 @@ class BeaconCotService : CotService() {
                 chatRepository = chatRepository,
                 deviceUidRepository = deviceUidRepository,
                 socketRepository = socketRepository,
+        )
+    }
+
+    private val emergencyThreadManager by lazy {
+        EmergencyThreadManager(
+                prefs = prefs,
+                errorListener = this,
+                deviceUidRepository = deviceUidRepository,
+                socketRepository = socketRepository,
+                gpsRepository = gpsRepository
         )
     }
 
@@ -100,5 +112,9 @@ class BeaconCotService : CotService() {
 
     fun sendChat(chatMessage: ChatCursorOnTarget) {
         chatThreadManager.sendChat(chatMessage)
+    }
+
+    fun sendEmergency(emergencyType: EmergencyType) {
+        emergencyThreadManager.sendEmergency(emergencyType)
     }
 }

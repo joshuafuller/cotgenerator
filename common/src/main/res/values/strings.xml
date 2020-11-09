@@ -6,6 +6,7 @@
     <string name="button_stop">STOP SERVICE</string>
     <string name="button_start">START SERVICE</string>
 
+    <string name="menu_emergency">Emergency</string>
     <string name="menu_location">My Location</string>
     <string name="menu_about">About</string>
     <string name="menu_save">Save</string>

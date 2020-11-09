@@ -21,4 +21,9 @@
     <string name="chat_inactive">Chat is inactive. Start the service first!</string>
     <string name="chat_ssl_warning">Warning: the chat function may be receive-only for SSL servers!</string>
     <string name="chat_notification_title">Chat Received</string>
+
+    <string name="emergency_dialog_title">Emergency</string>
+    <string name="emergency_spinner_label">Type: </string>
+    <string name="emergency_send">SEND</string>
+    <string name="emergency_back">BACK</string>
 </resources>

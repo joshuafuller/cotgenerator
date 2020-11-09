@@ -59,6 +59,7 @@ internal open class TcpThread(prefs: SharedPreferences) : BaseThread(prefs) {
         try {
             outputStream.write(cot.toBytes(dataFormat))
             Timber.i("Sent cot: %s to %d from %d", cot.callsign, socket.port, socket.localPort)
+//            Timber.i("Sent cot: %s to %d from %d: %s", cot.callsign, socket.port, socket.localPort, String(cot.toBytes(dataFormat)))
         } catch (e: NullPointerException) {
             /* Thrown when the thread is cancelled from another thread and we try to access the sockets */
             shutdown()
