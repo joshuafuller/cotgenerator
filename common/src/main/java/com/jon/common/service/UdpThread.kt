@@ -14,8 +14,10 @@ internal class UdpThread(prefs: SharedPreferences) : BaseThread(prefs) {
 
     override fun shutdown() {
         super.shutdown()
-        sockets.forEach { it.close() }
-        sockets.clear()
+        try {
+            sockets.forEach { it.close() }
+            sockets.clear()
+        } catch (ignored: Exception) { }
     }
 
     override fun run() {
