@@ -23,6 +23,9 @@ object CommonPrefs {
     val DEST_PORT = ResourceUtils.getString(R.string.key_dest_port)
     val EDIT_PRESETS = ResourceUtils.getString(R.string.key_edit_presets)
 
+    /* Other settings */
+    val LOG_TO_FILE = PrefPair.bool(R.string.key_log_to_file, R.bool.def_log_to_file)
+
     /* Preset settings */
     val PRESET_PROTOCOL = PrefPair.string(R.string.key_preset_protocol, R.string.transmission_protocol_udp)
     val PRESET_ALIAS = PrefPair.string(R.string.key_preset_alias, R.string.unknown)

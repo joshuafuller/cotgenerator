@@ -60,6 +60,8 @@
     <string name="battery_optimisation_dialog_title">Disable Battery Optimisation</string>
     <string name="battery_optimisation_dialog_message">Select "ALLOW" in the following window.</string>
 
+    <string name="permissions_denied_chastisement">You need to grant all permissions!</string>
+
     <string name="location_coordinates">Coordinates</string>
     <string name="location_copy">COPY</string>
     <string name="location_latitude">Latitude:</string>

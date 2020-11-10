@@ -19,6 +19,10 @@
     <string name="desc_dest_address">Destination Address</string>
     <string name="desc_dest_port">Destination Port</string>
 
+    <!-- Other Settings -->
+    <string name="pref_category_other_settings">Transmission Settings</string>
+    <string name="desc_log_to_file">Output Logs To File?</string>
+
     <!-- New preset screen -->
     <string name="pref_category_new_preset">Preset Settings</string>
     <string name="desc_new_preset_protocol">Protocol</string>

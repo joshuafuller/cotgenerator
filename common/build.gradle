@@ -126,11 +126,15 @@ dependencies {
     api "androidx.navigation:navigation-fragment-ktx:$versions.navigation"
     api "androidx.navigation:navigation-ui-ktx:$versions.navigation"
 
-    /* Utils */
+    /* Logging */
     api "com.jakewharton.timber:timber:$versions.timber"
+    implementation "org.slf4j:slf4j-api:$versions.slf4j"
+    implementation "com.github.tony19:logback-android:$versions.logback_android"
+
+    /* Utils */
     api "com.android.support:multidex:$versions.multidex"
     api "com.rugovit.eventlivedata:eventlivedata:$versions.eventlivedata"
-    implementation "org.opensextant:geodesy:$versions.coordinate_conversion"
+    implementation "com.github.jonapoul:geodesy:$versions.geodesy"
     api "com.google.android.gms:play-services-location:$versions.play_services_location"
     api "com.google.protobuf:protobuf-lite:$versions.protobuf_lite"
     implementation "commons-io:commons-io:$versions.commons_io"

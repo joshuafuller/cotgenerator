@@ -15,4 +15,7 @@
     <string name="def_ssl_preset">@string/ssl_takserver_value</string>
     <string name="def_tcp_preset">@string/tcp_freetakserver_value</string>
     <string name="def_udp_preset">@string/udp_default_sa_value</string>
+
+    <!-- Other settings -->
+    <bool name="def_log_to_file">false</bool>
 </resources>

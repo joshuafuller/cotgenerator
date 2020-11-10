@@ -6,6 +6,8 @@
     <string name="desc_random_role">Use Random Team Roles?</string>
     <string name="desc_icon_count">Icon Count</string>
 
+    <string name="summary_log_to_file">When enabled, the app will write its activity to a debug log file at /sdcard/cot_logging/generator.log. This may decrease device performance.</string>
+
     <string name="pref_category_location_settings">Location Settings</string>
     <string name="desc_follow_my_gps_location">Follow My GPS Location?</string>
     <string name="desc_centre_latitude">Centre Latitude</string>

@@ -1,8 +1,8 @@
 package com.jon.common.ui.main
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.*
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.net.Uri
 import android.os.Bundle
 import android.os.IBinder
@@ -11,6 +11,7 @@ import android.provider.Settings
 import android.view.Menu
 import android.view.View
 import androidx.activity.viewModels
+import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.NavController
@@ -21,7 +22,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jon.common.R
 import com.jon.common.di.IBuildResources
 import com.jon.common.di.IUiResources
+import com.jon.common.logging.FileLoggingTree
 import com.jon.common.prefs.CommonPrefs
+import com.jon.common.prefs.getBooleanFromPair
 import com.jon.common.prefs.getIntFromPair
 import com.jon.common.repositories.IStatusRepository
 import com.jon.common.service.CotService
@@ -46,7 +49,7 @@ import javax.inject.Inject
 
 abstract class MainActivity : AppCompatActivity(),
         EasyPermissions.PermissionCallbacks,
-        OnSharedPreferenceChangeListener,
+        SharedPreferences.OnSharedPreferenceChangeListener,
         ServiceConnection,
         IServiceCommunicator {
 
@@ -163,9 +166,20 @@ abstract class MainActivity : AppCompatActivity(),
         chastiseUserAndQuit()
     }
 
+    @CallSuper
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
-        if (CommonPrefs.TRANSMISSION_PERIOD.key == key) {
-            service?.updateGpsPeriod(prefs.getIntFromPair(CommonPrefs.TRANSMISSION_PERIOD))
+        when (key) {
+            CommonPrefs.TRANSMISSION_PERIOD.key -> {
+                service?.updateGpsPeriod(prefs.getIntFromPair(CommonPrefs.TRANSMISSION_PERIOD))
+            }
+            CommonPrefs.LOG_TO_FILE.key -> {
+                if (prefs.getBooleanFromPair(CommonPrefs.LOG_TO_FILE)) {
+                    startLoggingToFile()
+                } else {
+                    stopLoggingToFile()
+                }
+            }
+
         }
     }
 
@@ -217,7 +231,7 @@ abstract class MainActivity : AppCompatActivity(),
     }
 
     private fun chastiseUserAndQuit() {
-        val err = "You need to grant all permissions!"
+        val err = getString(R.string.permissions_denied_chastisement)
         Timber.e(err)
         Notify.toast(applicationContext, err)
         closeApp()
@@ -262,6 +276,7 @@ abstract class MainActivity : AppCompatActivity(),
         } else false
     }
 
+    @SuppressLint("BatteryLife")
     private fun disableBatteryOptimisation() {
         if (!VersionUtils.isAtLeast(IGNORE_BATTERY_OPTIMISATIONS)) {
             return
@@ -303,12 +318,27 @@ abstract class MainActivity : AppCompatActivity(),
         }
     }
 
+    private fun stopLoggingToFile() {
+        Timber.forest().forEach {
+            if (it is FileLoggingTree) {
+                Timber.uproot(it)
+            }
+        }
+        Notify.yellow(getRootView(), "Stopped logging to file")
+    }
+
+    private fun startLoggingToFile() {
+        Timber.plant(FileLoggingTree())
+        Notify.yellow(getRootView(), "Started logging to file!")
+    }
+
     companion object {
         private val BATTERY_OPTIMISATION_CODE = GenerateInt.next()
         private val PERMISSIONS_CODE = GenerateInt.next()
         val PERMISSIONS = arrayOf(
                 Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.READ_EXTERNAL_STORAGE
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
     }
 }

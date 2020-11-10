@@ -153,6 +153,14 @@
             app:title="@string/desc_launch_from_open"
             app:useSimpleSummaryProvider="true" />
 
+        <SwitchPreference
+            android:defaultValue="@bool/def_log_to_file"
+            android:key="@string/key_log_to_file"
+            android:summary="@string/summary_log_to_file"
+            app:iconSpaceReserved="false"
+            app:title="@string/desc_log_to_file"
+            app:useSimpleSummaryProvider="true" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>
