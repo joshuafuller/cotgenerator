@@ -22,7 +22,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jon.common.R
 import com.jon.common.di.IBuildResources
 import com.jon.common.di.IUiResources
-import com.jon.common.logging.FileLoggingTree
+import com.jon.common.logging.LogUtils
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getBooleanFromPair
 import com.jon.common.prefs.getIntFromPair
@@ -319,16 +319,12 @@ abstract class MainActivity : AppCompatActivity(),
     }
 
     private fun stopLoggingToFile() {
-        Timber.forest().forEach {
-            if (it is FileLoggingTree) {
-                Timber.uproot(it)
-            }
-        }
+        LogUtils.stopFileLogging()
         Notify.yellow(getRootView(), "Stopped logging to file")
     }
 
     private fun startLoggingToFile() {
-        Timber.plant(FileLoggingTree())
+        LogUtils.startFileLogging(buildResources)
         Notify.yellow(getRootView(), "Started logging to file!")
     }
 

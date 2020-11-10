@@ -4,8 +4,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
+import com.jon.common.di.IBuildResources
 import com.jon.common.logging.DebugTree
 import com.jon.common.logging.FileLoggingTree
+import com.jon.common.logging.LogUtils
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getBooleanFromPair
 import timber.log.Timber
@@ -14,6 +16,9 @@ import javax.inject.Inject
 open class CotApplication : MultiDexApplication() {
     @Inject
     lateinit var prefs: SharedPreferences
+
+    @Inject
+    lateinit var buildResources: IBuildResources
 
     override fun onCreate() {
         super.onCreate()
@@ -28,7 +33,7 @@ open class CotApplication : MultiDexApplication() {
         }
         if (prefs.getBooleanFromPair(CommonPrefs.LOG_TO_FILE)) {
             /* If the user has configured file logging */
-            Timber.plant(FileLoggingTree())
+            LogUtils.startFileLogging(buildResources)
         }
     }
 
