@@ -22,7 +22,6 @@ ext.versions = [
         appcompat               : '1.2.0',
         android_speed_dial      : '3.1.1',
         colorpicker             : '1.0.0',
-        commons_io              : '2.8.0',
         constraintlayout        : '2.0.4',
         easypermissions         : '3.0.0',
         eventlivedata           : '1.0',

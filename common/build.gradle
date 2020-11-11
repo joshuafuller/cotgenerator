@@ -137,7 +137,6 @@ dependencies {
     implementation "com.github.jonapoul:geodesy:$versions.geodesy"
     api "com.google.android.gms:play-services-location:$versions.play_services_location"
     api "com.google.protobuf:protobuf-lite:$versions.protobuf_lite"
-    implementation "commons-io:commons-io:$versions.commons_io"
 
     /* Testing */
     testImplementation "junit:junit:$versions.junit"

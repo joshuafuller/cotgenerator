@@ -2,18 +2,15 @@ package com.jon.common.utils
 
 import android.content.Context
 import androidx.annotation.RawRes
-import org.apache.commons.io.IOUtils
-import java.io.FileInputStream
+import java.io.File
 
 object FileUtils {
     fun toByteArray(filepath: String): ByteArray {
-        return IOUtils.toByteArray(
-                FileInputStream(filepath)
-        )
+        return File(filepath).readBytes()
     }
 
     fun rawResourceToByteArray(context: Context, @RawRes resId: Int): ByteArray {
         val inputStream = context.resources.openRawResource(resId)
-        return IOUtils.toByteArray(inputStream)
+        return inputStream.readBytes()
     }
 }
