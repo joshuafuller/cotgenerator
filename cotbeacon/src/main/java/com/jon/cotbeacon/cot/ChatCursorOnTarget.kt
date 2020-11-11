@@ -8,6 +8,7 @@ import com.jon.common.cot.proto.DetailOuterClass
 import com.jon.common.cot.proto.Takmessage
 import com.jon.common.di.IBuildResources
 import com.jon.common.presets.OutputPreset
+import com.jon.common.utils.NetworkUtils
 import com.jon.common.utils.Protocol
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -68,10 +69,24 @@ class ChatCursorOnTarget(
 
     private fun buildXmlDetail(): String {
         val serverDestination = getServerDestinationIfRequired()
-        return ("<__chat id=\"All Chat Rooms\" chatroom=\"All Chat Rooms\" senderCallsign=\"%s\" groupOwner=\"false\"><chatgrp " +
+        return ("<__chat%s id=\"All Chat Rooms\" chatroom=\"All Chat Rooms\" senderCallsign=\"%s\" groupOwner=\"false\"><chatgrp " +
                 "id=\"All Chat Rooms\" uid0=\"%s\" uid1=\"All Chat Rooms\"/></__chat><link uid=\"%s\" type=\"a-f-G-U-C\" relation=\"p-p\"/>" +
-                "<remarks source=\"BAO.F.%s.%s\" sourceID=\"%s\" to=\"All Chat Rooms\" time=\"%s\">%s</remarks>%s")
-                .format(callsign, uid, uid, sanitisePlatform(), uid, uid, time.isoTimestamp(), message, serverDestination)
+                "<remarks source=\"BAO.F.%s.%s\"%s to=\"All Chat Rooms\" time=\"%s\">%s</remarks>%s")
+                .format(parent(), callsign, uid, uid, sanitisePlatform(), uid, sourceId(), time.isoTimestamp(), message, serverDestination)
+    }
+
+    private fun parent(): String {
+        return if (outputPreset?.protocol == Protocol.SSL) {
+            " parent=\"RootContactGroup\""
+        } else ""
+    }
+
+    private fun sourceId(): String {
+        return if (outputPreset?.protocol == Protocol.SSL) {
+            ""
+        } else {
+            " sourceID=\"$uid\""
+        }
     }
 
     private fun sanitisePlatform(): String {
@@ -86,14 +101,12 @@ class ChatCursorOnTarget(
 
     @SuppressLint("DefaultLocale")
     private fun getServerDestinationIfRequired(): String {
-        outputPreset?.let {
-            return if (it.protocol != Protocol.UDP) {
-                "<__serverdestination destinations=\"${it.address}:${it.port}:${it.protocol.toString().toLowerCase()}:$uid\"/>"
-            } else {
-                ""
-            }
+        return if (outputPreset?.protocol != Protocol.UDP) {
+            val address = NetworkUtils.getLocalAddress().hostAddress
+            "<__serverdestination destinations=\"$address:4242:tcp:$uid\"/>"
+        } else {
+            ""
         }
-        return ""
     }
 
     companion object {

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jon.cotbeacon.cot.ChatCursorOnTarget
 import com.jon.common.cot.CotTeam
+import com.jon.common.di.IBuildResources
 import com.jon.common.di.IUiResources
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getStringFromPair
@@ -39,6 +40,9 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
 
     @Inject
     lateinit var uiResources: IUiResources
+
+    @Inject
+    lateinit var buildResources: IBuildResources
 
     @Inject
     lateinit var chatRepository: IChatRepository
@@ -113,7 +117,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
     }
 
     private fun sendChat(inputMessage: String) {
-        val chat = ChatCursorOnTarget(isIncoming = false).apply {
+        val chat = ChatCursorOnTarget(isIncoming = false, buildResources = buildResources).apply {
             uid = deviceUidRepository.getUid()
             messageUid = UUID.randomUUID().toString()
             team = CotTeam.fromPrefs(prefs)

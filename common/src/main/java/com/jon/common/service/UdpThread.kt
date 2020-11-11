@@ -3,7 +3,7 @@ package com.jon.common.service
 import android.content.SharedPreferences
 import com.jon.common.cot.CursorOnTarget
 import com.jon.common.prefs.CommonPrefs
-import com.jon.common.utils.NetworkHelper
+import com.jon.common.utils.NetworkUtils
 import timber.log.Timber
 import java.io.IOException
 import java.net.*
@@ -53,10 +53,9 @@ internal class UdpThread(prefs: SharedPreferences) : BaseThread(prefs) {
 
     @Throws(IOException::class)
     override fun openSockets() {
-        val networkHelper = NetworkHelper()
         if (destIp.isMulticastAddress) {
-            networkHelper.getValidInterfaces().forEach { ni ->
-                networkHelper.getAddressFromInterface(ni)?.let {
+            NetworkUtils.getValidInterfaces().forEach { ni ->
+                NetworkUtils.getAddressFromInterface(ni)?.let {
                     val socket = MulticastSocket()
                     socket.networkInterface = ni
                     socket.loopbackMode = false
