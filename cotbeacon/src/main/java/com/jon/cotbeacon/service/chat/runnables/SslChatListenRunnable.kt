@@ -39,6 +39,9 @@ class SslChatListenRunnable(
                     /* SSL sockets have a natural timeout value, so catch this and rerun the loop */
                     return@postErrorIfThrowable
                 }
+                if (length < 0) {
+                    return@postErrorIfThrowable
+                }
                 val receivedBytes = bytes.copyOf(length)
                 val xml = String(receivedBytes)
                 if (!xml.contains("All Chat Rooms")) {

@@ -33,6 +33,9 @@ class TcpChatListenRunnable(
                 Timber.i("Listening for chat from port %d to %d", socket?.port, socket?.localPort)
                 val bytes = ByteArray(PACKET_BUFFER_SIZE)
                 val length = inputStream?.read(bytes) ?: return@postErrorIfThrowable
+                if (length < 0) {
+                    return@postErrorIfThrowable
+                }
                 val receivedBytes = bytes.copyOf(length)
                 val xml = String(receivedBytes)
                 if (!xml.contains("All Chat Rooms")) {
