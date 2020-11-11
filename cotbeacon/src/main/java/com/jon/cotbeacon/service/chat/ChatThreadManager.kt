@@ -56,6 +56,7 @@ class ChatThreadManager(
         synchronized(lock) {
             Timber.d("shutdown")
             listenRunnable?.close()
+            listenRunnable = null
             listeningExecutor.shutdownNow()
             sendingExecutor.shutdownNow()
         }
@@ -73,7 +74,7 @@ class ChatThreadManager(
 
     override fun isRunning(): Boolean {
         synchronized(lock) {
-            return !listeningExecutor.isTerminated.also {
+            return (listenRunnable != null).also {
                 Timber.d("isRunning %s", it)
             }
         }
@@ -85,7 +86,7 @@ class ChatThreadManager(
             if (isRunning()) {
                 /* If any preferences are changed during runtime, kill the threads and reload with the new settings */
                 restart()
-            } else if (chatIsEnabled()) {
+            } else if (key == BeaconPrefs.ENABLE_CHAT.key && chatIsEnabled()) {
                 /* If chat was previously disabled (threads weren't running) and now it's enabled, start it up */
                 start()
             }
