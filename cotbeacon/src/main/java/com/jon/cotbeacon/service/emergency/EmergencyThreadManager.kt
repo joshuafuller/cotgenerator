@@ -9,6 +9,7 @@ import com.jon.common.repositories.ISocketRepository
 import com.jon.common.service.IThreadErrorListener
 import com.jon.common.service.ThreadManager
 import com.jon.common.utils.Protocol
+import com.jon.common.utils.exhaustive
 import com.jon.cotbeacon.cot.EmergencyType
 import com.jon.cotbeacon.service.emergency.runnables.SslEmergencyRunnable
 import com.jon.cotbeacon.service.emergency.runnables.TcpEmergencyRunnable
@@ -61,7 +62,7 @@ class EmergencyThreadManager(
                 Protocol.UDP -> UdpEmergencyRunnable(prefs, errorListener, socketRepository, gpsRepository, deviceUidRepository, emergencyType)
                 Protocol.TCP -> TcpEmergencyRunnable(prefs, errorListener, socketRepository, gpsRepository, deviceUidRepository, emergencyType)
                 Protocol.SSL -> SslEmergencyRunnable(prefs, errorListener, socketRepository, gpsRepository, deviceUidRepository, emergencyType)
-            }
+            }.exhaustive
             executor.execute(runnable)
         }
     }

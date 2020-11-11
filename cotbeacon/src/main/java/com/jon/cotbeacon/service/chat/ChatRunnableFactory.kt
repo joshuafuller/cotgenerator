@@ -6,6 +6,7 @@ import com.jon.common.repositories.IDeviceUidRepository
 import com.jon.common.repositories.ISocketRepository
 import com.jon.common.service.IThreadErrorListener
 import com.jon.common.utils.Protocol
+import com.jon.common.utils.exhaustive
 import com.jon.cotbeacon.repositories.IChatRepository
 import com.jon.cotbeacon.service.chat.runnables.*
 
@@ -20,7 +21,7 @@ internal class ChatRunnableFactory(
             Protocol.UDP -> UdpChatListenRunnable(prefs, threadErrorListener, socketRepository, chatRepository, deviceUidRepository)
             Protocol.TCP -> TcpChatListenRunnable(prefs, threadErrorListener, socketRepository, chatRepository, deviceUidRepository)
             Protocol.SSL -> SslChatListenRunnable(prefs, threadErrorListener, socketRepository, chatRepository, deviceUidRepository)
-        }
+        }.exhaustive
     }
 
     fun getSendRunnable(chatMessage: ChatCursorOnTarget): ChatSendRunnable {
@@ -28,6 +29,6 @@ internal class ChatRunnableFactory(
             Protocol.UDP -> UdpChatSendRunnable(prefs, threadErrorListener, socketRepository, chatRepository, chatMessage)
             Protocol.TCP -> TcpChatSendRunnable(prefs, threadErrorListener, socketRepository, chatRepository, chatMessage)
             Protocol.SSL -> SslChatSendRunnable(prefs, threadErrorListener, socketRepository, chatRepository, chatMessage)
-        }
+        }.exhaustive
     }
 }

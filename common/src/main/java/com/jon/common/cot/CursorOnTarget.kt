@@ -13,6 +13,7 @@ import com.jon.common.cot.proto.TrackOuterClass
 import com.jon.common.di.IBuildResources
 import com.jon.common.utils.DataFormat
 import com.jon.common.utils.TimeUtils
+import com.jon.common.utils.exhaustive
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -61,7 +62,7 @@ open class CursorOnTarget(buildResources: IBuildResources?) {
         return when (dataFormat) {
             DataFormat.XML -> toXml()
             DataFormat.PROTOBUF -> toProtobuf()
-        }
+        }.exhaustive
     }
 
     fun setStaleDiff(dt: Long, timeUnit: TimeUnit) {

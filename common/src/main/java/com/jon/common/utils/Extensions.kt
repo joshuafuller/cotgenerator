@@ -12,3 +12,7 @@ fun NavController.safelyNavigate(directions: NavDirections) {
          * No-op, we just put this here to avoid app crashing */
     }
 }
+
+/* See https://medium.com/androiddevelopers/sealed-with-a-class-a906f28ab7b5 */
+val <T> T.exhaustive: T
+    get() = this

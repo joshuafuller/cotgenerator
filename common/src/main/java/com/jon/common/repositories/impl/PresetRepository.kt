@@ -8,6 +8,7 @@ import com.jon.common.presets.IPresetDao
 import com.jon.common.repositories.IPresetRepository
 import com.jon.common.utils.FileUtils
 import com.jon.common.utils.Protocol
+import com.jon.common.utils.exhaustive
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -74,6 +75,6 @@ class PresetRepository @Inject constructor(
             Protocol.SSL -> sslDefaults
             Protocol.TCP -> tcpDefaults
             Protocol.UDP -> udpDefaults
-        }
+        }.exhaustive
     }
 }

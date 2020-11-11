@@ -8,6 +8,7 @@ import com.jon.common.prefs.getIntFromPair
 import com.jon.common.repositories.ISocketRepository
 import com.jon.common.utils.DataFormat
 import com.jon.common.utils.Protocol
+import com.jon.common.utils.exhaustive
 import java.net.InetAddress
 
 abstract class BaseThread(protected val prefs: SharedPreferences) : Thread() {
@@ -69,7 +70,7 @@ abstract class BaseThread(protected val prefs: SharedPreferences) : Thread() {
                 Protocol.UDP -> UdpThread(prefs)
                 Protocol.TCP -> TcpThread(prefs)
                 Protocol.SSL -> SslThread(prefs)
-            }.also {
+            }.exhaustive.also {
                 it.cotFactory = cotFactory
                 it.socketRepository = socketRepository
             }
