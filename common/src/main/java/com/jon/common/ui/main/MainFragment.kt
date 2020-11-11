@@ -23,6 +23,7 @@ import com.jon.common.ui.viewBinding
 import com.jon.common.utils.Notify
 import com.jon.common.utils.Protocol
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 import javax.inject.Inject
 
 /* Class to act as a wrapper to the SettingsFragment and the start/stop button view */
@@ -46,7 +47,9 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     private val binding by viewBinding(FragmentMainBinding::bind)
 
     private val startServiceOnClickListener = View.OnClickListener {
+        Timber.d("Clicked start button")
         if (presetIsSelected()) {
+            Timber.d("Starting service")
             serviceCommunicator.startService()
         } else {
             Notify.red(requireView(), "Select an output destination first!")
@@ -54,10 +57,12 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     }
 
     private val stopServiceOnClickListener = View.OnClickListener {
+        Timber.d("Clicked stop button")
         serviceCommunicator.stopService()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Timber.d("onCreate")
         super.onCreate(savedInstanceState)
         childFragmentManager.beginTransaction()
                 .replace(R.id.settings_fragment, settingsFragment)
@@ -66,7 +71,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        Timber.d("onViewCreated")
         statusRepository.getStatus().observe(viewLifecycleOwner) {
             if (it == ServiceState.RUNNING) {
                 showStopButton(binding.startStopButton)
@@ -77,16 +82,19 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     }
 
     override fun onResume() {
+        Timber.d("onResume")
         super.onResume()
         Notify.setAnchor(binding.startStopButton)
     }
 
     override fun onPause() {
+        Timber.d("onPause")
         super.onPause()
         Notify.setAnchor(null)
     }
 
     private fun showStopButton(button: Button) {
+        Timber.d("showStopButton")
         setButtonState(
                 button = button,
                 textId = R.string.button_stop,
@@ -98,6 +106,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     }
 
     private fun showStartButton(button: Button) {
+        Timber.d("showStartButton")
         setButtonState(
                 button = button,
                 textId = R.string.button_start,
@@ -116,6 +125,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             @DrawableRes iconId: Int,
             onClickListener: View.OnClickListener,
     ) {
+        Timber.d("setButtonState")
         val context = requireContext()
         button.text = getString(textId)
         button.setBackgroundColor(ContextCompat.getColor(context, backgroundColourId))
@@ -128,6 +138,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     }
 
     private fun presetIsSelected(): Boolean {
+        Timber.d("presetIsSelected")
         val presetPref = Protocol.fromPrefs(prefs).presetPref
         return !prefs.getString(CommonPrefs.DEST_ADDRESS, "").isNullOrEmpty() &&
                 !prefs.getString(CommonPrefs.DEST_PORT, "").isNullOrEmpty() &&

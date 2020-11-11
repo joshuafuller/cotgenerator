@@ -23,13 +23,13 @@ import com.jon.common.R
 import com.jon.common.databinding.FragmentLocationBinding
 import com.jon.common.di.IUiResources
 import com.jon.common.prefs.CommonPrefs
-import com.jon.common.prefs.getStringFromPair
 import com.jon.common.repositories.IGpsRepository
 import com.jon.common.ui.viewBinding
 import com.jon.common.utils.MinimumVersions.GNSS_CALLBACK
 import com.jon.common.utils.Notify
 import com.jon.common.utils.VersionUtils
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -58,11 +58,13 @@ class LocationFragment : Fragment(R.layout.fragment_location),
     lateinit var uiResources: IUiResources
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Timber.d("onCreate")
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Timber.d("onViewCreated")
         super.onViewCreated(view, savedInstanceState)
         initialiseCoordinateFormat()
         initialiseCoordinateButtons()
@@ -73,12 +75,14 @@ class LocationFragment : Fragment(R.layout.fragment_location),
     }
 
     override fun onResume() {
+        Timber.d("onResume")
         super.onResume()
         compass.registerListener(this)
     }
 
     @SuppressLint("MissingPermission")
     override fun onStart() {
+        Timber.d("onStart")
         super.onStart()
         if (VersionUtils.isAtLeast(GNSS_CALLBACK)) {
             gnssCallback = GnssCallback(this).also {
@@ -88,6 +92,7 @@ class LocationFragment : Fragment(R.layout.fragment_location),
     }
 
     override fun onStop() {
+        Timber.d("onStop")
         super.onStop()
         if (VersionUtils.isAtLeast(GNSS_CALLBACK)) {
             gnssCallback?.let { locationManager.unregisterGnssStatusCallback(it) }
@@ -95,17 +100,20 @@ class LocationFragment : Fragment(R.layout.fragment_location),
     }
 
     override fun onPause() {
+        Timber.d("onPause")
         super.onPause()
         compass.unregisterListener(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        Timber.d("onCreateOptionsMenu")
         super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
     }
 
     @SuppressLint("SetTextI18n")
     override fun onSensorChanged(event: SensorEvent?) {
+        Timber.d("onSensorChanged %s", event)
         if (event == null || !compass.shouldRecalculate()) {
             return
         }
@@ -120,6 +128,7 @@ class LocationFragment : Fragment(R.layout.fragment_location),
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onUsefulSatellitesReported(numUsefulSatellites: Int) {
+        Timber.d("onUsefulSatellitesReported %d", numUsefulSatellites)
         binding.numSatellites.text = if (numUsefulSatellites == GnssCallback.GNSS_STOPPED) {
             GPS_NOT_ENABLED
         } else {
@@ -128,17 +137,18 @@ class LocationFragment : Fragment(R.layout.fragment_location),
     }
 
     private fun initialiseCoordinateFormat() {
-        coordinateFormat = CoordinateFormat.fromString(
-                prefs.getStringFromPair(CommonPrefs.LOCATION_COORDINATE_FORMAT)
-        )
+        Timber.d("initialiseCoordinateFormat")
+        coordinateFormat = CoordinateFormat.fromPrefs(prefs)
         showCorrectCoordinateViews()
     }
 
     private fun initialiseCoordinateButtons() {
+        Timber.d("initialiseCoordinateButtons")
         val accent = ContextCompat.getColor(requireContext(), uiResources.accentColourId)
         binding.coordFormatButton.setBackgroundColor(accent)
         binding.coordFormatButton.text = coordinateFormat.name
         binding.coordFormatButton.setOnClickListener {
+            Timber.d("coordFormatButton clicked")
             coordinateFormat = CoordinateFormat.getNext(coordinateFormat)
             binding.coordFormatButton.text = coordinateFormat.name
             convertAndDisplayCoordinates(mostRecentLocation)
@@ -153,6 +163,7 @@ class LocationFragment : Fragment(R.layout.fragment_location),
         DrawableCompat.setTint(tintedIcon, ContextCompat.getColor(requireContext(), R.color.black))
         binding.coordCopyButton.setCompoundDrawablesWithIntrinsicBounds(tintedIcon, null, null, null)
         binding.coordCopyButton.setOnClickListener {
+            Timber.d("coordCopyButton clicked")
             /* Convert the displayed coordinates to a string and place it in the clipboard */
             val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val coordsString = gpsConverter.coordinatesToCopyableString(mostRecentLocation, coordinateFormat)
@@ -164,12 +175,14 @@ class LocationFragment : Fragment(R.layout.fragment_location),
 
     private fun observeGpsData() {
         gpsRepository.getLocation().observe(viewLifecycleOwner) { location ->
+            Timber.d("Location data updated")
             mostRecentLocation = location
             convertAndDisplayCoordinates(location)
         }
     }
 
     private fun convertAndDisplayCoordinates(location: Location?) {
+        Timber.d("convertAndDisplayCoordinates")
         gpsConverter.convertCoordinates(location, coordinateFormat).also {
             binding.latDegrees.text = it.latitude
             binding.lonDegrees.text = it.longitude
@@ -182,6 +195,7 @@ class LocationFragment : Fragment(R.layout.fragment_location),
     }
 
     private fun showCorrectCoordinateViews() {
+        Timber.d("showCorrectCoordinateViews %s", coordinateFormat)
         when (coordinateFormat) {
             CoordinateFormat.MGRS ->
                 toggleViewVisibility(
@@ -197,6 +211,7 @@ class LocationFragment : Fragment(R.layout.fragment_location),
     }
 
     private fun toggleViewVisibility(visible: List<View>, hidden: List<View>) {
+        Timber.d("toggleViewVisibility")
         visible.forEach { it.visibility = View.VISIBLE }
         hidden.forEach { it.visibility = View.GONE }
     }

@@ -25,15 +25,19 @@ class BeaconBootReceiver : BroadcastReceiver() {
     lateinit var buildResources: IBuildResources
 
     override fun onReceive(context: Context, intent: Intent?) {
+        Timber.d("onReceive %s", intent?.action)
         try {
             val launchFromBootEnabled = prefs.getBooleanFromPair(BeaconPrefs.LAUNCH_FROM_BOOT)
+            Timber.d("launchFromBootEnabled = %s", launchFromBootEnabled)
             if (launchFromBootEnabled && intent?.action == Intent.ACTION_BOOT_COMPLETED) {
                 val serviceIntent = Intent(context, buildResources.serviceClass).apply {
                     action = CotService.START_SERVICE
                 }
                 if (VersionUtils.isAtLeast(26)) {
+                    Timber.d("Starting foreground service")
                     context.startForegroundService(serviceIntent)
                 } else {
+                    Timber.d("Starting regular service?")
                     context.startService(serviceIntent)
                 }
                 Notify.toast(context, "Started transmitting location via CoT Beacon!")

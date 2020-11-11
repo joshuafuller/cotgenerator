@@ -30,7 +30,6 @@ class SslChatSendRunnable(
         postErrorIfThrowable {
             Timber.i("Sending chat message: ${chatMessage.message} from ${socket.localPort} to ${socket.port}")
             outputStream?.let {
-                Timber.i("Sending %s", String(chatMessage.toBytes(DataFormat.XML)))
                 it.write(chatMessage.toBytes(DataFormat.XML))
                 it.flush()
                 chatRepository.postChat(chatMessage)

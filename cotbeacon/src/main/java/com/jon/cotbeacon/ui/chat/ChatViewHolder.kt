@@ -17,7 +17,6 @@ internal class ChatViewHolder(
     private val callsign: TextView = itemView.findViewById(R.id.chat_callsign)
     private val message: TextView = itemView.findViewById(R.id.chat_message)
 
-
     fun initialise() {
         val chat = chats[adapterPosition]
         timestamp.text = chat.start.shortLocalTimestamp()

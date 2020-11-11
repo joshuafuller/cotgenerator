@@ -17,6 +17,7 @@ import com.jon.common.versioncheck.UpdateChecker
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -42,11 +43,13 @@ class AboutFragment : Fragment(R.layout.fragment_about) {
     private val adapter by lazy { AboutArrayAdapter(requireContext(), rows) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Timber.d("onCreate")
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Timber.d("onViewCreated")
         super.onViewCreated(view, savedInstanceState)
         binding.listView.adapter = adapter
         binding.listView.setOnItemClickListener { _, _, position: Int, _ ->
@@ -66,13 +69,14 @@ class AboutFragment : Fragment(R.layout.fragment_about) {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        Timber.d("onCreateOptionsMenu")
         super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
     }
 
     @SuppressLint("CheckResult")
     private fun fetchLatestVersion() {
-        /* Minimum SDK required by OkHttp, a dependency of Retrofit */
+        Timber.d("fetchLatestVersion")
         if (VersionUtils.isAtLeast(MinimumVersions.OKHTTP_SSL)) {
             updateChecker.fetchReleases()
                     .subscribeOn(Schedulers.io())
@@ -86,6 +90,7 @@ class AboutFragment : Fragment(R.layout.fragment_about) {
     }
 
     private fun onSuccess(release: GithubRelease?) {
+        Timber.d("onSuccess %s", release)
         if (release != null) {
             val suffix = getVersionSuffix(release)
             rows[LATEST_INDEX].subtitle = release.name + suffix
@@ -96,6 +101,8 @@ class AboutFragment : Fragment(R.layout.fragment_about) {
     }
 
     private fun onFailure(throwable: Throwable) {
+        Timber.d("onFailure")
+        Timber.w(throwable)
         rows[LATEST_INDEX].subtitle = "[Error: ${throwable.message}]"
         adapter.notifyDataSetChanged()
     }

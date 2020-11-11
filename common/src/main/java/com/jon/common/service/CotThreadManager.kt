@@ -2,6 +2,7 @@ package com.jon.common.service
 
 import android.content.SharedPreferences
 import com.jon.common.repositories.ISocketRepository
+import timber.log.Timber
 import java.util.concurrent.Executors
 
 internal class CotThreadManager(
@@ -19,6 +20,7 @@ internal class CotThreadManager(
 
     override fun start() {
         synchronized(lock) {
+            Timber.d("start")
             thread = BaseThread.fromPrefs(prefs, socketRepository, cotFactory).apply {
                 setUncaughtExceptionHandler { _, t: Throwable -> errorListener.onThreadError(t) }
                 start()
@@ -28,6 +30,7 @@ internal class CotThreadManager(
 
     override fun shutdown() {
         synchronized(lock) {
+            Timber.d("shutdown")
             Executors.newSingleThreadExecutor().execute {
                 synchronized(lock) {
                     thread?.shutdown()
@@ -38,6 +41,7 @@ internal class CotThreadManager(
     }
 
     override fun restart() {
+        Timber.d("restart")
         Executors.newSingleThreadExecutor().execute {
             synchronized(lock) {
                 thread?.shutdown()
@@ -48,6 +52,7 @@ internal class CotThreadManager(
 
     override fun onSharedPreferenceChanged(prefs: SharedPreferences, key: String) {
         /* If any preferences are changed, kill the thread and instantly reload with the new settings */
+        Timber.d("onSharedPreferenceChanged %s", key)
         synchronized(lock) {
             if (isRunning()) {
                 cotFactory.clear()
@@ -58,7 +63,9 @@ internal class CotThreadManager(
 
     override fun isRunning(): Boolean {
         synchronized(lock) {
-            return thread?.isRunning() ?: false
+            return (thread?.isRunning() ?: false).also {
+                Timber.d("isRunning %s", it)
+            }
         }
     }
 }

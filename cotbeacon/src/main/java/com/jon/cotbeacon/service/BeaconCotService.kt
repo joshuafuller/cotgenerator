@@ -54,6 +54,7 @@ class BeaconCotService : CotService() {
 
     override fun onCreate() {
         super.onCreate()
+        Timber.d("onCreate")
         if (VersionUtils.isAtLeast(NOTIFICATION_CHANNELS)) {
             notificationGenerator.createNotificationChannel(R.string.chat_notification_title)
         }
@@ -66,6 +67,7 @@ class BeaconCotService : CotService() {
 
     override fun onDestroy() {
         super.onDestroy()
+        Timber.d("onDestroy")
         if (VersionUtils.isAtLeast(IGNORE_BATTERY_OPTIMISATIONS)) {
             unregisterReceiver(dozeReceiver)
         }
@@ -73,6 +75,7 @@ class BeaconCotService : CotService() {
 
     override fun start() {
         super.start()
+        Timber.d("start")
         if (prefs.getBooleanFromPair(BeaconPrefs.ENABLE_CHAT)) {
             chatThreadManager.start()
         }
@@ -80,12 +83,16 @@ class BeaconCotService : CotService() {
 
     override fun shutdown() {
         super.shutdown()
+        Timber.d("shutdown")
         chatThreadManager.shutdown()
     }
 
     private fun observeChatMessages() {
+        Timber.d("observeChatMessages")
         chatRepository.getLatestChat().observe(this) {
+            Timber.d("Observed new chat message from repository")
             if (it.isIncoming && !BeaconApplication.chatFragmentIsVisible) {
+                Timber.d("Showing notification")
                 /* Only show a notification if this isn't a self-message, and if the chat fragment
                 * isn't already open. */
                 notificationGenerator.showNotification(

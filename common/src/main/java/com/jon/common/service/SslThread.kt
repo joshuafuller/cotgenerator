@@ -15,6 +15,7 @@ internal class SslThread(
 
     override fun shutdown() {
         super.shutdown()
+        Timber.i("shutdown")
         try {
             closeFromMainThread(socket)
             closeFromMainThread(outputStream)
@@ -24,6 +25,7 @@ internal class SslThread(
 
     @Throws(IOException::class)
     override fun sendToDestination(cot: CursorOnTarget) {
+        Timber.i("sendToDestination")
         try {
             outputStream.write(cot.toBytes(dataFormat))
             Timber.i("Sent cot: %s to %d from %d", cot.callsign, socket.port, socket.localPort)
@@ -46,6 +48,7 @@ internal class SslThread(
      * closing the SSLSocket via shutdown() from the UI thread. This wasn't an issue with TCP/UDP
      * so this is just a patch to deal with it for now. */
     private fun closeFromMainThread(closeable: Closeable?) {
+        Timber.i("closeFromMainThread %s", closeable)
         try {
             CloseSocketTask().execute(closeable).get()
         } catch (e: ExecutionException) {

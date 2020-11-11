@@ -1,8 +1,6 @@
 package com.jon.common.utils
 
 object Constants {
-    const val GITHUB_API_BASE_URL = "https://api.github.com"
-
     const val EARTH_RADIUS_METRES = 6371000
     const val DEG_TO_RAD = Math.PI / 180.0
     const val RAD_TO_DEG = 1.0 / DEG_TO_RAD

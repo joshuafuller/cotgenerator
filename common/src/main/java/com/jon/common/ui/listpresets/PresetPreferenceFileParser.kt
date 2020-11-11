@@ -15,6 +15,7 @@ internal class PresetPreferenceFileParser(
         private val path: String?
 ) {
     fun parse(callback: (OutputPreset?) -> Unit) {
+        Timber.d("parse %s", path)
         if (path == null) {
             callback(null)
             return
@@ -28,6 +29,7 @@ internal class PresetPreferenceFileParser(
     }
 
     private fun parseZipFile(file: File, callback: (OutputPreset?) -> Unit) {
+        Timber.d("parseZipFile")
         try {
             ZipFile(file).use { zipFile ->
                 val filenames = zipFile.entries()
@@ -35,6 +37,8 @@ internal class PresetPreferenceFileParser(
                         .map { it.name }
                         .filter { it.endsWith(".pref") }
                         .toList()
+
+                Timber.d("filenames = %s", filenames)
 
                 val presets = arrayListOf<OutputPreset>()
                 filenames.forEach {
@@ -51,6 +55,7 @@ internal class PresetPreferenceFileParser(
     }
 
     private fun parsePrefFile(file: File, callback: (OutputPreset?) -> Unit) {
+        Timber.d("parsePrefFile")
         try {
             val xmlString = concatXmlLines(file)
             val presets = getPresetsFromXml(xmlString)
@@ -62,6 +67,7 @@ internal class PresetPreferenceFileParser(
     }
 
     private fun getPresetsFromXml(xmlString: String): List<OutputPreset> {
+        Timber.d("getPresetsFromXml")
         val presets = arrayListOf<OutputPreset>()
         val cotStreams = COT_STREAMS_PATTERN.find(xmlString)!!.groupValues[1]
         val count = COUNT_PATTEN.find(cotStreams)!!.groupValues[1].toInt()
@@ -87,6 +93,7 @@ internal class PresetPreferenceFileParser(
     }
 
     private fun inputStreamToString(inputStream: InputStream): String {
+        Timber.d("inputStreamToString")
         BufferedReader(inputStream.reader()).use {
             val content = it.readText()
             return content.replace("\n", "").replace("\t", "")
@@ -94,6 +101,7 @@ internal class PresetPreferenceFileParser(
     }
 
     private fun concatXmlLines(file: File): String {
+        Timber.d("concatXmlLines")
         val builder = StringBuilder()
         file.forEachLine { builder.append(it) }
         return builder.toString()
@@ -101,6 +109,7 @@ internal class PresetPreferenceFileParser(
 
     @Suppress("CascadeIf")
     private fun callbackDependingOnPresetCount(presets: List<OutputPreset>, callback: (OutputPreset?) -> Unit) {
+        Timber.d("callbackDependingOnPresetCount %d", presets.size)
         if (presets.isEmpty()) {
             /* None found, so pass back a null value */
             callback(null)

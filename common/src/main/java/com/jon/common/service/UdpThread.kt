@@ -14,6 +14,7 @@ internal class UdpThread(prefs: SharedPreferences) : BaseThread(prefs) {
 
     override fun shutdown() {
         super.shutdown()
+        Timber.i("shutdown")
         try {
             sockets.forEach { it.close() }
             sockets.clear()
@@ -21,6 +22,7 @@ internal class UdpThread(prefs: SharedPreferences) : BaseThread(prefs) {
     }
 
     override fun run() {
+        Timber.i("run")
         try {
             super.run()
             initialiseDestAddress()

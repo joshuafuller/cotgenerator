@@ -29,6 +29,7 @@ import com.jon.cotbeacon.databinding.FragmentChatBinding
 import com.jon.cotbeacon.repositories.IChatRepository
 import com.jon.cotbeacon.ui.IChatServiceCommunicator
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
@@ -61,12 +62,14 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Timber.d("onCreate")
         setHasOptionsMenu(true)
     }
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Timber.d("onViewCreated")
         /* Block notifications of new messages whilst this fragment is open */
         BeaconApplication.chatFragmentIsVisible = true
 
@@ -86,11 +89,13 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        Timber.d("onDestroyView")
         /* Re-allow notifications of chat messages */
         BeaconApplication.chatFragmentIsVisible = false
     }
 
     private fun initialiseRecyclerView(context: Context) {
+        Timber.d("initialiseRecyclerView")
         binding.chatRecyclerView.layoutManager = LinearLayoutManager(context).also {
             /* When new data is added, put it at the bottom of the view */
             it.stackFromEnd = true
@@ -108,6 +113,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
     }
 
     private fun initialiseSendButton(context: Context) {
+        Timber.d("initialiseSendButton")
         binding.chatSendButton.setBackgroundColor(ContextCompat.getColor(context, uiResources.accentColourId))
         val icon = ContextCompat.getDrawable(context, R.drawable.send)
         binding.chatSendButton.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null)
@@ -117,6 +123,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
     }
 
     private fun sendChat(inputMessage: String) {
+        Timber.d("sendChat")
         val chat = ChatCursorOnTarget(isIncoming = false, buildResources = buildResources).apply {
             uid = deviceUidRepository.getUid()
             messageUid = UUID.randomUUID().toString()
@@ -131,7 +138,9 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun observeServiceStatus() {
+        Timber.d("observeServiceStatus")
         statusRepository.getStatus().observe(viewLifecycleOwner) {
+            Timber.d("Service state = %s", it)
             if (it == ServiceState.RUNNING) {
                 binding.chatStatus.visibility = View.GONE
                 binding.disabledBox.visibility = View.GONE
@@ -146,10 +155,13 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
     }
 
     private fun observeChatStatus() {
+        Timber.d("observeChatStatus")
         chatRepository.getChats().observe(viewLifecycleOwner) {
+            Timber.d("Chats updated %s", it)
             adapter.updateChats(it)
         }
         chatRepository.getErrors().observe(viewLifecycleOwner) {
+            Timber.d("Chat error received: %s", it)
             Notify.red(requireView(), "Chat error: $it")
         }
     }
@@ -159,6 +171,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        Timber.d("onCreateOptionsMenu")
         super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
     }

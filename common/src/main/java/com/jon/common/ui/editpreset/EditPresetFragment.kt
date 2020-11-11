@@ -50,6 +50,7 @@ abstract class EditPresetFragment : PreferenceFragmentCompat(),
     private var currentPresetId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Timber.d("onCreate")
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         requireActivity().onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -61,6 +62,7 @@ abstract class EditPresetFragment : PreferenceFragmentCompat(),
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        Timber.d("onCreatePreferences")
         setPreferencesFromResource(R.xml.edit_preset, rootKey)
 
         /* Tell these two "bytes" preferences to launch a file browser when clicked */
@@ -84,6 +86,7 @@ abstract class EditPresetFragment : PreferenceFragmentCompat(),
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        Timber.d("onCreateOptionsMenu")
         menu.clear()
         (requireActivity() as AppCompatActivity).supportActionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)
@@ -93,6 +96,7 @@ abstract class EditPresetFragment : PreferenceFragmentCompat(),
     }
 
     private fun prepopulateSpecifiedFields() {
+        Timber.d("prepopulateSpecifiedFields")
         getFragmentArgumentPreset()?.let { preset ->
             currentPresetId = preset.id
             findPreference<ListPreference>(CommonPrefs.PRESET_PROTOCOL.key)?.value = preset.protocol.toString()
@@ -107,6 +111,7 @@ abstract class EditPresetFragment : PreferenceFragmentCompat(),
     }
 
     private fun populateBytesField(key: String, bytes: ByteArray?) {
+        Timber.d("populateBytesField %s", key)
         bytes?.let {
             val str = String(it)
             val length = if (inputValidator.validateString(str)) str.length else 0
@@ -116,6 +121,7 @@ abstract class EditPresetFragment : PreferenceFragmentCompat(),
     }
 
     private fun fileBrowserOnClickListener(requestCode: Int, type: String) = Preference.OnPreferenceClickListener {
+        Timber.d("fileBrowserOnClickListener")
         MaterialFilePicker()
                 .withSupportFragment(this)
                 .withCloseMenu(true)
@@ -130,23 +136,27 @@ abstract class EditPresetFragment : PreferenceFragmentCompat(),
     }
 
     override fun onResume() {
+        Timber.d("onResume")
         super.onResume()
         prefs.registerOnSharedPreferenceChangeListener(this)
         toggleSSLSettingsVisibility()
     }
 
     override fun onPause() {
+        Timber.d("onPause")
         super.onPause()
         prefs.unregisterOnSharedPreferenceChangeListener(this)
     }
 
     override fun onDestroy() {
+        Timber.d("onDestroy")
         super.onDestroy()
         clearPrefs()
     }
 
     @Suppress("CascadeIf")
     override fun onActivityResult(requestCode: Int, resultCode: Int, result: Intent?) {
+        Timber.d("onActivityResult %d %d", requestCode, resultCode)
         if (result == null) {
             Notify.orange(requireView(), "Nothing imported!")
         } else if (resultCode != Activity.RESULT_OK) {
@@ -176,6 +186,7 @@ abstract class EditPresetFragment : PreferenceFragmentCompat(),
     }
 
     private fun resetPassword(key: String) {
+        Timber.d("resetPassword %s", key)
         val passwordKey = when (key) {
             CommonPrefs.PRESET_SSL_CLIENTCERT_BYTES.key -> CommonPrefs.PRESET_SSL_CLIENTCERT_PASSWORD.key
             CommonPrefs.PRESET_SSL_TRUSTSTORE_BYTES.key -> CommonPrefs.PRESET_SSL_TRUSTSTORE_PASSWORD.key
@@ -188,6 +199,7 @@ abstract class EditPresetFragment : PreferenceFragmentCompat(),
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
+        Timber.d("onSharedPreferenceChanged %s", key)
         when (key) {
             CommonPrefs.PRESET_SSL_CLIENTCERT_PASSWORD.key, CommonPrefs.PRESET_SSL_TRUSTSTORE_PASSWORD.key -> setPasswordSummary(key)
             CommonPrefs.PRESET_PROTOCOL.key -> toggleSSLSettingsVisibility()
@@ -195,6 +207,7 @@ abstract class EditPresetFragment : PreferenceFragmentCompat(),
     }
 
     private fun setPasswordSummary(key: String) {
+        Timber.d("setPasswordSummary %s", key)
         findPreference<EditTextPreference>(key)?.let {
             val length = prefs.getString(key, "")!!.length
             it.summary = "*".repeat(length)
@@ -202,6 +215,7 @@ abstract class EditPresetFragment : PreferenceFragmentCompat(),
     }
 
     override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
+        Timber.d("onPreferenceChange %s", preference.key)
         val input = newValue as String
         return when (val key = preference.key) {
             CommonPrefs.PRESET_DESTINATION_ADDRESS.key -> errorIfInvalid(input, key, inputValidator.validateHostname(input))
@@ -218,6 +232,7 @@ abstract class EditPresetFragment : PreferenceFragmentCompat(),
     }
 
     private fun setCategoryVisibleIfCondition(key: String, condition: Boolean) {
+        Timber.d("setCategoryVisibleIfCondition %s %s", key, condition)
         findPreference<Preference>(key)?.let {
             it.isVisible = condition
         }
@@ -230,11 +245,13 @@ abstract class EditPresetFragment : PreferenceFragmentCompat(),
             /* thrown if the selected value is null */
             false
         }
+        Timber.d("toggleSSLSettingsVisibility %s", sslIsSelected)
         setCategoryVisibleIfCondition(CommonPrefs.PRESET_SSL_OPTIONS_CATEGORY, sslIsSelected)
     }
 
     @SuppressLint("ApplySharedPref")
     private fun clearPrefs() {
+        Timber.d("clearPrefs")
         val editor = prefs.edit()
         ALL_TEXT_PREFS.forEach { key ->
             editor.remove(key)
@@ -250,6 +267,7 @@ abstract class EditPresetFragment : PreferenceFragmentCompat(),
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        Timber.d("onOptionsItemSelected")
         val resId = item.itemId
         if (resId == android.R.id.home) {
             onBackPressed()
@@ -262,6 +280,7 @@ abstract class EditPresetFragment : PreferenceFragmentCompat(),
     }
 
     private fun onBackPressed() {
+        Timber.d("onBackPressed")
         MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.go_back)
                 .setMessage(R.string.go_back_message)
@@ -271,13 +290,14 @@ abstract class EditPresetFragment : PreferenceFragmentCompat(),
     }
 
     private fun settingsAreValid(): Boolean {
+        Timber.d("settingsAreValid")
         val inputValidator = InputValidator()
         try {
             /* Regular options */
-            val protocolStr: String = prefs.getStringFromPair(CommonPrefs.PRESET_PROTOCOL)
-            val alias: String = prefs.getStringFromPair(CommonPrefs.PRESET_ALIAS)
-            val address: String = prefs.getStringFromPair(CommonPrefs.PRESET_DESTINATION_ADDRESS)
-            val portStr: String = prefs.getStringFromPair(CommonPrefs.PRESET_DESTINATION_PORT)
+            val protocolStr = prefs.getStringFromPair(CommonPrefs.PRESET_PROTOCOL)
+            val alias = prefs.getStringFromPair(CommonPrefs.PRESET_ALIAS)
+            val address = prefs.getStringFromPair(CommonPrefs.PRESET_DESTINATION_ADDRESS)
+            val portStr = prefs.getStringFromPair(CommonPrefs.PRESET_DESTINATION_PORT)
             if (!inputValidator.validateString(protocolStr, ".*?")) {
                 Notify.orange(requireView(), "No protocol chosen!")
                 return false
@@ -293,10 +313,10 @@ abstract class EditPresetFragment : PreferenceFragmentCompat(),
             }
             if (getInputProtocol() == Protocol.SSL) {
                 /* SSL-only options */
-                val clientBytes: String = prefs.getStringFromPair(CommonPrefs.PRESET_SSL_CLIENTCERT_BYTES)
-                val clientPass: String = prefs.getStringFromPair(CommonPrefs.PRESET_SSL_CLIENTCERT_PASSWORD)
-                val trustBytes: String = prefs.getStringFromPair(CommonPrefs.PRESET_SSL_TRUSTSTORE_BYTES)
-                val trustPass: String = prefs.getStringFromPair(CommonPrefs.PRESET_SSL_TRUSTSTORE_PASSWORD)
+                val clientBytes = prefs.getStringFromPair(CommonPrefs.PRESET_SSL_CLIENTCERT_BYTES)
+                val clientPass = prefs.getStringFromPair(CommonPrefs.PRESET_SSL_CLIENTCERT_PASSWORD)
+                val trustBytes = prefs.getStringFromPair(CommonPrefs.PRESET_SSL_TRUSTSTORE_BYTES)
+                val trustPass = prefs.getStringFromPair(CommonPrefs.PRESET_SSL_TRUSTSTORE_PASSWORD)
                 if (!inputValidator.validateString(clientBytes)) {
                     Notify.orange(requireView(), "No client certificate chosen!")
                     return false
@@ -319,6 +339,7 @@ abstract class EditPresetFragment : PreferenceFragmentCompat(),
     }
 
     private fun getEnteredPresetValues(): OutputPreset {
+        Timber.d("getEnteredPresetValues")
         val protocol = getInputProtocol()
         val preset = OutputPreset(
                 protocol,
@@ -340,6 +361,7 @@ abstract class EditPresetFragment : PreferenceFragmentCompat(),
     }
 
     private fun storePresetInDatabase() {
+        Timber.d("storePresetInDatabase")
         presetRepository.insertPreset(getEnteredPresetValues())
     }
 

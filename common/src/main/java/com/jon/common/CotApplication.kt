@@ -30,10 +30,12 @@ open class CotApplication : MultiDexApplication() {
         if (BuildConfig.DEBUG) {
             /* Debug builds only */
             Timber.plant(DebugTree())
+            Timber.d("Planted debug tree")
         }
         if (prefs.getBooleanFromPair(CommonPrefs.LOG_TO_FILE)) {
             /* If the user has configured file logging */
             LogUtils.startFileLogging(buildResources)
+            Timber.d("Planted file logging tree")
         }
     }
 

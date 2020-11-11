@@ -66,13 +66,15 @@ class NotificationGenerator @Inject constructor(
     }
 
     override fun showErrorNotification(errorMessage: String?) {
+        val message = errorMessage ?: "Null error: check the stack trace for info"
         notificationManager.notify(
                 GenerateInt.next(),
                 NotificationCompat.Builder(context, errorChannelId)
                         .setOngoing(false)
                         .setSmallIcon(R.drawable.error)
                         .setContentTitle("Error")
-                        .setStyle(bigText(errorMessage ?: "Null error: check the stack trace for info"))
+                        .setContentText(message)
+                        .setStyle(bigText(message))
                         .build()
         )
     }

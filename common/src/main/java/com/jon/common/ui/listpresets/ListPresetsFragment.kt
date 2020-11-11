@@ -46,6 +46,7 @@ class ListPresetsFragment : Fragment(R.layout.fragment_list_presets),
     lateinit var uiResources: IUiResources
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Timber.d("onViewCreated")
         setHasOptionsMenu(true)
 
         val viewMap = mapOf(
@@ -69,11 +70,13 @@ class ListPresetsFragment : Fragment(R.layout.fragment_list_presets),
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        Timber.d("onCreateOptionsMenu")
         menu.clear()
         inflater.inflate(R.menu.list_presets_menu, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        Timber.d("onOptionsItemSelected")
         if (item.itemId == R.id.delete_all) {
             MaterialAlertDialogBuilder(requireContext())
                     .setTitle("Delete Presets")
@@ -86,10 +89,12 @@ class ListPresetsFragment : Fragment(R.layout.fragment_list_presets),
     }
 
     override fun onClickEditItem(preset: OutputPreset) {
+        Timber.d("onClickEditItem")
         navController.safelyNavigate(uiResources.listToEditDirections(preset))
     }
 
     override fun onClickDeleteItem(preset: OutputPreset) {
+        Timber.d("onClickDeleteItem")
         MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Delete Preset")
                 .setMessage("Are you sure you want to delete " + preset.alias + "?")
@@ -99,6 +104,7 @@ class ListPresetsFragment : Fragment(R.layout.fragment_list_presets),
     }
 
     private fun initialiseFab() {
+        Timber.d("initialiseFab")
         /* Add the two items */
         binding.fab.mainFabClosedIconColor = ContextCompat.getColor(requireContext(), R.color.black)
         binding.fab.buildAndAddAction(R.id.new_preset_create, R.drawable.edit, R.string.fab_create_new_preset)
@@ -106,6 +112,7 @@ class ListPresetsFragment : Fragment(R.layout.fragment_list_presets),
 
         /* React to an item being tapped */
         binding.fab.setOnActionSelectedListener {
+            Timber.d("fab onActionSelected")
             binding.fab.close()
             return@setOnActionSelectedListener when (it.id) {
                 R.id.new_preset_create -> {
@@ -124,6 +131,7 @@ class ListPresetsFragment : Fragment(R.layout.fragment_list_presets),
     }
 
     private fun showImportDialog() {
+        Timber.d("showImportDialog")
         Notify.toast(requireContext(), "Select either a .pref or a .zip file")
         MaterialFilePicker()
                 .withSupportFragment(this)
@@ -138,6 +146,7 @@ class ListPresetsFragment : Fragment(R.layout.fragment_list_presets),
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, result: Intent?) {
+        Timber.d("onActivityResult %d %d", requestCode, resultCode)
         super.onActivityResult(requestCode, resultCode, result)
         if (result == null || requestCode != IMPORT_FILE_REQUEST_CODE) {
             Notify.orange(requireView(), "Nothing imported!")

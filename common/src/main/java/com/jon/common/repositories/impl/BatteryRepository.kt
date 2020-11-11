@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
 import com.jon.common.repositories.IBatteryRepository
+import timber.log.Timber
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -18,13 +19,14 @@ class BatteryRepository @Inject constructor(private val context: Context) : IBat
             if (!isInitialised) {
                 initialise(context)
             }
-            val level: Int = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
-            val scale: Int = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
+            val level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+            val scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
             return (level * 100 / scale.toFloat()).roundToInt()
         }
     }
 
     private fun initialise(context: Context) {
+        Timber.d("initialise")
         val intentFilter = IntentFilter(Intent.ACTION_BATTERY_CHANGED)
         batteryIntent = context.registerReceiver(null, intentFilter)!!
         isInitialised = true

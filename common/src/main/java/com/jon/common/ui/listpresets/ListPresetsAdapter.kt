@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.jon.common.databinding.PresetListItemBinding
 import com.jon.common.presets.OutputPreset
+import timber.log.Timber
 
 internal class ListPresetsAdapter(
         context: Context,
@@ -30,6 +31,7 @@ internal class ListPresetsAdapter(
     override fun getItemCount() = presets.size
 
     fun updatePresets(newPresets: List<OutputPreset>) {
+        Timber.d("updatePresets")
         presets.clear()
         presets.addAll(newPresets)
         notifyDataSetChanged()

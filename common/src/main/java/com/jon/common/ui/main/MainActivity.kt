@@ -74,8 +74,10 @@ abstract class MainActivity : AppCompatActivity(),
     protected lateinit var buildResources: IBuildResources
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Timber.d("onCreate")
         super.onCreate(savedInstanceState)
         if (!hasPermissions()) {
+            Timber.d("Don't have permissions, requesting...")
             EasyPermissions.requestPermissions(
                     this,
                     getString(uiResources.permissionRationaleId),
@@ -83,6 +85,7 @@ abstract class MainActivity : AppCompatActivity(),
                     *PERMISSIONS
             )
         } else if (isBatteryOptimised()) {
+            Timber.d("Battery is optimised, requesting to disable...")
             disableBatteryOptimisation()
         } else {
             buildActivity()
@@ -90,7 +93,9 @@ abstract class MainActivity : AppCompatActivity(),
     }
 
     private fun buildActivity() {
+        Timber.d("buildActivity")
         if (viewModel.activityIsBuilt) {
+            Timber.d("Activity has already been built!")
             return
         }
         setContentView(uiResources.activityLayoutId)
@@ -111,6 +116,7 @@ abstract class MainActivity : AppCompatActivity(),
     }
 
     private fun initialiseToolbar() {
+        Timber.d("initialiseToolbar")
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.apply {
@@ -126,17 +132,21 @@ abstract class MainActivity : AppCompatActivity(),
     }
 
     override fun onResume() {
+        Timber.d("onResume")
         super.onResume()
         prefs.registerOnSharedPreferenceChangeListener(this)
 
         if (hasPermissions() && isBatteryOptimised()) {
+            Timber.d("Have permissions but battery is optimised, requesting to disable...")
             disableBatteryOptimisation()
         }
     }
 
     override fun onDestroy() {
+        Timber.d("onDestroy")
         super.onDestroy()
         service?.let {
+            Timber.d("Unbinding service")
             service = null
             unbindService(this)
         }
@@ -145,6 +155,7 @@ abstract class MainActivity : AppCompatActivity(),
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        Timber.d("onCreateOptionsMenu")
         menuInflater.inflate(uiResources.mainMenuId, menu)
         return true
     }
@@ -154,29 +165,33 @@ abstract class MainActivity : AppCompatActivity(),
     }
 
     override fun onPermissionsGranted(requestCode: Int, grantedPermissions: List<String>) {
+        Timber.d("onPermissionsGranted")
         if (grantedPermissions.size == PERMISSIONS.size) {
-            /* All permissions granted */
+            Timber.d("All permissions granted!")
             buildActivity()
         } else {
+            Timber.d("Not all permissions granted!")
             chastiseUserAndQuit()
         }
     }
 
     override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
+        Timber.d("Some permissions denied!")
         chastiseUserAndQuit()
     }
 
     @CallSuper
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
+        Timber.d("onSharedPreferenceChanged %s", key)
         when (key) {
             CommonPrefs.TRANSMISSION_PERIOD.key -> {
                 service?.updateGpsPeriod(prefs.getIntFromPair(CommonPrefs.TRANSMISSION_PERIOD))
             }
             CommonPrefs.LOG_TO_FILE.key -> {
                 if (prefs.getBooleanFromPair(CommonPrefs.LOG_TO_FILE)) {
-                    startLoggingToFile()
+                    LogUtils.startFileLogging(buildResources)
                 } else {
-                    stopLoggingToFile()
+                    LogUtils.stopFileLogging()
                 }
             }
 
@@ -184,27 +199,33 @@ abstract class MainActivity : AppCompatActivity(),
     }
 
     override fun onServiceConnected(name: ComponentName, binder: IBinder) {
+        Timber.d("onServiceConnected %s", name)
         service = (binder as CotService.ServiceBinder).service
         service?.initialiseFusedLocationClient()
     }
 
     override fun onServiceDisconnected(name: ComponentName) {
+        Timber.d("onServiceDisconnected %s", name)
         service = null
     }
 
     override fun startService() {
+        Timber.d("startService")
         service?.start()
     }
 
     override fun stopService() {
+        Timber.d("stopService")
         service?.shutdown()
     }
 
     override fun isServiceNull(): Boolean {
+        Timber.d("isServiceNull = %s", service == null)
         return service == null
     }
 
     override fun isServiceRunning(): Boolean {
+        Timber.d("isServiceRunning = %s", viewModel.currentState == ServiceState.RUNNING)
         return viewModel.currentState == ServiceState.RUNNING
     }
 
@@ -213,7 +234,9 @@ abstract class MainActivity : AppCompatActivity(),
     }
 
     private fun observeServiceStatus() {
+        Timber.d("observeServiceStatus")
         statusRepository.getStatus().observe(this) {
+            Timber.d("Service state changed to %s", it.name)
             viewModel.currentState = it
             if (it == ServiceState.ERROR) {
                 Notify.red(getRootView(), "Error: ${ServiceState.errorMessage}")
@@ -222,6 +245,8 @@ abstract class MainActivity : AppCompatActivity(),
     }
 
     private fun startCotService() {
+        Timber.d("startCotService")
+
         /* Start the service and bind to it */
         val intent = Intent(this, buildResources.serviceClass)
         startService(intent)
@@ -231,6 +256,7 @@ abstract class MainActivity : AppCompatActivity(),
     }
 
     private fun chastiseUserAndQuit() {
+        Timber.d("chastiseUserAndQuit")
         val err = getString(R.string.permissions_denied_chastisement)
         Timber.e(err)
         Notify.toast(applicationContext, err)
@@ -238,6 +264,8 @@ abstract class MainActivity : AppCompatActivity(),
     }
 
     private fun onReleasesFetched(releases: List<GithubRelease>) {
+        Timber.d("onReleasesFetched")
+
         val latest = updateChecker.getLatestRelease(releases)
         if (latest != null && updateChecker.isNewerVersion(latest) && updateChecker.releaseIsNotIgnored(latest, prefs)) {
             val msg = "Installed = ${buildResources.versionName}\nLatest = ${latest.name}\n\n" +
@@ -257,6 +285,9 @@ abstract class MainActivity : AppCompatActivity(),
     }
 
     private fun onReleaseFetchingFailure(throwable: Throwable) {
+        Timber.d("onReleaseFetchingFailure")
+        Timber.d(throwable)
+
         if (throwable !is IOException) {
             /* Don't show an error snackbar if the exception was due to network problems.
              * If the user is off-grid I don't want to annoy them. */
@@ -278,7 +309,9 @@ abstract class MainActivity : AppCompatActivity(),
 
     @SuppressLint("BatteryLife")
     private fun disableBatteryOptimisation() {
+        Timber.d("disableBatteryOptimisation")
         if (!VersionUtils.isAtLeast(IGNORE_BATTERY_OPTIMISATIONS)) {
+            Timber.d("Too low version to disable battery optimisations!")
             return
         }
         MaterialAlertDialogBuilder(this)
@@ -286,6 +319,7 @@ abstract class MainActivity : AppCompatActivity(),
                 .setMessage(R.string.battery_optimisation_dialog_message)
                 .setPositiveButton(android.R.string.ok) { _, _ ->
                     // Add a positive button which will take the user to battery settings when pressed.
+                    Timber.d("Starting activity for result")
                     startActivityForResult(
                             Intent().apply {
                                 action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
@@ -301,6 +335,7 @@ abstract class MainActivity : AppCompatActivity(),
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        Timber.d("onActivityResult")
         if (requestCode == BATTERY_OPTIMISATION_CODE && isBatteryOptimised()) {
             // User clicked "DENY", so close the app and let them do it again
             Notify.toast(this, "Battery optimisation should be disabled!")
@@ -312,20 +347,12 @@ abstract class MainActivity : AppCompatActivity(),
 
     private fun closeApp() {
         if (VersionUtils.isAtLeast(FINISH_AND_REMOVE_TASK)) {
+            Timber.d("finishAndRemoveTask")
             finishAndRemoveTask()
         } else {
+            Timber.d("finish")
             finish()
         }
-    }
-
-    private fun stopLoggingToFile() {
-        LogUtils.stopFileLogging()
-        Notify.yellow(getRootView(), "Stopped logging to file")
-    }
-
-    private fun startLoggingToFile() {
-        LogUtils.startFileLogging(buildResources)
-        Notify.yellow(getRootView(), "Started logging to file!")
     }
 
     companion object {

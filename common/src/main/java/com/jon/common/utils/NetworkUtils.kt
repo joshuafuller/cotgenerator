@@ -4,7 +4,7 @@ import java.net.Inet4Address
 import java.net.InetAddress
 import java.net.NetworkInterface
 
-class NetworkHelper {
+object NetworkUtils {
     fun getValidInterfaces(): List<NetworkInterface> {
         return NetworkInterface.getNetworkInterfaces()
                 .asSequence()
@@ -20,5 +20,11 @@ class NetworkHelper {
 
     private fun interfaceHasIpv4Address(ni: NetworkInterface): Boolean {
         return getAddressFromInterface(ni) != null
+    }
+
+    fun getLocalAddress(): InetAddress {
+        return getValidInterfaces()
+                .mapNotNull { getAddressFromInterface(it) }
+                .first()
     }
 }

@@ -20,7 +20,7 @@
     <string name="desc_dest_port">Destination Port</string>
 
     <!-- Other Settings -->
-    <string name="pref_category_other_settings">Transmission Settings</string>
+    <string name="pref_category_other_settings">Other Settings</string>
     <string name="desc_log_to_file">Output Logs To File?</string>
 
     <!-- New preset screen -->

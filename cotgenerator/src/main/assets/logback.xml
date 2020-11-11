@@ -1,10 +1,16 @@
-<configuration debug="true">
+<configuration>
 
-    <appender name="file" class="ch.qos.logback.core.FileAppender">
-        <file>/storage/emulated/0/cot_logging/generator.log</file>
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>/storage/emulated/0/cot_logging/generator-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>5MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>50MB</totalSizeCap>
+        </rollingPolicy>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %msg%n</pattern>
         </encoder>
+        <prudent>true</prudent>
     </appender>
 
     <appender name="async" class="ch.qos.logback.classic.AsyncAppender">

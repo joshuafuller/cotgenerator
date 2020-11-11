@@ -5,6 +5,7 @@ import com.jon.common.prefs.CommonPrefs
 import com.jon.common.presets.OutputPreset
 import com.jon.common.repositories.IPresetRepository
 import com.jon.common.utils.Constants
+import timber.log.Timber
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.OutputStream
@@ -20,6 +21,7 @@ class SocketFactory(
     private val lock = Any()
 
     fun getUdpInputSocket(group: String, port: Int): MulticastSocket {
+        Timber.i("getUdpInputSocket %s %d", group, port)
         return MulticastSocket(port).also {
             it.joinGroup(InetAddress.getByName(group))
             it.loopbackMode = true // don't subscribe to loopback traffic
@@ -29,10 +31,14 @@ class SocketFactory(
     fun getTcpSocket(): Socket {
         synchronized(lock) {
             return Socket().also {
+                val address = getDestinationIp()
+                val port = getDestinationPort()
+                Timber.i("getTcpSocket %s %d", address, port)
                 it.connect(
-                        InetSocketAddress(getDestinationIp(), getDestinationPort()),
+                        InetSocketAddress(address, port),
                         Constants.TCP_SOCKET_TIMEOUT_MS
                 )
+                Timber.i("TCP socket connected!")
             }
         }
     }
@@ -54,9 +60,16 @@ class SocketFactory(
                     getTrustManagers(trustStore),
                     SecureRandom()
             )
-            return (sslContext.socketFactory.createSocket(getDestinationIp(), getDestinationPort()) as SSLSocket).also {
+            val address = getDestinationIp()
+            val port = getDestinationPort()
+            Timber.i("getTcpSocket %s %d", address, port)
+            return (sslContext.socketFactory.createSocket() as SSLSocket).also {
                 it.enabledProtocols = arrayOf("TLSv1.1", "TLSv1.2")
-                it.soTimeout = Constants.TCP_SOCKET_TIMEOUT_MS
+                it.connect(
+                        InetSocketAddress(address, port),
+                        Constants.TCP_SOCKET_TIMEOUT_MS
+                )
+                Timber.i("SSL socket connected!")
             }
         }
     }

@@ -62,11 +62,13 @@ abstract class CotService : LifecycleService(),
 
 
     override fun onBind(intent: Intent): IBinder? {
+        Timber.d("onBind")
         super.onBind(intent)
         return binder
     }
 
     override fun onCreate() {
+        Timber.d("onCreate")
         super.onCreate()
         if (VersionUtils.isAtLeast(NOTIFICATION_CHANNELS)) {
             notificationGenerator.createForegroundChannel()
@@ -76,13 +78,13 @@ abstract class CotService : LifecycleService(),
 
     override fun onDestroy() {
         super.onDestroy()
-        Timber.i("onDestroy")
+        Timber.d("onDestroy")
         unregisterGpsUpdates()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Timber.d("onStartCommand %s", intent?.action)
         val result = super.onStartCommand(intent, flags, startId)
-        Timber.i("onStartCommand ${intent?.action}")
         return when (intent?.action) {
             STOP_SERVICE -> {
                 shutdown()
@@ -99,6 +101,7 @@ abstract class CotService : LifecycleService(),
     }
 
     fun initialiseFusedLocationClient() {
+        Timber.d("initialiseFusedLocationClient")
         try {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this).apply {
                 lastLocation.addOnSuccessListener {
@@ -114,20 +117,21 @@ abstract class CotService : LifecycleService(),
     }
 
     open fun start() {
-        Timber.i("Starting service")
+        Timber.d("start")
         statusRepository.postStatus(ServiceState.RUNNING)
         threadManager.start()
         startForegroundService()
     }
 
     open fun shutdown() {
+        Timber.d("shutdown")
         statusRepository.postStatus(ServiceState.STOPPED)
-        Timber.i("Stopping service")
         threadManager.shutdown()
         stopForegroundService()
     }
 
     private fun error(throwable: Throwable) {
+        Timber.d("error")
         Timber.e(throwable)
         notificationGenerator.showErrorNotification(throwable.message)
         shutdown()
@@ -136,20 +140,24 @@ abstract class CotService : LifecycleService(),
     }
 
     fun updateGpsPeriod(newPeriodSeconds: Int) {
+        Timber.d("updateGpsPeriod %d secs", newPeriodSeconds)
         updateRateSeconds = newPeriodSeconds
         initialiseLocationRequest()
     }
 
     private fun startForegroundService() {
+        Timber.d("startForegroundService")
         startForeground(3, notificationGenerator.getForegroundNotification())
     }
 
     private fun stopForegroundService() {
+        Timber.d("stopForegroundService")
         stopForeground(true)
         stopSelf()
     }
 
     private fun initialiseLocationRequest() {
+        Timber.d("initialiseLocationRequest")
         unregisterGpsUpdates()
         locationRequest = LocationRequest.create()
                 .setInterval(updateRateSeconds * 1000.toLong())
@@ -158,6 +166,7 @@ abstract class CotService : LifecycleService(),
     }
 
     private fun registerGpsUpdates() {
+        Timber.d("registerGpsUpdates")
         try {
             fusedLocationClient?.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
         } catch (e: SecurityException) {
@@ -166,10 +175,12 @@ abstract class CotService : LifecycleService(),
     }
 
     private fun unregisterGpsUpdates() {
+        Timber.d("unregisterGpsUpdates")
         fusedLocationClient?.removeLocationUpdates(locationCallback)
     }
 
     override fun onThreadError(throwable: Throwable) {
+        Timber.d("onThreadError")
         /* Get an error from a thread, so pass the message down to our activity and show the user */
         error(throwable)
     }

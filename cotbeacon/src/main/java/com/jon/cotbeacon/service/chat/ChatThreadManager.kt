@@ -43,6 +43,7 @@ class ChatThreadManager(
 
     override fun start() {
         synchronized(lock) {
+            Timber.d("start")
             if (listeningExecutor.isShutdown) {
                 listeningExecutor = Executors.newSingleThreadExecutor()
             }
@@ -52,8 +53,8 @@ class ChatThreadManager(
     }
 
     override fun shutdown() {
-        Timber.i("shutting down")
         synchronized(lock) {
+            Timber.d("shutdown")
             listenRunnable?.close()
             listeningExecutor.shutdownNow()
             sendingExecutor.shutdownNow()
@@ -61,8 +62,8 @@ class ChatThreadManager(
     }
 
     override fun restart() {
-        Timber.i("restarting")
         synchronized(lock) {
+            Timber.d("restart")
             shutdown()
             if (chatIsEnabled()) {
                 start()
@@ -72,12 +73,15 @@ class ChatThreadManager(
 
     override fun isRunning(): Boolean {
         synchronized(lock) {
-            return !listeningExecutor.isTerminated
+            return !listeningExecutor.isTerminated.also {
+                Timber.d("isRunning %s", it)
+            }
         }
     }
 
     override fun onSharedPreferenceChanged(prefs: SharedPreferences, key: String) {
         synchronized(lock) {
+            Timber.d("onSharedPreferenceChanged %s", key)
             if (isRunning()) {
                 /* If any preferences are changed during runtime, kill the threads and reload with the new settings */
                 restart()
@@ -90,6 +94,7 @@ class ChatThreadManager(
 
     fun sendChat(chatMessage: ChatCursorOnTarget) {
         synchronized(lock) {
+            Timber.d("sendChat")
             if (sendingExecutor.isShutdown) {
                 sendingExecutor = Executors.newSingleThreadExecutor()
             }

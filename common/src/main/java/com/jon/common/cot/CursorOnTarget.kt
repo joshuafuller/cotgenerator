@@ -62,7 +62,9 @@ open class CursorOnTarget(buildResources: IBuildResources?) {
         return when (dataFormat) {
             DataFormat.XML -> toXml()
             DataFormat.PROTOBUF -> toProtobuf()
-        }.exhaustive
+        }.exhaustive.also {
+            Timber.d(String(it))
+        }
     }
 
     fun setStaleDiff(dt: Long, timeUnit: TimeUnit) {
@@ -131,7 +133,6 @@ open class CursorOnTarget(buildResources: IBuildResources?) {
         return TAK_HEADER + cotBytes
     }
 
-    /* Thrown in unit tests */
     @SuppressLint("DefaultLocale")
     private fun getDeviceName(): String {
         return try {

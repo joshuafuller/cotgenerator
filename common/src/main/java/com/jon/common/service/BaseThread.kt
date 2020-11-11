@@ -9,6 +9,7 @@ import com.jon.common.repositories.ISocketRepository
 import com.jon.common.utils.DataFormat
 import com.jon.common.utils.Protocol
 import com.jon.common.utils.exhaustive
+import timber.log.Timber
 import java.net.InetAddress
 
 abstract class BaseThread(protected val prefs: SharedPreferences) : Thread() {
@@ -35,6 +36,7 @@ abstract class BaseThread(protected val prefs: SharedPreferences) : Thread() {
 
     @CallSuper
     override fun run() {
+        Timber.d("run")
         synchronized(lock) {
             bIsRunning = true
             cotIcons = cotFactory.generate()
@@ -42,6 +44,7 @@ abstract class BaseThread(protected val prefs: SharedPreferences) : Thread() {
     }
 
     open fun shutdown() {
+        Timber.d("shutdown")
         synchronized(lock) {
             bIsRunning = false
             interrupt()

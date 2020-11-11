@@ -118,7 +118,7 @@ class ProvidesApplicationModule {
     fun provideRetrofitClient(): Retrofit? {
         return if (VersionUtils.isAtLeast(MinimumVersions.OKHTTP_SSL)) {
             return Retrofit.Builder()
-                    .baseUrl(Constants.GITHUB_API_BASE_URL)
+                    .baseUrl("https://api.github.com")
                     .addConverterFactory(GsonConverterFactory.create())
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .build()

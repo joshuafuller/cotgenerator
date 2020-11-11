@@ -69,6 +69,7 @@ class SocketRepository @Inject constructor(private val socketFactory: SocketFact
 
     private fun socketIsValid(socket: Socket): Boolean {
         return try {
+            /* Write a single byte to the socket to check whether it throws any exceptions */
             socket.outputStream.write(0)
             Timber.i("Socket is valid")
             true

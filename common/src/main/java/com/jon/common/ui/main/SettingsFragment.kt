@@ -20,7 +20,7 @@ import com.jon.common.utils.InputValidator
 import com.jon.common.utils.Notify
 import com.jon.common.utils.Protocol
 import com.jon.common.utils.safelyNavigate
-import java.util.*
+import timber.log.Timber
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 
@@ -57,11 +57,13 @@ abstract class SettingsFragment : PreferenceFragmentCompat(),
     )
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        Timber.d("onCreateView")
         setHasOptionsMenu(false)
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun onCreatePreferences(savedState: Bundle?, rootKey: String?) {
+        Timber.d("onCreatePreferences")
         setPreferencesFromResource(uiResources.settingsXmlId, rootKey)
 
         val callsignPreference = findPreference<RefreshCallsignPreference>(CommonPrefs.CALLSIGN.key)
@@ -86,6 +88,7 @@ abstract class SettingsFragment : PreferenceFragmentCompat(),
         /* Launch a new activity when clicking "Edit Presets" */
         findPreference<Preference>(CommonPrefs.EDIT_PRESETS)?.let {
             it.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                Timber.d("Clicked custom presets")
                 navController.safelyNavigate(uiResources.mainToListDirections)
                 true
             }
@@ -93,16 +96,19 @@ abstract class SettingsFragment : PreferenceFragmentCompat(),
     }
 
     override fun onActivityCreated(state: Bundle?) {
+        Timber.d("onActivityCreated")
         super.onActivityCreated(state)
         prefs.registerOnSharedPreferenceChangeListener(this)
     }
 
     override fun onStart() {
+        Timber.d("onStart")
         super.onStart()
         updatePreferences()
     }
 
     override fun onResume() {
+        Timber.d("onResume")
         super.onResume()
         for ((key, value) in getSuffixes()) {
             setPreferenceSuffix(prefs, key, value)
@@ -110,6 +116,7 @@ abstract class SettingsFragment : PreferenceFragmentCompat(),
     }
 
     protected open fun updatePreferences() {
+        Timber.d("updatePreferences")
         toggleProtocolSettingVisibility()
         toggleDataFormatSettingVisibility()
         updatePresetPreferences()
@@ -117,11 +124,13 @@ abstract class SettingsFragment : PreferenceFragmentCompat(),
     }
 
     override fun onDestroy() {
+        Timber.d("onDestroy")
         prefs.unregisterOnSharedPreferenceChangeListener(this)
         super.onDestroy()
     }
 
     override fun onSharedPreferenceChanged(prefs: SharedPreferences, key: String) {
+        Timber.d("onSharedPreferenceChanged %s", key)
         val suffixes = getSuffixes()
         if (suffixes.containsKey(key)) {
             setPreferenceSuffix(this.prefs, key, suffixes[key])
@@ -138,11 +147,13 @@ abstract class SettingsFragment : PreferenceFragmentCompat(),
     }
 
     protected fun <T> setPrefVisibleIfCondition(pref: PrefPair<T>, condition: Boolean) {
+        Timber.d("setPrefVisibleIfCondition %s %s", pref.key, condition)
         findPreference<Preference>(pref.key)?.isVisible = condition
     }
 
     private fun toggleProtocolSettingVisibility() {
         val protocol = Protocol.fromPrefs(prefs)
+        Timber.d("toggleProtocolSettingVisibility %s", protocol.name)
         setPrefVisibleIfCondition(CommonPrefs.SSL_PRESETS, protocol == Protocol.SSL)
         setPrefVisibleIfCondition(CommonPrefs.TCP_PRESETS, protocol == Protocol.TCP)
         setPrefVisibleIfCondition(CommonPrefs.UDP_PRESETS, protocol == Protocol.UDP)
@@ -151,10 +162,12 @@ abstract class SettingsFragment : PreferenceFragmentCompat(),
     private fun toggleDataFormatSettingVisibility() {
         /* Data format is only relevant for UDP, since TAK Server only takes XML data */
         val showDataFormatSetting = Protocol.fromPrefs(prefs) == Protocol.UDP
+        Timber.d("toggleDataFormatSettingVisibility %s", showDataFormatSetting)
         setPrefVisibleIfCondition(CommonPrefs.DATA_FORMAT, showDataFormatSetting)
     }
 
     override fun onPreferenceChange(pref: Preference, newValue: Any): Boolean {
+        Timber.d("onPreferenceChange %s", newValue.toString())
         val input = newValue as String
         val inputValidator = InputValidator()
         return when (val key = pref.key) {
@@ -167,21 +180,23 @@ abstract class SettingsFragment : PreferenceFragmentCompat(),
     }
 
     protected fun errorIfInvalid(input: String, key: String?, result: Boolean): Boolean {
+        Timber.d("errorIfInvalid %s %s %s", input, key, result)
         if (!result) {
             Notify.red(requireView(), "Invalid input: " + input + ". " + getPrefValidationRationales()[key])
         }
         return result
     }
 
-    private fun setPreferenceSuffix(prefs: SharedPreferences?, key: String, suffix: String?) {
-        val pref = findPreference<Preference>(key)
-        if (pref != null) {
-            val `val` = prefs!!.getString(key, "")
-            pref.summary = String.format(Locale.ENGLISH, "%s %s", `val`, suffix)
+    private fun setPreferenceSuffix(prefs: SharedPreferences, key: String, suffix: String?) {
+        Timber.d("setPreferenceSuffix %s %s", key, suffix)
+        findPreference<Preference>(key)?.let {
+            val value = prefs.getString(key, "")
+            it.summary = "$value $suffix"
         }
     }
 
     private fun insertPresetAddressAndPort() {
+        Timber.d("insertPresetAddressAndPort")
         val addressPref = findPreference<EditTextPreference>(CommonPrefs.DEST_ADDRESS)
         val portPref = findPreference<EditTextPreference>(CommonPrefs.DEST_PORT)
         val presetPref = findPreference<ListPreference>(
@@ -201,6 +216,7 @@ abstract class SettingsFragment : PreferenceFragmentCompat(),
     }
 
     private fun updatePresetPreferences() {
+        Timber.d("updatePresetPreferences")
         mapOf(
                 Protocol.SSL to CommonPrefs.SSL_PRESETS.key,
                 Protocol.TCP to CommonPrefs.TCP_PRESETS.key,
@@ -217,6 +233,7 @@ abstract class SettingsFragment : PreferenceFragmentCompat(),
     }
 
     private fun updatePresetEntries(presets: List<OutputPreset>, key: String) {
+        Timber.d("updatePresetEntries %s", key)
         val entries = presets.map { it.alias }.toTypedArray()
         val entryValues = presets.map { it.toString() }.toTypedArray()
         findPreference<ListPreference>(key)?.let {
