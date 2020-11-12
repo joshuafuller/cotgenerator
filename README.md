@@ -50,7 +50,9 @@ As of version 1.7.0, a chat function has been added to allow text communication 
 
 Also, please be aware that my testing with SSL servers has shown that I can only receive chat messages in Beacon, not send. The reason for this is unclear, but it may be a configuration issue on the Discord TAK server (the only one I've been able to test with). Chat works both-ways for UDP and TCP protocols, however.
 
-There is also a
+## Emergency
+
+CoT Beacon includes a feature to enable sending/cancelling of a selection of emergency messages. This will appear as flashing a dot on all other user's map screens and will give them a vibrational alert.
 
 | Beacon Chat |
 :--:|
@@ -72,32 +74,43 @@ When adding a new preset, the user can either enter one manually (faffing about 
 - If the selected file contains multiple outputs, you will be presented with a list dialog asking to import one of them. Currently, only a single import can currently be performed at a time.
 - When selected, the "Edit Preset" screen is shown, so you can edit to your heart's content. When done, tap the "save" button in the top right to finalise the process.
 
-
 ## Settings
 
-Note that some of the following settings are not available on CoT Beacon.
+### Generator-Only
 
 | Option | Possible Values | Description |
 |--------|-----------------|-------------|
 | Use Random Callsigns? | True/False | When enabled, icon callsigns will be pulled at random from ATAK's default callsign list. |
-| Callsign | Any characters except '<' or '>' | Acts as a base callsign for all generated icons. E.g. "GENERATED-1", "GENERATED-2", etc. |
 | Use Indexed Callsigns? | True/False | When enabled, icons will have their callsigns appended with an identifying index, e.g. 'GENERATED-1'.z |
 | Use Random Team Colours? | True/False |When enabled, icon colours are pulled at random from ATAK's team colour list. |
-| Team Colour | Standard ATAK team colours | Colour to be applied to all icons. |
 | Use Random Team Roles? | True/False | When enabled, icon roles are pulled at random from ATAK's role list. |
-| Team Role | Standard ATAK icon roles | Role to be applied to all icons. |
 | Icon Count | Positive integer | Number of icons to place on the map. |
-| Stale Timer | 1 to 60 | Time (in minutes) after which icons will stale out of the TAK map. |
 | Follow My GPS Location? | True/False | When enabled, all generated icons will follow your moving GPS position on the ATAK map. |
 | Centre Latitude/Longitude | <p>0 < longitude < 360<br>-90 < latitude < 90</p> | Specifies the static centrepoint of all generated icons. |
 | Stay At Ground Level? | True/False | When enabled, all icons are placed at an altitude of 0m HAE (height above ellipsoid). |
 | Centre Altitude | 0 to 5km | Sets the vertical centrepoint of all generated icons. Icons will be distributed in a pseudo-cylinder around the specified lat/lon/HAE coordinates. |
 | Radial Distribution | Positive integer | The radius of the icon distribution circle. Essentially a maximum distance each icon can possibly move from the centrepoint in 3D space. |
 | Icon Movement Speed  | Positive integer | Speed at which each icon moves from point to point between each update. Note that the directional bearing is random. |
+
+### Beacon-Only
+| Option | Possible Values | Description |
+|--------|-----------------|-------------|
+| Enable Chat? | True/False | When enabled, the app will start listening for chat messages from the "All Chat Rooms" channel, and will allow you to send messages to the same. |
+| Start Service On Boot? | True/False | When enabled, the app will automatically start transmitting to the preconfigured destination soon (within a couple of minutes) after device boot. |
+| Start Service On App Launch? | True/False | When enabled, the app will automatically start transmitting as soon as the app is opened, so you won't have to tap the "START SERVICE" button. |
+
+### Shared between both
+| Option | Possible Values | Description |
+|--------|-----------------|-------------|
+| Callsign | Any characters except '<' or '>' | Display name of your CoT icon(s) on the TAK map. |
+| Team Colour | Standard ATAK team colours | Colour to be applied to all icons. |
+| Team Role | Standard ATAK icon roles | Role to be applied to all icons. |
+| Stale Timer | 1 to 60 | Time (in minutes) after which icons will stale out of the TAK map. |
 | Transmission Period | 1 to 30 | Update period for each icon. So if we have Icon Count of 40 and a Transmission period of 10 seconds, we'll send out 4 packets per second. |
 | Transmission Protocol | SSL, TCP, UDP | Network protocol to use when sending out packets. |
 | Data Format | XML or Protobuf | The serialisation format of the CoT packet. Note that TAK Servers over TCP/SSL only allow XML, so the option will be hidden for these protocols. |
 | Output Destination | Any default or custom preset | The preconfigured destination for your generated packets. |
+| Output Log To File? | True/fFlse | When enabled, the app will dump all activity to the /sdcard/cot_logging directory, so you can send me some useful info if/when the app crashes!. Be aware that this will contain location information, so feel free to redact that if you like. |
 
 ## Permissions
 Two permissions requested:
@@ -114,9 +127,14 @@ Note that 100% of testing has been done on a OnePlus 6 running Android 10. If th
 Thanks to the crew at the TAK Discord, most notably [Corvo](https://github.com/brothercorvo) and [Field Mapper](https://github.com/fieldmapper) for hosting their public [FreeTAKServer](https://github.com/FreeTAKTeam/FreeTakServer) and OG TAK Server respectively, used extensively for testing.
 
 ## TODO
-- Fix package parsing error
-- Add a button for sending/canceling emergencies
-- Change app launcher icons
+- Reorganise UI to have a status screen on home instead of settings
+    - "connection status"
+    - GPS status/coords
+    - layout buttons for the main screens, or a bottom navbar
+- Not connecting to FTS on corvo's older devices?
+- Fix SSL chat
+- Make sure boot function works
+- Move threads to runnables
 - Add a toggleable option to encrypt the database of presets
     - This would make SSL certificate passwords more secure, since they're currently stored in plaintext
     - www.outline.com/rnpyG6
@@ -125,5 +143,3 @@ Thanks to the crew at the TAK Discord, most notably [Corvo](https://github.com/b
 - Add the option to post REST API messages to FTS instances
     - Would require me to identify whether a given server is an FTS
     - As an alternative to XML/Protobuf
-- Dump error stack traces to a log file
-    - Would help error identification
