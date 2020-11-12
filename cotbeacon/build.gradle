@@ -53,7 +53,7 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
     implementation "androidx.appcompat:appcompat:$versions.appcompat"
-    implementation "androidx.lifecycle:lifecycle-extensions:$versions.lifecycle_extensions"
+    implementation "androidx.lifecycle:lifecycle-extensions:$versions.lifecycle"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.viewmodel_ktx"
     implementation "androidx.core:core-ktx:$versions.core_ktx"
     implementation "com.jaredrummler:material-spinner:$versions.materialspinner"

@@ -235,12 +235,14 @@ abstract class MainActivity : AppCompatActivity(),
 
     private fun observeServiceStatus() {
         Timber.d("observeServiceStatus")
-        statusRepository.getStatus().observe(this) {
-            Timber.d("Service state changed to %s", it.name)
-            viewModel.currentState = it
-            if (it == ServiceState.ERROR) {
-                Notify.red(getRootView(), "Error: ${ServiceState.errorMessage}")
-            }
+        statusRepository.getStatus().observe(this) { updateStatus(it) }
+    }
+
+    protected open fun updateStatus(newState: ServiceState) {
+        Timber.d("Service state changed to %s", newState.name)
+        viewModel.currentState = newState
+        if (newState == ServiceState.ERROR) {
+            Notify.red(getRootView(), "Error: ${ServiceState.errorMessage}")
         }
     }
 

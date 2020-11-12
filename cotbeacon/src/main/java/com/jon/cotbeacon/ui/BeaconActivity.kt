@@ -6,7 +6,9 @@ import android.os.IBinder
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import com.jon.common.prefs.getBooleanFromPair
+import com.jon.common.service.ServiceState
 import com.jon.common.ui.main.MainActivity
 import com.jon.common.ui.main.MainFragmentDirections
 import com.jon.common.utils.Notify
@@ -26,6 +28,8 @@ class BeaconActivity : MainActivity(),
     private var emergencyMenuItem: MenuItem? = null
 
     private val beaconViewModel: BeaconActivityViewModel by viewModels()
+
+    private var emergencyDialog: AlertDialog? = null
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         Timber.d("onCreateOptionsMenu")
@@ -82,6 +86,12 @@ class BeaconActivity : MainActivity(),
         }
     }
 
+    override fun updateStatus(newState: ServiceState) {
+        super.updateStatus(newState)
+        /* If the service stops unexpectedly, close the dialog because we won't be able to transmit */
+        emergencyDialog?.dismiss()
+    }
+
     private fun chatIsEnabled(): Boolean {
         return prefs.getBooleanFromPair(BeaconPrefs.ENABLE_CHAT).also {
             Timber.d("chatIsEnabled %s", it)
@@ -92,7 +102,7 @@ class BeaconActivity : MainActivity(),
         Timber.d("dealWithEmergencyClick")
         if (isServiceRunning()) {
             /* Ask the user which emergency type to send */
-            EmergencyDialogBuilder(this, beaconViewModel.emergencyIsActive) {
+            emergencyDialog = EmergencyDialogBuilder(this, beaconViewModel.emergencyIsActive) {
                 Timber.d("Sending emergency %s", it)
                 getService()?.sendEmergency(it)
                 Notify.yellow(getRootView(), "Sent '${it.description}'")

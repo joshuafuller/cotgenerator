@@ -62,7 +62,7 @@ class SocketFactory(
             )
             val address = getDestinationIp()
             val port = getDestinationPort()
-            Timber.i("getTcpSocket %s %d", address, port)
+            Timber.i("getSslSocket %s %d", address, port)
             return (sslContext.socketFactory.createSocket() as SSLSocket).also {
                 it.enabledProtocols = arrayOf("TLSv1.1", "TLSv1.2")
                 it.connect(
