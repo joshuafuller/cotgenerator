@@ -1,8 +1,10 @@
-package com.jon.common.versioncheck;
+package com.jon.common.versioncheck
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import androidx.annotation.Keep
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
 
+@Keep
 data class GithubRelease(
         @Expose
         @SerializedName("name")

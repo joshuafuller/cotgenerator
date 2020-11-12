@@ -19,3 +19,16 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# GSON fixes
+-keepattributes Signature
+-keep class com.google.gson.examples.android.model.** { *; }
+
+# Navigation argument fixes
+-keep class * extends androidx.fragment.app.Fragment{}
+-keep class com.jon.common.presets.OutputPreset
+
+# Logback fixes
+-keep class ch.qos.** { *; }
+-keep class org.slf4j.** { *; }
+-keepattributes *Annotation*

@@ -5,9 +5,7 @@ import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
 import com.jon.common.di.IBuildResources
-import com.jon.common.logging.DebugTree
-import com.jon.common.logging.FileLoggingTree
-import com.jon.common.logging.LogUtils
+import com.jon.common.logging.*
 import com.jon.common.prefs.CommonPrefs
 import com.jon.common.prefs.getBooleanFromPair
 import timber.log.Timber
@@ -30,6 +28,10 @@ open class CotApplication : MultiDexApplication() {
         if (BuildConfig.DEBUG) {
             /* Debug builds only */
             Timber.plant(DebugTree())
+            Timber.d("Planted debug tree")
+        } else {
+            /* Release builds */
+            Timber.plant(ReleaseTree())
             Timber.d("Planted debug tree")
         }
         if (prefs.getBooleanFromPair(CommonPrefs.LOG_TO_FILE)) {
